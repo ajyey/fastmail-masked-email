@@ -101,3 +101,42 @@ export const setForDomain = async (
   const data: SetResponse = <SetResponse>await response.json();
   return data.methodResponses[0][1].updated;
 };
+/**
+ * Sets the state of a masked email
+ * @param id The id of the masked email to update
+ * @param state The new state to set
+ * @param session The session object
+ */
+export const setState = async (
+  id: string | undefined,
+  state: string,
+  session: any
+): Promise<{ [key: string]: null }> => {
+  if (!session) {
+    throw new Error('No session provided');
+  }
+  if (!id) {
+    throw new Error('No id provided');
+  }
+  if (!state) {
+    throw new Error('No state provided');
+  }
+  const { apiUrl, accountId } = parseSession(session);
+  const headers = buildHeaders();
+  const response = await fetch(apiUrl, {
+    method: HTTP.POST,
+    headers,
+    body: JSON.stringify({
+      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+      methodCalls: [
+        [
+          MASKED_EMAIL_CALLS.set,
+          { accountId, update: { [id]: { state } } },
+          'a',
+        ],
+      ],
+    }),
+  });
+  const data: SetResponse = <SetResponse>await response.json();
+  return data.methodResponses[0][1].updated;
+};

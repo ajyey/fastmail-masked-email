@@ -1,13 +1,13 @@
 {
   "name": "fastmail-masked-email",
   "version": "1.0.0",
-  "description": "A library for interacting with and modifying Fastmail Masked Emails",
+  "description": "A library for creating, modifying, and otherwise interacting with Fastmail Masked Emails",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "repository": "https://github.com/ajyey/fastmail-masked-email",
   "license": "MIT",
-  "keywords": [],
+  "keywords": ["fastmail", "masked", "email"],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
