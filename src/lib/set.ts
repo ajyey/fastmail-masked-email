@@ -52,10 +52,18 @@ export const setDescription = async (
 
 /**
  * Sets the forDomain of the masked email address
+ * @param id The id of the masked email to update
  * @param headers The headers to use for the request
  * @param forDomain The new domain to set
  * @param apiUrl The apiUrl from the session object.
  * @param accountId The accountId from the session object.
+ * @returns An object containing the id of the email that was updated as the key
+ * e.g.
+ *
+ * {
+ *
+ *     [masked-1234]: null
+ * }
  */
 export const setForDomain = async (
   id: string | undefined,
@@ -64,6 +72,9 @@ export const setForDomain = async (
   apiUrl: RequestInfo,
   accountId: string
 ): Promise<{ [key: string]: null }> => {
+  if (!id) {
+    throw new Error('No id provided');
+  }
   const response = await fetch(apiUrl, {
     method: HTTP.POST,
     headers,
