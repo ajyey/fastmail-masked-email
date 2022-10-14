@@ -138,9 +138,7 @@ export const setState = async (
     }),
   });
   const data: SetResponse = <SetResponse>await response.json();
-  return state !== 'deleted'
-    ? data.methodResponses[0][1].updated
-    : data.methodResponses[0][1].destroyed;
+  return data.methodResponses[0][1].updated;
 };
 
 /**
