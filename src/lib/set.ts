@@ -152,5 +152,5 @@ export const deleteEmail = async (
   id: string | undefined,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return setState(id, 'deleted', session);
+  return await setState(id, 'deleted', session);
 };
