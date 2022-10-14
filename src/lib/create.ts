@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 import {
   HTTP,
   JMAP,
@@ -7,6 +5,7 @@ import {
   MASKED_EMAIL_CAPABILITY,
 } from '../constants';
 import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
+import { SetResponse } from '../types/Response';
 // import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
@@ -48,6 +47,6 @@ export const create = async (
       ],
     }),
   });
-  const data = await response.json();
+  const data: SetResponse = <SetResponse>await response.json();
   return data.methodResponses[0][1].created[forDomain];
 };
