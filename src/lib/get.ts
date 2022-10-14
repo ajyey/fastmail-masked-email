@@ -7,7 +7,7 @@ import {
   MASKED_EMAIL_CAPABILITY,
 } from '../constants';
 import { MaskedEmail } from '../types/MaskedEmail';
-import { Response } from '../types/Response';
+import { GetResponse } from '../types/Response';
 import { getEmailByAddress } from '../util/getUtil';
 
 /**
@@ -29,7 +29,7 @@ export const getAll = async (
       methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']],
     }),
   });
-  const data: Response = <Response>await response.json();
+  const data: GetResponse = <GetResponse>await response.json();
   return data.methodResponses[0][1].list;
 };
 
@@ -53,7 +53,7 @@ export const getById = async (
       methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']],
     }),
   });
-  const data: Response = <Response>await response.json();
+  const data: GetResponse = <GetResponse>await response.json();
   return data.methodResponses[0][1].list[0];
 };
 

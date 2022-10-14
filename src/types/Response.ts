@@ -1,7 +1,12 @@
-import { MethodResponse } from './MethodResponse';
+import { GetMethodResponse, SetMethodResponse } from './MethodResponse';
 
-export interface Response {
+export interface GetResponse {
   sessionState: string;
   latestClientVersion: string;
-  methodResponses: Array<Array<MethodResponse>>;
+  methodResponses: Array<Array<GetMethodResponse>>;
+}
+export interface SetResponse {
+  sessionState: string;
+  latestClientVersion: string;
+  methodResponses: Array<Array<SetMethodResponse>>;
 }
