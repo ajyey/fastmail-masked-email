@@ -10,7 +10,6 @@ import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
 // import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
-
 /**
  * Creates a new masked email address
  * @param session The session object
@@ -52,5 +51,3 @@ export const create = async (
   const data = await response.json();
   return data.methodResponses[0][1].created[forDomain];
 };
-
-// create a function that takes in a session object and creates a new masked email address using jmap
