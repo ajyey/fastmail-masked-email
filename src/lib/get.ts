@@ -22,7 +22,7 @@ export const getAll = async (
   accountId: string
 ): Promise<readonly MaskedEmail[]> => {
   const response = await fetch(apiUrl, {
-    method: HTTP.GET,
+    method: HTTP.POST,
     headers,
     body: JSON.stringify({
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
