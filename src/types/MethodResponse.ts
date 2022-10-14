@@ -19,5 +19,5 @@ export interface SetMethodResponse {
   accountId: string;
   newState: string;
   updated: { [key: string]: null };
-  destroyed: [any];
+  destroyed: { [key: string]: null };
 }

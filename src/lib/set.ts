@@ -138,5 +138,19 @@ export const setState = async (
     }),
   });
   const data: SetResponse = <SetResponse>await response.json();
-  return data.methodResponses[0][1].updated;
+  return state !== 'deleted'
+    ? data.methodResponses[0][1].updated
+    : data.methodResponses[0][1].destroyed;
+};
+
+/**
+ * Deletes a masked email by setting the state to deleted
+ * @param id The id of the masked email to delete
+ * @param session The session object
+ */
+export const deleteEmail = async (
+  id: string | undefined,
+  session: any
+): Promise<{ [key: string]: null }> => {
+  return setState(id, 'deleted', session);
 };
