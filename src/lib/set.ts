@@ -1,10 +1,10 @@
-import fetch from 'node-fetch';
-
+import axios from 'axios';
+import { Logger } from 'tslog';
+const logger: Logger = new Logger();
 import {
-  HTTP,
   JMAP,
   MASKED_EMAIL_CALLS,
-  MASKED_EMAIL_CAPABILITY,
+  MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
@@ -28,38 +28,39 @@ export const setDescription = async (
   session: any
 ): Promise<{ [key: string]: null }> => {
   if (!id) {
-    throw new Error('No id provided');
+    return Promise.reject(new Error('No id provided'));
   }
   if (!session) {
-    throw new Error('No session provided');
+    return Promise.reject(new Error('No session provided'));
   }
   const { apiUrl, accountId } = parseSession(session);
   const headers = buildHeaders();
-  const response = await fetch(apiUrl, {
-    method: HTTP.POST,
-    headers,
-    body: JSON.stringify({
+  const response = await axios.post(
+    apiUrl,
+    {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
       methodCalls: [
         [
           MASKED_EMAIL_CALLS.set,
           { accountId, update: { [id]: { description } } },
-          'a',
-        ],
-      ],
-    }),
-  });
-  const data: SetResponse = <SetResponse>await response.json();
+          'a'
+        ]
+      ]
+    },
+    {
+      headers
+    }
+  );
+  logger.debug('setDescription() response', response);
+  const data: SetResponse = response.data;
   return data.methodResponses[0][1].updated;
 };
 
 /**
  * Sets the forDomain of the masked email address
  * @param id The id of the masked email to update
- * @param headers The headers to use for the request
  * @param forDomain The new domain to set
- * @param apiUrl The apiUrl from the session object.
- * @param accountId The accountId from the session object.
+ * @param session The session object
  * @returns An object containing the id of the email that was updated as the key
  * e.g.
  *
@@ -74,70 +75,76 @@ export const setForDomain = async (
   session: any
 ): Promise<{ [key: string]: null }> => {
   if (!session) {
-    throw new Error('No session provided');
+    return Promise.reject(new Error('No session provided'));
   }
   if (!id) {
-    throw new Error('No id provided');
+    return Promise.reject(new Error('No id provided'));
   }
   if (!forDomain) {
-    throw new Error('No forDomain provided');
+    return Promise.reject(new Error('No forDomain provided'));
   }
   const { apiUrl, accountId } = parseSession(session);
   const headers = buildHeaders();
-  const response = await fetch(apiUrl, {
-    method: HTTP.POST,
-    headers,
-    body: JSON.stringify({
+  const response = await axios.post(
+    apiUrl,
+    {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
       methodCalls: [
         [
           MASKED_EMAIL_CALLS.set,
           { accountId, update: { [id]: { forDomain } } },
-          'a',
-        ],
-      ],
-    }),
-  });
-  const data: SetResponse = <SetResponse>await response.json();
+          'a'
+        ]
+      ]
+    },
+    {
+      headers
+    }
+  );
+  logger.debug('setForDomain() response', response);
+  const data: SetResponse = response.data;
   return data.methodResponses[0][1].updated;
 };
+
 /**
  * Sets the state of a masked email
  * @param id The id of the masked email to update
  * @param state The new state to set
  * @param session The session object
  */
-export const setState = async (
+const setState = async (
   id: string | undefined,
   state: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
   if (!session) {
-    throw new Error('No session provided');
+    return Promise.reject(new Error('No session provided'));
   }
   if (!id) {
-    throw new Error('No id provided');
+    return Promise.reject(new Error('No id provided'));
   }
   if (!state) {
-    throw new Error('No state provided');
+    return Promise.reject(new Error('No state provided'));
   }
   const { apiUrl, accountId } = parseSession(session);
   const headers = buildHeaders();
-  const response = await fetch(apiUrl, {
-    method: HTTP.POST,
-    headers,
-    body: JSON.stringify({
+  const response = await axios.post(
+    apiUrl,
+    {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
       methodCalls: [
         [
           MASKED_EMAIL_CALLS.set,
           { accountId, update: { [id]: { state } } },
-          'a',
-        ],
-      ],
-    }),
-  });
-  const data: SetResponse = <SetResponse>await response.json();
+          'a'
+        ]
+      ]
+    },
+    {
+      headers
+    }
+  );
+  const data: SetResponse = await response.data;
   return data.methodResponses[0][1].updated;
 };
 
@@ -146,9 +153,33 @@ export const setState = async (
  * @param id The id of the masked email to delete
  * @param session The session object
  */
-export const deleteEmail = async (
+export const remove = async (
   id: string | undefined,
   session: any
 ): Promise<{ [key: string]: null }> => {
   return await setState(id, 'deleted', session);
+};
+
+/**
+ * Disables a masked email by setting the state to disabled
+ * @param id The id of the masked email to disable
+ * @param session The session object
+ */
+export const disable = async (
+  id: string | undefined,
+  session: any
+): Promise<{ [key: string]: null }> => {
+  return await setState(id, 'disabled', session);
+};
+
+/**
+ * Enables a masked email by setting the state to enabled
+ * @param id The id of the masked email to enable
+ * @param session The session object
+ */
+export const enable = async (
+  id: string | undefined,
+  session: any
+): Promise<{ [key: string]: null }> => {
+  return await setState(id, 'enabled', session);
 };

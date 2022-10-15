@@ -6,10 +6,10 @@ import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
  * @param list The list of masked emails
  * @returns The masked email if found, otherwise an empty list
  */
-export const getEmailByAddress = async (
+export const filterByAddress = (
   address: string,
-  list: readonly MaskedEmail[]
-): Promise<MaskedEmail[]> => {
+  list: MaskedEmail[]
+): MaskedEmail[] | [] => {
   return list.filter((me) => me.email === address);
 };
 
@@ -19,9 +19,21 @@ export const getEmailByAddress = async (
  * @param list The list of masked emails
  * @returns The masked emails that match the state
  */
-export const filterEmailsByState = async (
+export const filterByState = (
   state: MaskedEmailState,
   list: MaskedEmail[]
-): Promise<MaskedEmail[]> => {
+): MaskedEmail[] | [] => {
   return list.filter((me) => me.state === state);
+};
+
+/**
+ * Filters emails by forDomain
+ * @param domain The domain to filter by
+ * @param list The list of masked emails
+ */
+export const filterByForDomain = (
+  domain: string,
+  list: MaskedEmail[]
+): MaskedEmail[] | [] => {
+  return list.filter((me) => me.forDomain === domain);
 };

@@ -1,35 +1,39 @@
-import fetch from 'node-fetch';
+import axios, { AxiosResponse } from 'axios';
+import { Logger } from 'tslog';
+const logger: Logger = new Logger();
 
 import {
-  HTTP,
   JMAP,
   MASKED_EMAIL_CALLS,
-  MASKED_EMAIL_CAPABILITY,
+  MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { MaskedEmail } from '../types/MaskedEmail';
 import { GetResponse } from '../types/Response';
-import { getEmailByAddress } from '../util/getUtil';
+import { filterByAddress } from '../util/getUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
- * Gets all masked emails
+ * Retrieves all masked emails
  * @param session The session object
  */
-export const getAll = async (session: any): Promise<readonly MaskedEmail[]> => {
+export const list = async (session: any): Promise<MaskedEmail[]> => {
   if (!session) {
     throw new Error('No session provided');
   }
   const { apiUrl, accountId } = parseSession(session);
   const headers = buildHeaders();
-  const response = await fetch(apiUrl, {
-    method: HTTP.POST,
-    headers,
-    body: JSON.stringify({
+  const response: AxiosResponse = await axios.post(
+    apiUrl,
+    {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']],
-    }),
-  });
-  const data: GetResponse = <GetResponse>await response.json();
+      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
+    },
+    {
+      headers
+    }
+  );
+  logger.debug('list() response', response);
+  const data: GetResponse = response.data;
   return data.methodResponses[0][1].list;
 };
 
@@ -52,17 +56,20 @@ export const getById = async (
   }
   const { apiUrl, accountId } = parseSession(session);
   const headers = buildHeaders();
-  const response = await fetch(apiUrl, {
-    method: HTTP.POST,
-    headers,
-    body: JSON.stringify({
+  const response: AxiosResponse = await axios.post(
+    apiUrl,
+    {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']],
-    }),
-  });
-  const data: GetResponse = <GetResponse>await response.json();
+      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']]
+    },
+    {
+      headers
+    }
+  );
+  logger.debug('getById() response', response);
+  const data: GetResponse = response.data;
   if (!data.methodResponses[0][1].list) {
-    throw new Error(`No masked email found with id ${id}`);
+    return Promise.reject(new Error(`No masked email found with id ${id}`));
   }
   return data.methodResponses[0][1].list[0];
 };
@@ -76,7 +83,7 @@ export const getById = async (
 export const getByAddress = async (
   address: string,
   session: any
-): Promise<MaskedEmail[]> => {
-  const maskedEmails = await getAll(session);
-  return getEmailByAddress(address, maskedEmails);
+): Promise<MaskedEmail[] | []> => {
+  const maskedEmails = await list(session);
+  return filterByAddress(address, maskedEmails);
 };

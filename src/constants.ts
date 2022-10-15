@@ -1,11 +1,11 @@
 export const JMAP = {
   CORE: 'urn:ietf:params:jmap:core',
-  MAIL: 'urn:ietf:params:jmap:mail',
+  MAIL: 'urn:ietf:params:jmap:mail'
 };
 
 export const MASKED_EMAIL_CALLS = {
   get: 'MaskedEmail/get',
-  set: 'MaskedEmail/set',
+  set: 'MaskedEmail/set'
 };
 
 export const MASKED_EMAIL_CAPABILITY =
@@ -13,5 +13,5 @@ export const MASKED_EMAIL_CAPABILITY =
 
 export const HTTP = {
   GET: 'GET',
-  POST: 'POST',
+  POST: 'POST'
 };

@@ -1,0 +1,44 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+	"project": "./tsconfig.json"
+  },
+  "plugins": [
+	"@typescript-eslint",
+	"simple-import-sort",
+	"prettier",
+	"jest"
+  ],
+  "extends": [
+	"eslint:recommended",
+	"plugin:@typescript-eslint/recommended",
+	"plugin:import/recommended",
+	"plugin:import/typescript",
+	"prettier"
+  ],
+  "settings": {
+	"import/resolver": {
+	  "node": {
+		"extensions": [
+		  ".js",
+		  ".jsx",
+		  ".ts",
+		  ".tsx"
+		]
+	  },
+	  "caseSensitive": false
+	}
+  },
+  "rules": {
+	"@typescript-eslint/no-explicit-any": "off",
+	"simple-import-sort/imports": "error",
+	"simple-import-sort/exports": "error",
+	"prettier/prettier": 2
+  },
+  "env": {
+	"browser": true,
+	"node": true,
+	"jest/globals": true
+  }
+}

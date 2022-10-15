@@ -9,7 +9,7 @@ export const parseSession = (session: any) => {
   const { apiUrl } = session;
   return {
     accountId,
-    apiUrl,
+    apiUrl
   };
 };
 
@@ -22,6 +22,6 @@ export const buildHeaders = () => {
   }
   return {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${process.env.JMAP_TOKEN}`,
+    Authorization: `Bearer ${process.env.JMAP_TOKEN}`
   };
 };

@@ -1,8 +1,8 @@
-import { MaskedEmail } from './MaskedEmail';
-
 /**
  * Method response returned from making a standard get call
  */
+import { MaskedEmail } from './MaskedEmail';
+
 export interface GetMethodResponse {
   accountId: string;
   state: string;

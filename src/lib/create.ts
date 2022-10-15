@@ -1,14 +1,15 @@
+import axios from 'axios';
+import { Logger } from 'tslog';
+
 import {
-  HTTP,
   JMAP,
   MASKED_EMAIL_CALLS,
-  MASKED_EMAIL_CAPABILITY,
+  MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
 import { SetResponse } from '../types/Response';
-// import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
-
+const logger: Logger = new Logger();
 /**
  * Creates a new masked email address
  * @param session The session object
@@ -21,17 +22,16 @@ export const create = async (
   state?: MaskedEmailState
 ): Promise<MaskedEmail> => {
   if (!session) {
-    throw new Error('No session provided');
+    return Promise.reject(new Error('No session provided'));
   }
   if (!forDomain) {
-    throw new Error('No domain provided');
+    return Promise.reject(new Error('No forDomain provided'));
   }
   const { apiUrl, accountId } = parseSession(session);
   const headers = buildHeaders();
-  const response = await fetch(apiUrl, {
-    method: HTTP.POST,
-    headers,
-    body: JSON.stringify({
+  const response = await axios.post(
+    apiUrl,
+    {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
       methodCalls: [
         [
@@ -39,14 +39,22 @@ export const create = async (
           {
             accountId,
             create: {
-              [forDomain]: { forDomain, state: state ? state : 'enabled' },
-            },
+              [forDomain]: {
+                forDomain,
+                state: state ? state : 'enabled'
+              }
+            }
           },
-          'a',
-        ],
-      ],
-    }),
-  });
-  const data: SetResponse = <SetResponse>await response.json();
+          'a'
+        ]
+      ]
+    },
+    {
+      headers
+    }
+  );
+
+  logger.debug('create() response', response);
+  const data: SetResponse = response.data;
   return data.methodResponses[0][1].created[forDomain];
 };
