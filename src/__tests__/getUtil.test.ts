@@ -1,5 +1,9 @@
 import { MaskedEmail } from '../types/MaskedEmail';
-import { filterByAddress, filterByState } from "../util/getUtil";
+import {
+  filterByAddress,
+  filterByForDomain,
+  filterByState
+} from '../util/getUtil';
 
 describe('getUtil', () => {
   let maskedEmails: MaskedEmail[];
@@ -50,6 +54,17 @@ describe('getUtil', () => {
     });
     it('should return an empty list if the masked email is not found', () => {
       expect(filterByState('disabled', maskedEmails)).toStrictEqual([]);
+    });
+  });
+  describe('filterByForDomain', () => {
+    it('should return the masked email by forDomain if found', () => {
+      expect(filterByForDomain('test.com', maskedEmails)).toStrictEqual([
+        maskedEmails[0],
+        maskedEmails[1]
+      ]);
+    });
+    it('should return an empty list if the masked email is not found', () => {
+      expect(filterByForDomain('test2.com', maskedEmails)).toStrictEqual([]);
     });
   });
 });
