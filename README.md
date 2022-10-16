@@ -109,29 +109,27 @@ There are three masked email properties that can be updated:
 - `state`
 - `description`
 
-### Updating the `forDomain` property
-The `forDomain` property is the domain that the masked email is for.
-This property can be updated by calling the `setForDomain` method and passing in email `id`, the new `forDomain`, and the `session` object.
+To update a masked email, call the `update` method.
+The `update` method requires the `id` of the masked email to update, the `session` object, an  `options` object.
+
+The `options` object can contain any of the above three properties properties, but MUST contain at least one of them.
+`update` returns a rejected promise if no properties are passed into the options object.
+
 
 ```typescript
-import { setForDomain, getSession } from 'fastmail-masked-email';
+import { update, getSession } from 'fastmail-masked-email';
 
-const session = getSession(token, hostname);
+const session = await getSession(token, hostname);
 
-await setForDomain('id', 'new-domain.com', session);
+await update('my-masked-email-id', session, {
+	forDomain: 'example.com',
+	description: 'My new masked email!',
+	state: 'disabled'
+});
 ```
 
-### Enabling/Disabling a Masked Email
-Disabling a masked email is done by calling the `disable` method and passing in the masked email `id` and the `session` object.
-When a masked email is disabled, any email sent to it will be sent to the trash.
 
-```typescript
-import { disable, getSession } from 'fastmail-masked-email';
-
-const session = getSession(token, hostname);
-
-await disable('id', session);
-```
+### Enabling, Disabling, and Deleting a Masked Email
 Enabling a masked email is done by calling the `enable` method and passing in the masked email `id` and the `session` object.
 An enabled masked email will receive any email sent to it.
 
@@ -140,10 +138,21 @@ import { disable, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await disable('id', session);
+await disable('my-masked-email-id', session);
 ```
+#### Disable
+Disabling a masked email is done by calling the `disable` method and passing in the masked email `id` and the `session` object.
+When a masked email is disabled, any email sent to it will be sent to the trash.
 
-### Deleting a Masked Email
+#### Enable
+```typescript
+import { disable, getSession } from 'fastmail-masked-email';
+
+const session = getSession(token, hostname);
+
+await disable('my-masked-email-id', session);
+```
+#### Delete
 A masked email can be deleted by calling the `remove` method and passing in the masked email `id` and the `session` object.
 Any email sent to a deleted masked email will be sent to the trash.
 A deleted email can be restored by `enable`-ing it again at which point it will continue to receive emails.
@@ -153,5 +162,5 @@ import { remove, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await remove('id', session);
+await remove('my-masked-email-id', session);
 ```
