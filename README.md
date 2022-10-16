@@ -76,7 +76,13 @@ console.log(myMaskedEmail);
 
 
 ## Creating a new Masked Email
-Creating a new masked email is done by calling the `create` method and passing in the `session` object and the `forDomain` for the masked email.
+Creating a new masked email is done by calling the `create` method and passing in both the `session` object and an optional `options` parameter.
+The `options` parameter is an object that can contain the following properties:
+
+- `state`: `enabled` | `disabled` | `pending` ( Defaults to `enabled` )
+- `forDomain`: string ( This is the domain that you want associated with this masked email )
+- `description`: string ( This is a description of the masked email )
+
 You can optionally pass in a `state` to set the initial state of the masked email. The default state is `enabled`.
 
 ```typescript
@@ -85,10 +91,16 @@ import { create, getSession } from 'fastmail-masked-email';
 const session = await getSession(token, hostname);
 
 // Create a new masked email for the domain 'example.com'
-const newMaskedEmail = await create(session, 'example.com');
+const newMaskedEmail = await create(session, { forDomain: 'example.com' });
 
-// Alternatively, create a new masked email that is disabled by default
-newMaskedEmail = await create(session, 'example.com', 'disabled');
+// Create a new masked email that is disabled by default
+newMaskedEmail = await create(session, 'example.com', { state: 'disabled' });
+
+// Create a new masked email with a description
+newMaskedEmail = await create(session, { description: 'My new masked email' });
+
+// Create a new masked email with all options present
+newMaskedEmail = await create(session, { forDomain: 'example.com', state: 'enabled', description: 'My new masked email' });
 ```
 
 ## Updating a Masked Email

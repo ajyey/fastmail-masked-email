@@ -1,6 +1,5 @@
 export const JMAP = {
-  CORE: 'urn:ietf:params:jmap:core',
-  MAIL: 'urn:ietf:params:jmap:mail'
+  CORE: 'urn:ietf:params:jmap:core'
 };
 
 export const MASKED_EMAIL_CALLS = {

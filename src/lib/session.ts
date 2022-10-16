@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import debug from 'debug';
-const logger = debug('session');
+const sessionLogger = debug('session');
 import { API_HOSTNAME } from '../constants';
 
 /**
@@ -33,6 +33,6 @@ export const getSession = async (
   });
   // Set the token in the session object to be used in subsequent requests
   response.data.fmAuthToken = token;
-  logger('getSession() response: %o', response.data);
+  sessionLogger('getSession() response: %o', JSON.stringify(response.data));
   return await response.data;
 };

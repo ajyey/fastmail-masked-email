@@ -2,9 +2,6 @@
   "include": [
 	"src/**/*"
   ],
-  "exclude": [
-	"src/**/*.spec.ts"
-  ],
   "compilerOptions": {
 	"target": "es2017",
 	"lib": [

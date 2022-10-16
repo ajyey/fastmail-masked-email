@@ -1,59 +1,58 @@
 import axios from 'axios';
 import debug from 'debug';
-const logger = debug('create');
+const createLogger = debug('create');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
-import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
+import { MaskedEmail } from '../types/MaskedEmail';
+import { CreateOptions } from '../types/Options';
 import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
+
 /**
  * Creates a new masked email address
  * @param session The session object
- * @param forDomain The domain to create the masked email for
- * @param state The state to set the masked email to. Defaults to 'enabled'.
+ * @param options The options for creating the masked email
  */
 export const create = async (
   session: any,
-  forDomain: string,
-  state?: MaskedEmailState
+  options: CreateOptions = {}
 ): Promise<MaskedEmail> => {
   if (!session) {
     return Promise.reject(new Error('No session provided'));
   }
-  if (!forDomain) {
-    return Promise.reject(new Error('No forDomain provided'));
-  }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          {
-            accountId,
-            create: {
-              [forDomain]: {
-                forDomain,
-                state: state ? state : 'enabled'
-              }
+  const state = options.state || 'enabled';
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [
+      [
+        MASKED_EMAIL_CALLS.set,
+        {
+          accountId,
+          create: {
+            ['0']: {
+              ...options,
+              state
             }
-          },
-          'a'
-        ]
+          }
+        },
+        'a'
       ]
-    },
-    {
-      headers
-    }
-  );
+    ]
+  };
+  createLogger('create() body: %o', JSON.stringify(body));
+  const response = await axios.post(apiUrl, body, {
+    headers
+  });
 
-  logger('create() response: %o', response);
+  createLogger('create() response: %o', JSON.stringify(response.data));
   const data: SetResponse = response.data;
-  return data.methodResponses[0][1].created[forDomain];
+  return {
+    ...data.methodResponses[0][1].created['0'],
+    state
+  };
 };

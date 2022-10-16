@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import debug from 'debug';
-const logger = debug('get');
+const listLogger = debug('list');
+const getByIdLogger = debug('getById');
 
 import {
   JMAP,
@@ -22,17 +23,15 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response: AxiosResponse = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
-    },
-    {
-      headers
-    }
-  );
-  logger('list() response: %o', response.data);
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
+  };
+  listLogger('list() body: %o', JSON.stringify(body));
+  const response: AxiosResponse = await axios.post(apiUrl, body, {
+    headers
+  });
+  listLogger('list() response: %o', JSON.stringify(response.data));
   const data: GetResponse = response.data;
   return data.methodResponses[0][1].list;
 };
@@ -56,18 +55,16 @@ export const getById = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response: AxiosResponse = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']]
-    },
-    {
-      headers
-    }
-  );
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']]
+  };
+  const response: AxiosResponse = await axios.post(apiUrl, body, {
+    headers
+  });
+  getByIdLogger('getById() body: %o', JSON.stringify(body));
   const data: GetResponse = response.data;
-  logger('getById() response %o', response.data);
+  getByIdLogger('getById() response %o', JSON.stringify(response.data));
   if (!data.methodResponses[0][1].list) {
     return Promise.reject(new Error(`No masked email found with id ${id}`));
   }
