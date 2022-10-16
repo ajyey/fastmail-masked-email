@@ -11,21 +11,25 @@ import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
+ * Options for creating a masked email
+ */
+interface CreateOptions {
+  description?: string;
+  forDomain?: string;
+  state?: MaskedEmailState;
+}
+
+/**
  * Creates a new masked email address
  * @param session The session object
- * @param forDomain The domain to create the masked email for
- * @param state The state to set the masked email to. Defaults to 'enabled'.
+ * @param createOptions The options for creating the masked email
  */
 export const create = async (
   session: any,
-  forDomain: string,
-  state?: MaskedEmailState
+  createOptions: CreateOptions = {}
 ): Promise<MaskedEmail> => {
   if (!session) {
     return Promise.reject(new Error('No session provided'));
-  }
-  if (!forDomain) {
-    return Promise.reject(new Error('No forDomain provided'));
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
@@ -37,9 +41,10 @@ export const create = async (
         {
           accountId,
           create: {
-            [forDomain]: {
-              forDomain,
-              state: state ? state : 'enabled'
+            ['0']: {
+              forDomain: createOptions.forDomain || '',
+              description: createOptions.description || '',
+              state: createOptions.state || 'enabled'
             }
           }
         },
@@ -54,5 +59,5 @@ export const create = async (
 
   createLogger('create() response: %o', JSON.stringify(response.data));
   const data: SetResponse = response.data;
-  return data.methodResponses[0][1].created[forDomain];
+  return data.methodResponses[0][1].created['0'];
 };
