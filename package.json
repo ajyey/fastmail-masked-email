@@ -63,6 +63,8 @@
 	"!build/**/*.map",
 	"!build/**/*.test.js",
 	"!build/**/*.test.js.map",
+	"!build/**/*.fixture.js",
+	"!build/**/*.fixture.js.map",
 	"!build/**/*.log",
     "CHANGELOG.md",
     "LICENSE",

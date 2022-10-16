@@ -1,3 +1,4 @@
+import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture';
 import { MaskedEmail } from '../types/MaskedEmail';
 import {
   filterByAddress,
@@ -9,28 +10,8 @@ describe('getUtil', () => {
   let maskedEmails: MaskedEmail[];
   beforeEach(() => {
     maskedEmails = [
-      {
-        id: '1',
-        email: 'testEmail@test.com',
-        state: 'enabled',
-        description: 'A very helpful description',
-        forDomain: 'test.com',
-        createdAt: '2020-01-01T00:00:00.000Z',
-        createdBy: '1Password',
-        url: 'gmail.com',
-        lastMessageAt: '2020-01-01T00:00:00.000Z'
-      },
-      {
-        id: '2',
-        email: 'testEmail2@test.com',
-        state: 'enabled',
-        description: 'A not so helpful description',
-        forDomain: 'test.com',
-        createdAt: '2020-01-01T00:00:00.000Z',
-        createdBy: '1Password',
-        url: 'gmail.com',
-        lastMessageAt: '2020-01-01T00:00:00.000Z'
-      }
+      { ...maskedEmailFixture },
+      { ...maskedEmailFixture, id: '2', email: 'testEmail2@test.com' }
     ];
   });
   describe('filterByAddress', () => {
