@@ -1,3 +1,4 @@
+![Logo](docs/logo/logo.png)
 # fastmail-masked-email
 
 A Node.js library for creating and modifying/updating [Fastmail Masked Emails](https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email)
