@@ -1,6 +1,8 @@
 import axios from 'axios';
 import debug from 'debug';
-const logger = debug('set');
+const setStateLog = debug('setState');
+const setDescriptionLog = debug('setDescription');
+const setForDomainLog = debug('setForDomain');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -35,23 +37,21 @@ export const setDescription = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          { accountId, update: { [id]: { description } } },
-          'a'
-        ]
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [
+      [
+        MASKED_EMAIL_CALLS.set,
+        { accountId, update: { [id]: { description } } },
+        'a'
       ]
-    },
-    {
-      headers
-    }
-  );
-  logger('setDescription() response: %o', response);
+    ]
+  };
+  setDescriptionLog('setDescription() body: %o', JSON.stringify(body));
+  const response = await axios.post(apiUrl, body, {
+    headers
+  });
+  setDescriptionLog('setDescription() response: %o', response);
   const data: SetResponse = response.data;
   return data.methodResponses[0][1].updated;
 };
@@ -85,23 +85,21 @@ export const setForDomain = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          { accountId, update: { [id]: { forDomain } } },
-          'a'
-        ]
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [
+      [
+        MASKED_EMAIL_CALLS.set,
+        { accountId, update: { [id]: { forDomain } } },
+        'a'
       ]
-    },
-    {
-      headers
-    }
-  );
-  logger('setForDomain() response: %o', response);
+    ]
+  };
+  setForDomainLog('setForDomain() body: %o', JSON.stringify(body));
+  const response = await axios.post(apiUrl, body, {
+    headers
+  });
+  setForDomainLog('Response: %o', JSON.stringify(response.data));
   const data: SetResponse = response.data;
   return data.methodResponses[0][1].updated;
 };
@@ -128,23 +126,17 @@ const setState = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          { accountId, update: { [id]: { state } } },
-          'a'
-        ]
-      ]
-    },
-    {
-      headers
-    }
-  );
-  logger('setState() response: %o', response);
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [
+      [MASKED_EMAIL_CALLS.set, { accountId, update: { [id]: { state } } }, 'a']
+    ]
+  };
+  setStateLog('setState() body: %o', JSON.stringify(body));
+  const response = await axios.post(apiUrl, body, {
+    headers
+  });
+  setStateLog('setState() response: %o', JSON.stringify(response.data));
   const data: SetResponse = await response.data;
   return data.methodResponses[0][1].updated;
 };
