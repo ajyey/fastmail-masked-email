@@ -6,33 +6,26 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
-import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
+import { MaskedEmail } from '../types/MaskedEmail';
+import { CreateOptions } from '../types/Options';
 import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
- * Options for creating a masked email
- */
-interface CreateOptions {
-  description?: string;
-  forDomain?: string;
-  state?: MaskedEmailState;
-}
-
-/**
  * Creates a new masked email address
  * @param session The session object
- * @param createOptions The options for creating the masked email
+ * @param options The options for creating the masked email
  */
 export const create = async (
   session: any,
-  createOptions: CreateOptions = {}
+  options: CreateOptions = {}
 ): Promise<MaskedEmail> => {
   if (!session) {
     return Promise.reject(new Error('No session provided'));
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
+  const state = options.state || 'enabled';
   const body = {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [
@@ -42,9 +35,8 @@ export const create = async (
           accountId,
           create: {
             ['0']: {
-              forDomain: createOptions.forDomain || '',
-              description: createOptions.description || '',
-              state: createOptions.state || 'enabled'
+              ...options,
+              state
             }
           }
         },
@@ -59,5 +51,8 @@ export const create = async (
 
   createLogger('create() response: %o', JSON.stringify(response.data));
   const data: SetResponse = response.data;
-  return data.methodResponses[0][1].created['0'];
+  return {
+    ...data.methodResponses[0][1].created['0'],
+    state
+  };
 };
