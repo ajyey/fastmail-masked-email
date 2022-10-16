@@ -8,3 +8,12 @@ export interface CreateOptions {
   forDomain?: string;
   state?: MaskedEmailState;
 }
+
+/**
+ * Options for updating a masked email
+ */
+export interface UpdateOptions {
+  description?: string;
+  forDomain?: string;
+  state?: MaskedEmailState;
+}
