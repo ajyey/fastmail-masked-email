@@ -60,6 +60,10 @@
   },
   "files": [
     "build",
+	"!build/__tests__",
+	"!build/__tests__/**/*",
+	"!build/__fixtures__",
+	"!build/__fixtures__/**/*",
 	"!build/**/*.map",
 	"!build/**/*.test.js",
 	"!build/**/*.test.js.map",
