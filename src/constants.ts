@@ -11,7 +11,4 @@ export const MASKED_EMAIL_CALLS = {
 export const MASKED_EMAIL_CAPABILITY =
   'https://www.fastmail.com/dev/maskedemail';
 
-export const HTTP = {
-  GET: 'GET',
-  POST: 'POST'
-};
+export const API_HOSTNAME = 'api.fastmail.com';
