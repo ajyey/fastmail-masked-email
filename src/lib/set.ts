@@ -124,6 +124,7 @@ const setState = async (
   if (!state) {
     return Promise.reject(new Error('No state provided'));
   }
+  setStateLog('Setting email with id %s to state %s', id, state);
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
   const body = {

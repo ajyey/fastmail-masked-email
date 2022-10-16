@@ -1,6 +1,6 @@
 import axios from 'axios';
 import debug from 'debug';
-const logger = debug('create');
+const createLogger = debug('create');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -9,6 +9,7 @@ import {
 import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
 import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
+
 /**
  * Creates a new masked email address
  * @param session The session object
@@ -28,32 +29,30 @@ export const create = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const response = await axios.post(
-    apiUrl,
-    {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          {
-            accountId,
-            create: {
-              [forDomain]: {
-                forDomain,
-                state: state ? state : 'enabled'
-              }
+  const body = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [
+      [
+        MASKED_EMAIL_CALLS.set,
+        {
+          accountId,
+          create: {
+            [forDomain]: {
+              forDomain,
+              state: state ? state : 'enabled'
             }
-          },
-          'a'
-        ]
+          }
+        },
+        'a'
       ]
-    },
-    {
-      headers
-    }
-  );
+    ]
+  };
+  createLogger('create() body: %o', JSON.stringify(body));
+  const response = await axios.post(apiUrl, body, {
+    headers
+  });
 
-  logger('create() response: %o', response);
+  createLogger('create() response: %o', JSON.stringify(response.data));
   const data: SetResponse = response.data;
   return data.methodResponses[0][1].created[forDomain];
 };
