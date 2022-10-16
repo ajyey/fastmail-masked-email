@@ -6,22 +6,21 @@ import { JMAP } from '../constants';
  */
 export const parseSession = (session: any) => {
   const accountId = session.primaryAccounts[JMAP.CORE];
-  const { apiUrl } = session;
+  const { apiUrl, fmAuthToken } = session;
   return {
     accountId,
-    apiUrl
+    apiUrl,
+    authToken: fmAuthToken
   };
 };
 
 /**
  * Builds headers for requests using the JMAP token
+ * @param authToken The JMAP authentication token
  */
-export const buildHeaders = () => {
-  if (!process.env.JMAP_TOKEN) {
-    throw new Error('JMAP_TOKEN env variable must be set');
-  }
+export const buildHeaders = (authToken: string) => {
   return {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${process.env.JMAP_TOKEN}`
+    Authorization: `Bearer ${authToken}`
   };
 };

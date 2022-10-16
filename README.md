@@ -33,25 +33,28 @@ both of which are required when making more useful requests to Fastmail to inter
 import { getSession } from 'fastmail-masked-email';
 
 // Get a session and pass in your token and hostname directly (e.g. from using dotenv)
-const session = await getSession(hostname, token);
+const session = await getSession(token, hostname);
 
-// Alternatively, getSession will attempt to load the JMAP_TOKEN and JMAP_HOSTNAME
+// getSession will attempt to load the JMAP_TOKEN and JMAP_HOSTNAME
 // environment variables if they are not directly passed in as arguments
 session = await getSession();
+
+// Getting a session also works with just passing in the token. In this case, the hostname will default to api.fastmail.com
+session = await getSession(token);
 ```
 
 ## Listing all your Masked Emails
 Once you have a session, you can use it to list **all** of the masked emails that are currently configured for your account.
 This includes `enabled`, `disabled`, `pending` and `deleted` masked emails.
 
-All of the masked emails are returned in an array of `MaskedEmail` objects.
+All the masked emails are returned in an array of `MaskedEmail` objects.
 All methods require a `session` object to be passed in as the first argument. This session object is used to interact with the
 Fastmail API.
 
 ```typescript
 import { list, getSession } from 'fastmail-masked-email';
 
-const session = await getSession(hostname, token);
+const session = await getSession(token, hostname);
 
 const myMaskedEmails = await list(session);
 
@@ -64,7 +67,7 @@ If you know the unique ID of a masked email you want to retrieve, you can get it
 ```typescript
 import { getById, getSession } from 'fastmail-masked-email';
 
-const session = await getSession(hostname, token);
+const session = await getSession(token, hostname);
 
 const myMaskedEmail = await getById('my-masked-email-id', session);
 
@@ -79,7 +82,7 @@ You can optionally pass in a `state` to set the initial state of the masked emai
 ```typescript
 import { create, getSession } from 'fastmail-masked-email';
 
-const session = await getSession(hostname, token);
+const session = await getSession(token, hostname);
 
 // Create a new masked email for the domain 'example.com'
 const newMaskedEmail = await create(session, 'example.com');
@@ -101,7 +104,7 @@ This property can be updated by calling the `setForDomain` method and passing in
 ```typescript
 import { setForDomain, getSession } from 'fastmail-masked-email';
 
-const session = getSession(hostname, token);
+const session = getSession(token, hostname);
 
 await setForDomain('id', 'new-domain.com', session);
 ```
@@ -113,7 +116,7 @@ When a masked email is disabled, any email sent to it will be sent to the trash.
 ```typescript
 import { disable, getSession } from 'fastmail-masked-email';
 
-const session = getSession(hostname, token);
+const session = getSession(token, hostname);
 
 await disable('id', session);
 ```
@@ -123,7 +126,7 @@ An enabled masked email will receive any email sent to it.
 ```typescript
 import { disable, getSession } from 'fastmail-masked-email';
 
-const session = getSession(hostname, token);
+const session = getSession(token, hostname);
 
 await disable('id', session);
 ```
@@ -135,6 +138,8 @@ A deleted email can be restored by `enable`-ing it again at which point it will 
 
 ```typescript
 import { remove, getSession } from 'fastmail-masked-email';
+
+const session = getSession(token, hostname);
 
 await remove('id', session);
 ```

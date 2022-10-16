@@ -1,14 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
-import { Logger } from 'tslog';
-
+import debug from 'debug';
+const logger = debug('session');
 import { API_HOSTNAME } from '../constants';
-const logger: Logger = new Logger();
+
 /**
  * Gets the session object from the JMAP server
  */
 export const getSession = async (
-  hostname?: string,
-  token?: string
+  token?: string,
+  hostname: string = API_HOSTNAME
 ): Promise<any> => {
   if (!hostname) {
     hostname = process.env.JMAP_HOSTNAME || API_HOSTNAME;
@@ -23,7 +23,7 @@ export const getSession = async (
       )
     );
   }
-  const authUrl = `https://${hostname}/.well-known/jmap`;
+  const authUrl = `https://${hostname}/jmap/session`;
   const headers = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`
@@ -31,6 +31,8 @@ export const getSession = async (
   const response: AxiosResponse = await axios.get(authUrl, {
     headers
   });
-  logger.debug('getSession() response', response);
+  // Set the token in the session object to be used in subsequent requests
+  response.data.fmAuthToken = token;
+  logger('getSession() response: %o', response.data);
   return await response.data;
 };

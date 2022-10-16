@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { Logger } from 'tslog';
-const logger: Logger = new Logger();
+import debug from 'debug';
+const logger = debug('get');
 
 import {
   JMAP,
@@ -18,10 +18,10 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  */
 export const list = async (session: any): Promise<MaskedEmail[]> => {
   if (!session) {
-    throw new Error('No session provided');
+    return Promise.reject(new Error('No session provided'));
   }
-  const { apiUrl, accountId } = parseSession(session);
-  const headers = buildHeaders();
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
   const response: AxiosResponse = await axios.post(
     apiUrl,
     {
@@ -32,7 +32,7 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
       headers
     }
   );
-  logger.debug('list() response', response);
+  logger('list() response: %o', response.data);
   const data: GetResponse = response.data;
   return data.methodResponses[0][1].list;
 };
@@ -49,13 +49,13 @@ export const getById = async (
   session: any
 ): Promise<MaskedEmail> => {
   if (!session) {
-    throw new Error('No session provided');
+    return Promise.reject(new Error('No session provided'));
   }
   if (!id) {
-    throw new Error('No id provided');
+    return Promise.reject(new Error('No id provided'));
   }
-  const { apiUrl, accountId } = parseSession(session);
-  const headers = buildHeaders();
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
   const response: AxiosResponse = await axios.post(
     apiUrl,
     {
@@ -66,8 +66,8 @@ export const getById = async (
       headers
     }
   );
-  logger.debug('getById() response', response);
   const data: GetResponse = response.data;
+  logger('getById() response %o', response.data);
   if (!data.methodResponses[0][1].list) {
     return Promise.reject(new Error(`No masked email found with id ${id}`));
   }

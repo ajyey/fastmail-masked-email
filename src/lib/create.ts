@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Logger } from 'tslog';
-
+import debug from 'debug';
+const logger = debug('create');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -9,7 +9,6 @@ import {
 import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
 import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
-const logger: Logger = new Logger();
 /**
  * Creates a new masked email address
  * @param session The session object
@@ -27,8 +26,8 @@ export const create = async (
   if (!forDomain) {
     return Promise.reject(new Error('No forDomain provided'));
   }
-  const { apiUrl, accountId } = parseSession(session);
-  const headers = buildHeaders();
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
   const response = await axios.post(
     apiUrl,
     {
@@ -54,7 +53,7 @@ export const create = async (
     }
   );
 
-  logger.debug('create() response', response);
+  logger('create() response: %o', response);
   const data: SetResponse = response.data;
   return data.methodResponses[0][1].created[forDomain];
 };

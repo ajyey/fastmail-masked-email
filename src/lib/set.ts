@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Logger } from 'tslog';
-const logger: Logger = new Logger();
+import debug from 'debug';
+const logger = debug('set');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -33,8 +33,8 @@ export const setDescription = async (
   if (!session) {
     return Promise.reject(new Error('No session provided'));
   }
-  const { apiUrl, accountId } = parseSession(session);
-  const headers = buildHeaders();
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
   const response = await axios.post(
     apiUrl,
     {
@@ -51,7 +51,7 @@ export const setDescription = async (
       headers
     }
   );
-  logger.debug('setDescription() response', response);
+  logger('setDescription() response: %o', response);
   const data: SetResponse = response.data;
   return data.methodResponses[0][1].updated;
 };
@@ -83,8 +83,8 @@ export const setForDomain = async (
   if (!forDomain) {
     return Promise.reject(new Error('No forDomain provided'));
   }
-  const { apiUrl, accountId } = parseSession(session);
-  const headers = buildHeaders();
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
   const response = await axios.post(
     apiUrl,
     {
@@ -101,7 +101,7 @@ export const setForDomain = async (
       headers
     }
   );
-  logger.debug('setForDomain() response', response);
+  logger('setForDomain() response: %o', response);
   const data: SetResponse = response.data;
   return data.methodResponses[0][1].updated;
 };
@@ -126,8 +126,8 @@ const setState = async (
   if (!state) {
     return Promise.reject(new Error('No state provided'));
   }
-  const { apiUrl, accountId } = parseSession(session);
-  const headers = buildHeaders();
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
   const response = await axios.post(
     apiUrl,
     {
@@ -144,6 +144,7 @@ const setState = async (
       headers
     }
   );
+  logger('setState() response: %o', response);
   const data: SetResponse = await response.data;
   return data.methodResponses[0][1].updated;
 };
