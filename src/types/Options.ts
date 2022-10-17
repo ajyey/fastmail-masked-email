@@ -13,7 +13,10 @@ export interface CreateOptions {
  * Options for updating a masked email
  */
 export interface UpdateOptions {
+  /** The updated description to use  */
   description?: string;
+  /** The updated forDomain to use  */
   forDomain?: string;
+  /** The updated state to use  */
   state?: MaskedEmailState;
 }
