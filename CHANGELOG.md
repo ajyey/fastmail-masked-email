@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive error handling
 - Automated release management
 
+## [1.0.0-alpha.1] - 2022-10-17
+### Fixed
+- Fixed a bug where the entry point was not being set correctly in the package.json file
+- Fixed a bug where the `debug` package should have been a dependency instead of a devDependency
+
 ## [1.0.0-alpha.0] - 2022-10-17
 ### Added
 - Initial package structure
