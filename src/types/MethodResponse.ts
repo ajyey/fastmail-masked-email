@@ -3,6 +3,9 @@
  */
 import { MaskedEmail } from './MaskedEmail';
 
+/**
+ * Method response containing masked email information returned from making a standard get call
+ */
 export interface GetMethodResponse {
   accountId: string;
   state: string;
@@ -11,7 +14,7 @@ export interface GetMethodResponse {
 }
 
 /**
- * Method response returned from making a standard set call
+ * Method response returned form making a successful set/update call
  */
 export interface SetMethodResponse {
   created: any;

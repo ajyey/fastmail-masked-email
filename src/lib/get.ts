@@ -8,6 +8,7 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
+import { InvalidArgumentError } from '../error/InvalidArgumentError';
 import { MaskedEmail } from '../types/MaskedEmail';
 import { GetResponse } from '../types/Response';
 import { filterByAddress } from '../util/getUtil';
@@ -15,11 +16,13 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
  * Retrieves all masked emails
- * @param session The session object
+ * @param session - The session object
+ * @throws {@link InvalidArgumentError} if no session is provided
+ * @returns A list of {@link MaskedEmail} objects
  */
 export const list = async (session: any): Promise<MaskedEmail[]> => {
   if (!session) {
-    return Promise.reject(new Error('No session provided'));
+    return Promise.reject(new InvalidArgumentError('No session provided'));
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
@@ -38,20 +41,20 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
 
 /**
  * Get a masked email by id
- * @param id The id of the masked email address.
- * @param session The session object
- * @returns The masked email
- * @throws Error if no id is provided, no session is provided, or the masked email is not found
+ * @param id - The id of the masked email address.
+ * @param session - The session object
+ * @returns A {@link MaskedEmail} object
+ * @throws {@link InvalidArgumentError} if no session is provided or no id is provided
  */
 export const getById = async (
   id: string,
   session: any
 ): Promise<MaskedEmail> => {
   if (!session) {
-    return Promise.reject(new Error('No session provided'));
+    return Promise.reject(new InvalidArgumentError('No session provided'));
   }
   if (!id) {
-    return Promise.reject(new Error('No id provided'));
+    return Promise.reject(new InvalidArgumentError('No id provided'));
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
@@ -73,9 +76,9 @@ export const getById = async (
 
 /**
  * Get a masked email by address
- * @param address The address to retrieve
- * @param session The session object
- * @returns The masked email object in a list
+ * @param address - The address to retrieve
+ * @param session - The session object
+ * @returns  A {@link MaskedEmail} object
  */
 export const getByAddress = async (
   address: string,
