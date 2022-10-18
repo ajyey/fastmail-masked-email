@@ -6,6 +6,7 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
+import { InvalidArgumentError } from '../error/InvalidArgumentError';
 import { MaskedEmail } from '../types/MaskedEmail';
 import { CreateOptions } from '../types/Options';
 import { SetResponse } from '../types/Response';
@@ -14,14 +15,15 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
 /**
  * Creates a new masked email address
  * @param session - The session object
- * @param options - The options for creating the masked email
+ * @param options - The {@link CreateOptions} for creating the masked email
+ * @throws {@link InvalidArgumentError} if no session is provided
  */
 export const create = async (
   session: any,
   options: CreateOptions = {}
 ): Promise<MaskedEmail> => {
   if (!session) {
-    return Promise.reject(new Error('No session provided'));
+    return Promise.reject(new InvalidArgumentError('No session provided'));
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
