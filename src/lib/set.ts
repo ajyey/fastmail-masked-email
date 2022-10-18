@@ -12,9 +12,9 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
  * Updates a masked email
- * @param id The id of the masked email to update
- * @param session The session object
- * @param options The options containing the fields to update
+ * @param id - The id of the masked email to update
+ * @param session - The session object
+ * @param options - The options containing the fields to update
  */
 export const update = async (
   id: string | undefined,
@@ -58,8 +58,8 @@ export const update = async (
 
 /**
  * Deletes a masked email by setting the state to deleted
- * @param id The id of the masked email to delete
- * @param session The session object
+ * @param id - The id of the masked email to delete
+ * @param session - The session object
  */
 export const remove = async (
   id: string | undefined,
@@ -70,8 +70,8 @@ export const remove = async (
 
 /**
  * Disables a masked email by setting the state to disabled
- * @param id The id of the masked email to disable
- * @param session The session object
+ * @param id - The id of the masked email to disable
+ * @param session - The session object
  */
 export const disable = async (
   id: string | undefined,
@@ -82,8 +82,8 @@ export const disable = async (
 
 /**
  * Enables a masked email by setting the state to enabled
- * @param id The id of the masked email to enable
- * @param session The session object
+ * @param id - The id of the masked email to enable
+ * @param session - The session object
  */
 export const enable = async (
   id: string | undefined,

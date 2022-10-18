@@ -15,7 +15,7 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
  * Retrieves all masked emails
- * @param session The session object
+ * @param session - The session object
  */
 export const list = async (session: any): Promise<MaskedEmail[]> => {
   if (!session) {
@@ -38,8 +38,8 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
 
 /**
  * Get a masked email by id
- * @param id The id of the masked email address.
- * @param session The session object
+ * @param id - The id of the masked email address.
+ * @param session - The session object
  * @returns The masked email
  * @throws Error if no id is provided, no session is provided, or the masked email is not found
  */
@@ -73,8 +73,8 @@ export const getById = async (
 
 /**
  * Get a masked email by address
- * @param address The address to retrieve
- * @param session The session object
+ * @param address - The address to retrieve
+ * @param session - The session object
  * @returns The masked email object in a list
  */
 export const getByAddress = async (

@@ -2,7 +2,7 @@ import { JMAP } from '../constants';
 
 /**
  * Parses the session object and returns the apiUrl and accountId
- * @param session The session object
+ * @param session - The session object
  */
 export const parseSession = (session: any) => {
   const accountId = session.primaryAccounts[JMAP.CORE];
@@ -16,7 +16,7 @@ export const parseSession = (session: any) => {
 
 /**
  * Builds headers for requests using the JMAP token
- * @param authToken The JMAP authentication token
+ * @param authToken - The JMAP authentication token
  */
 export const buildHeaders = (authToken: string) => {
   return {

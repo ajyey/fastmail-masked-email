@@ -13,8 +13,8 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
  * Creates a new masked email address
- * @param session The session object
- * @param options The options for creating the masked email
+ * @param session - The session object
+ * @param options - The options for creating the masked email
  */
 export const create = async (
   session: any,
