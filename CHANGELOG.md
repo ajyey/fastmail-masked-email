@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive error handling
 - Automated release management
 
+## [1.0.0-alpha.2] - 2022-10-24
+### Added
+- Better error types for invalid arguments and invalid credentials
+- Much better typedoc descriptions and annotations
+- Eslint plugin for tsdoc
+
 ## [1.0.0-alpha.1] - 2022-10-17
 ### Fixed
 - Fixed a bug where the entry point was not being set correctly in the package.json file
