@@ -8,7 +8,8 @@
 	"@typescript-eslint",
 	"simple-import-sort",
 	"prettier",
-	"jest"
+	"jest",
+    "eslint-plugin-tsdoc"
   ],
   "extends": [
 	"eslint:recommended",
@@ -34,6 +35,7 @@
 	"@typescript-eslint/no-explicit-any": "off",
 	"simple-import-sort/imports": "error",
 	"simple-import-sort/exports": "error",
+    "tsdoc/syntax": "warn",
 	"prettier/prettier": 2
   },
   "env": {

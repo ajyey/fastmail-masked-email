@@ -4,8 +4,15 @@ import { MaskedEmailState } from './MaskedEmail';
  * Options for creating a masked email
  */
 export interface CreateOptions {
+  /** The description to use for the newly created masked email */
   description?: string;
+  /** The domain to be associated with the newly created masked email */
   forDomain?: string;
+  /**
+   * The state to set for the newly created masked email
+   * @defaultValue 'enabled'
+   * @see {@link MaskedEmailState} for valid values
+   * */
   state?: MaskedEmailState;
 }
 
@@ -13,10 +20,10 @@ export interface CreateOptions {
  * Options for updating a masked email
  */
 export interface UpdateOptions {
-  /** The updated description to use  */
+  /** The description to use when updating the masked email */
   description?: string;
-  /** The updated forDomain to use  */
+  /** The domain to use when updating the masked email  */
   forDomain?: string;
-  /** The updated state to use  */
+  /** The state to update the masked email to  */
   state?: MaskedEmailState;
 }

@@ -5,6 +5,9 @@ import { API_HOSTNAME } from '../constants';
 
 /**
  * Gets the session object from the JMAP server
+ * @param token - Optional Fastmail API token to use for authentication
+ * @param hostname Optional Fastmail API hostname to use for authentication; defaults to https://api.fastmail.com
+ * @throws {@link InvalidCredentialsError} if no username or password is provided
  */
 export const getSession = async (
   token?: string,
