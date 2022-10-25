@@ -6,30 +6,32 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
+import { InvalidArgumentError } from '../error/InvalidArgumentError';
 import { UpdateOptions } from '../types/Options';
 import { SetResponse } from '../types/Response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
  * Updates a masked email
- * @param id The id of the masked email to update
- * @param session The session object
- * @param options The options containing the fields to update
+ * @param id - The id of the masked email to update
+ * @param session - The session object
+ * @param options - The {@link UpdateOptions} containing the fields to update
+ * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link UpdateOptions} are empty
  */
 export const update = async (
-  id: string | undefined,
+  id: string,
   session: any,
   options: UpdateOptions = {}
 ): Promise<{ [key: string]: null }> => {
   if (!session) {
-    return Promise.reject(new Error('No session provided'));
+    return Promise.reject(new InvalidArgumentError('No session provided'));
   }
   if (!id) {
-    return Promise.reject(new Error('No id provided'));
+    return Promise.reject(new InvalidArgumentError('No id provided'));
   }
   if (Object.keys(options).length === 0) {
     return Promise.reject(
-      new Error(
+      new InvalidArgumentError(
         'No options provided. Please provide at least one option to update.'
       )
     );
@@ -58,11 +60,11 @@ export const update = async (
 
 /**
  * Deletes a masked email by setting the state to deleted
- * @param id The id of the masked email to delete
- * @param session The session object
+ * @param id - The id of the masked email to delete
+ * @param session - The session object
  */
 export const remove = async (
-  id: string | undefined,
+  id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
   return await update(id, session, { state: 'deleted' });
@@ -70,11 +72,11 @@ export const remove = async (
 
 /**
  * Disables a masked email by setting the state to disabled
- * @param id The id of the masked email to disable
- * @param session The session object
+ * @param id - The id of the masked email to disable
+ * @param session - The session object
  */
 export const disable = async (
-  id: string | undefined,
+  id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
   return await update(id, session, { state: 'disabled' });
@@ -82,11 +84,11 @@ export const disable = async (
 
 /**
  * Enables a masked email by setting the state to enabled
- * @param id The id of the masked email to enable
- * @param session The session object
+ * @param id - The id of the masked email to enable
+ * @param session - The session object
  */
 export const enable = async (
-  id: string | undefined,
+  id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
   return await update(id, session, { state: 'enabled' });
