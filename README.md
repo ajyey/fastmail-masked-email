@@ -3,6 +3,9 @@
 
 A Node.js library for creating and modifying/updating [Fastmail Masked Emails](https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email)
 
+## Documentation
+[Typedoc](https://ajyey.github.io/fastmail-masked-email/)
+
 ## Installation
 ```bash
 npm install fastmail-masked-email
