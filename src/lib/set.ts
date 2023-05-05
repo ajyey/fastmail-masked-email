@@ -36,6 +36,17 @@ export const update = async (
       )
     );
   }
+  const validOptions: string[] = ['description', 'forDomain', 'state'];
+  const invalidOptions: string[] = Object.keys(options).filter(
+    (option: string) => !validOptions.includes(option)
+  );
+  if (invalidOptions.length > 0) {
+    return Promise.reject(
+      new InvalidArgumentError(
+        `Invalid options provided: ${invalidOptions.join(', ')}`
+      )
+    );
+  }
 
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
