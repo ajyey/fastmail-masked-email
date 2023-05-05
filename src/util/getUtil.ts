@@ -1,4 +1,4 @@
-import { MaskedEmail, MaskedEmailState } from '../types/MaskedEmail';
+import { MaskedEmail, MaskedEmailState } from '../types/maskedEmail';
 
 /**
  * Gets a masked email by email address from the full list of masked emails
