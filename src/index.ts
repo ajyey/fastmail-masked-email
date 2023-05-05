@@ -8,3 +8,4 @@ export * from './types/MaskedEmail';
 export * from './types/MethodResponse';
 export * from './types/Options';
 export * from './types/Response';
+export * from './types/Session';
