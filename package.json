@@ -1,6 +1,6 @@
 {
   "name": "fastmail-masked-email",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "A library for creating, modifying, and otherwise interacting with Fastmail Masked Emails",
   "author": "Andrew Leonard",
   "main": "build/index.js",
@@ -38,10 +38,10 @@
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:win32": "onchange \"src/**/*.ts\" -- prettier --write {{changed}}",
     "start:dev": "nodemon",
-	"version:prelease-alpha": "npm version prerelease --preid=alpha",
-	"version:prelease-beta": "npm version prerelease --preid=beta",
-  	"publish:alpha": "run-s build && npm publish --tag alpha",
-  	"publish:beta": "run-s build && npm publish --tag beta",
+    "version:prelease-alpha": "npm version prerelease --preid=alpha",
+    "version:prelease-beta": "npm version prerelease --preid=beta",
+    "publish:alpha": "run-s build && npm publish --tag alpha",
+    "publish:beta": "run-s build && npm publish --tag beta",
     "upgrade-packages": "npx npm-check-updates -u && npm install"
   },
   "husky": {
