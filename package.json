@@ -38,8 +38,8 @@
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:win32": "onchange \"src/**/*.ts\" -- prettier --write {{changed}}",
     "start:dev": "nodemon",
-    "version:prelease-alpha": "npm version prerelease --preid=alpha",
-    "version:prelease-beta": "npm version prerelease --preid=beta",
+    "version:prerelease-alpha": "npm version prerelease --preid=alpha",
+    "version:prerelease-beta": "npm version prerelease --preid=beta",
     "publish:alpha": "run-s build && npm publish --tag alpha",
     "publish:beta": "run-s build && npm publish --tag beta",
     "upgrade-packages": "npx npm-check-updates -u && npm install"
