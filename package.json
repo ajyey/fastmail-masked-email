@@ -38,6 +38,8 @@
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:win32": "onchange \"src/**/*.ts\" -- prettier --write {{changed}}",
     "start:dev": "nodemon",
+	"version:prelease-alpha": "npm version prerelease --preid=alpha",
+	"version:prelease-beta": "npm version prerelease --preid=beta",
     "upgrade-packages": "npx npm-check-updates -u && npm install"
   },
   "husky": {
