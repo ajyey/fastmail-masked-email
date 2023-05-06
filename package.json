@@ -1,6 +1,6 @@
 {
   "name": "fastmail-masked-email",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.4",
   "description": "A library for creating, modifying, and otherwise interacting with Fastmail Masked Emails",
   "author": "Andrew Leonard",
   "main": "build/index.js",
@@ -37,7 +37,12 @@
     "prettier-watch:darwin:linux": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:win32": "onchange \"src/**/*.ts\" -- prettier --write {{changed}}",
-    "start:dev": "nodemon"
+    "start:dev": "nodemon",
+    "version:prelease-alpha": "npm version prerelease --preid=alpha",
+    "version:prelease-beta": "npm version prerelease --preid=beta",
+    "publish:alpha": "run-s build && npm publish --tag alpha",
+    "publish:beta": "run-s build && npm publish --tag beta",
+    "upgrade-packages": "npx npm-check-updates -u && npm install"
   },
   "husky": {
     "hooks": {
@@ -51,11 +56,11 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.5.1",
-    "@types/node": "^18.16.3",
+    "@types/node": "^20.1.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
     "dotenv": "^16.0.3",
-    "eslint": "8.39.0",
+    "eslint": "8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^27.2.1",
