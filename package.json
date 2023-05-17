@@ -54,11 +54,14 @@
     "debug": "^4.3.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.3",
+    "@commitlint/config-conventional": "^17.6.3",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.5.1",
     "@types/node": "^20.1.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
+    "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.0.3",
     "eslint": "8.40.0",
     "eslint-config-prettier": "^8.8.0",
@@ -97,5 +100,10 @@
     "CHANGELOG.md",
     "LICENSE",
     "README.md"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }

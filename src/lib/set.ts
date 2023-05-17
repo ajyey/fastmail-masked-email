@@ -6,9 +6,9 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
-import { InvalidArgumentError } from '../error/InvalidArgumentError';
-import { UpdateOptions } from '../types/Options';
-import { SetResponse } from '../types/Response';
+import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { UpdateOptions } from '../types/options';
+import { SetResponse } from '../types/response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**

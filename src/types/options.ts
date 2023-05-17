@@ -1,4 +1,4 @@
-import { MaskedEmailState } from './MaskedEmail';
+import { MaskedEmailState } from './maskedEmail';
 
 /**
  * Options for creating a masked email

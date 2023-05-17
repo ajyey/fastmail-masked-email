@@ -1,4 +1,4 @@
-import { GetMethodResponse, SetMethodResponse } from './MethodResponse';
+import { GetMethodResponse, SetMethodResponse } from './methodResponse';
 
 /**
  * Response returned from making a standard get call

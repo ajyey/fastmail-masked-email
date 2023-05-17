@@ -1,5 +1,5 @@
 import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture';
-import { MaskedEmail } from '../types/MaskedEmail';
+import { MaskedEmail } from '../types/maskedEmail';
 import {
   filterByAddress,
   filterByForDomain,

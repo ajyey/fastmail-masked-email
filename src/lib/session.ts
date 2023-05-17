@@ -11,7 +11,7 @@ import { API_HOSTNAME } from '../constants';
  */
 export const getSession = async (
   token?: string,
-  hostname: string = API_HOSTNAME
+  hostname?: string
 ): Promise<any> => {
   if (!hostname) {
     hostname = process.env.JMAP_HOSTNAME || API_HOSTNAME;
@@ -22,7 +22,7 @@ export const getSession = async (
   if (!token) {
     return Promise.reject(
       new Error(
-        'No hostname or token provided. Please provide a hostname and token, or set the JMAP_HOSTNAME and JMAP_TOKEN environment variables.'
+        'No auth token provided and JMAP_TOKEN environment variable is not set. Please provide a token.'
       )
     );
   }
