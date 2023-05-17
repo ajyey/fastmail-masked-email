@@ -8,9 +8,9 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
-import { InvalidArgumentError } from '../error/InvalidArgumentError';
-import { MaskedEmail } from '../types/MaskedEmail';
-import { GetResponse } from '../types/Response';
+import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { MaskedEmail } from '../types/maskedEmail';
+import { GetResponse } from '../types/response';
 import { filterByAddress } from '../util/getUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 

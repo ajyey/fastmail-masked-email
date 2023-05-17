@@ -6,10 +6,10 @@ import {
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
-import { InvalidArgumentError } from '../error/InvalidArgumentError';
-import { MaskedEmail } from '../types/MaskedEmail';
-import { CreateOptions } from '../types/Options';
-import { SetResponse } from '../types/Response';
+import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { MaskedEmail, MaskedEmailState } from '../types/maskedEmail';
+import { CreateOptions } from '../types/options';
+import { SetResponse } from '../types/response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
@@ -27,7 +27,7 @@ export const create = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const state = options.state || 'enabled';
+  const state: MaskedEmailState = options.state || 'enabled';
   const body = {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [
@@ -47,6 +47,7 @@ export const create = async (
     ]
   };
   createLogger('create() body: %o', JSON.stringify(body));
+
   const response = await axios.post(apiUrl, body, {
     headers
   });

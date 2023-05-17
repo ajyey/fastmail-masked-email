@@ -1,4 +1,4 @@
-import { MaskedEmailState } from '../types/MaskedEmail';
+import { MaskedEmailState } from '../types/maskedEmail';
 
 export const maskedEmailFixture = {
   id: '1',

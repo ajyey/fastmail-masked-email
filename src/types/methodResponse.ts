@@ -1,7 +1,7 @@
 /**
  * Method response returned from making a standard get call
  */
-import { MaskedEmail } from './MaskedEmail';
+import { MaskedEmail } from './maskedEmail';
 
 /**
  * Method response containing masked email information returned from making a standard get call
