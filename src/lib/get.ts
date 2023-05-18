@@ -39,6 +39,13 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
   return data.methodResponses[0][1].list;
 };
 
+const maskedEmailNotFound = (id: string, response: GetResponse): boolean => {
+  const notFoundIds = response.methodResponses[0][1].notFound;
+  if (notFoundIds && notFoundIds.length > 0) {
+    return notFoundIds.includes(id);
+  }
+  return false;
+};
 /**
  * Get a masked email by id
  * @param id - The id of the masked email address.
@@ -66,12 +73,12 @@ export const getById = async (
     headers
   });
   getByIdLogger('getById() body: %o', JSON.stringify(body));
-  const data: GetResponse = response.data;
+  const responseData: GetResponse = response.data;
   getByIdLogger('getById() response %o', JSON.stringify(response.data));
-  if (!data.methodResponses[0][1].list) {
+  if (maskedEmailNotFound(id, responseData)) {
     return Promise.reject(new Error(`No masked email found with id ${id}`));
   }
-  return data.methodResponses[0][1].list[0];
+  return responseData.methodResponses[0][1].list[0];
 };
 
 /**
