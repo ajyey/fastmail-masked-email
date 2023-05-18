@@ -6,7 +6,6 @@ test
 src/**.js
 coverage
 *.log
-package-lock.json
 .env
 .DS_Store
 README.dev.md
