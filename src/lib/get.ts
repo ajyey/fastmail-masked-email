@@ -54,7 +54,7 @@ const maskedEmailNotFound = (id: string, response: GetResponse): boolean => {
  * @throws {@link InvalidArgumentError} if no session is provided or no id is provided
  */
 export const getById = async (
-  id: string,
+  id: string | undefined,
   session: any
 ): Promise<MaskedEmail> => {
   if (!session) {

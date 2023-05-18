@@ -30,7 +30,7 @@ describe('create', () => {
     await expect(create(undefined)).rejects.toThrow(InvalidArgumentError);
   });
 
-  it('should create a new masked email address', async () => {
+  it('should create a new masked email address enabled by default', async () => {
     const session = {
       primaryAccounts: {
         [JMAP.CORE]: 'account1'
@@ -39,7 +39,7 @@ describe('create', () => {
       fmAuthToken: 'auth-token-123'
     };
 
-    const options: CreateOptions = { state: 'enabled' };
+    const options: CreateOptions = {};
 
     const expectedRequest = {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
@@ -50,7 +50,7 @@ describe('create', () => {
             accountId: 'account1',
             create: {
               ['0']: {
-                ...options
+                state: 'enabled'
               }
             }
           },
