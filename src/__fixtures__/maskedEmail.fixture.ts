@@ -1,7 +1,7 @@
 import { MaskedEmailState } from '../types/maskedEmail';
 
 export const maskedEmailFixture = {
-  id: '1',
+  id: 'masked-email-1',
   email: 'testEmail@test.com',
   state: 'enabled' as MaskedEmailState,
   description: 'A very helpful description',

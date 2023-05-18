@@ -19,9 +19,9 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link UpdateOptions} are empty
  */
 export const update = async (
-  id: string,
+  id: string | undefined,
   session: any,
-  options: UpdateOptions = {}
+  options: UpdateOptions
 ): Promise<{ [key: string]: null }> => {
   if (!session) {
     return Promise.reject(new InvalidArgumentError('No session provided'));
