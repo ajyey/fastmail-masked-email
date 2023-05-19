@@ -7,7 +7,7 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
-import { UpdateOptions } from '../types/options';
+import { Options } from '../types/options';
 import { SetResponse } from '../types/response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
@@ -15,13 +15,13 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  * Updates a masked email
  * @param id - The id of the masked email to update
  * @param session - The session object
- * @param options - The {@link UpdateOptions} containing the fields to update
- * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link UpdateOptions} are empty
+ * @param options - The {@link Options} containing the fields to update
+ * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link Options} are empty
  */
 export const update = async (
   id: string | undefined,
   session: any,
-  options: UpdateOptions
+  options: Options
 ): Promise<{ [key: string]: null }> => {
   if (!session) {
     return Promise.reject(new InvalidArgumentError('No session provided'));

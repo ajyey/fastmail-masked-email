@@ -8,19 +8,19 @@ import {
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { MaskedEmail, MaskedEmailState } from '../types/maskedEmail';
-import { CreateOptions } from '../types/options';
+import { Options } from '../types/options';
 import { SetResponse } from '../types/response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
  * Creates a new masked email address
  * @param session - The session object
- * @param options - The {@link CreateOptions} for creating the masked email
+ * @param options - The {@link Options} for creating the masked email
  * @throws {@link InvalidArgumentError} if no session is provided
  */
 export const create = async (
   session: any,
-  options: CreateOptions = {}
+  options: Options = {}
 ): Promise<MaskedEmail> => {
   if (!session) {
     return Promise.reject(new InvalidArgumentError('No session provided'));

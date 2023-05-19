@@ -7,7 +7,7 @@ import {
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { create } from '../lib/create';
-import { CreateOptions } from '../types/options';
+import { Options } from '../types/options';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 jest.mock('axios');
@@ -39,7 +39,7 @@ describe('create', () => {
       fmAuthToken: 'auth-token-123'
     };
 
-    const options: CreateOptions = {};
+    const options: Options = {};
 
     const expectedRequest = {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
