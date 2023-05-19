@@ -17,6 +17,7 @@
 					{"type": "refactor", "release": "patch"},
 					{"type": "refactor", "scope": "types", "release": "minor"},
 					{"type": "feat", "scope":"major", "release": "major"},
+					{"type": "feat", "scope":"minor", "release": "minor"},
 					{"scope": "no-release", "release": false}
 				],
 				"parserOpts": {
