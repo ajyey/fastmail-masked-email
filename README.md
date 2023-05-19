@@ -100,7 +100,7 @@ const session = await getSession(token, hostname);
 const newMaskedEmail = await create(session, { forDomain: 'example.com' });
 
 // Create a new masked email that is disabled by default
-newMaskedEmail = await create(session, 'example.com', { state: 'disabled' });
+newMaskedEmail = await create(session, { state: 'disabled' });
 
 // Create a new masked email with a description
 newMaskedEmail = await create(session, { description: 'My new masked email' });
