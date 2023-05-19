@@ -1,3 +1,10 @@
+# 1.0.0-beta.1 (2023-05-19)
+
+
+### Features
+
+* check the notFound field to determine if a masked email could not be found ([1988fab](https://github.com/ajyey/fastmail-masked-email/commit/1988fabaab2f45946efb7db291028d7db129591c))
+
 # Changelog
 
 All notable changes to `fastmail-masked-email` will be documented in this file.
