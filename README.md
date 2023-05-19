@@ -9,13 +9,13 @@ A Node.js library for creating and modifying/updating [Fastmail Masked Emails](h
 
 ## Installation
 
-Please note that `fastmail-masked-email` is currently in alpha and is subject to change. Any breaking changes will be noted in the [CHANGELOG](CHANGELOG.md).
+
 ```bash
-npm install fastmail-masked-email@alpha
+npm install fastmail-masked-email --save
 ```
 or
 ```bash
-yarn add fastmail-masked-email@alpha
+yarn add fastmail-masked-email
 ```
 
 ## Authentication Setup
