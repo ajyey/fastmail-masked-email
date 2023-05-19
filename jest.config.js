@@ -8,6 +8,7 @@ module.exports = {
   roots: ['<rootDir>/src'],
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.ts'],
+	coverageReporters: ['json-summary', 'lcov'],
   coveragePathIgnorePatterns: ['src/index.ts', 'src/constants.ts'],
   passWithNoTests: true,
   coverageThreshold: {
