@@ -5,22 +5,7 @@
 
 * remove minor scope release rule ([91b2eb2](https://github.com/ajyey/fastmail-masked-email/commit/91b2eb2a60d2031ccaeeaa28f1b71dd3d7cc6646))
 
-# 1.0.0 (2023-05-19)
 
-
-### Features
-
-* **minor:** add explicit release rule for minor version bump ([51c5707](https://github.com/ajyey/fastmail-masked-email/commit/51c57071c63b236cf79453b36154445c3aef0af8))
-* check the notFound field to determine if a masked email could not be found ([1988fab](https://github.com/ajyey/fastmail-masked-email/commit/1988fabaab2f45946efb7db291028d7db129591c))
-
-# 1.0.0 (2023-05-19)
-
-
-### Features
-
-* check the notFound field to determine if a masked email could not be found ([1988fab](https://github.com/ajyey/fastmail-masked-email/commit/1988fabaab2f45946efb7db291028d7db129591c))
-
-# [1.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2023-05-19)
 
 # 1.0.0-beta.1 (2023-05-19)
 
