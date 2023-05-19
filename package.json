@@ -1,6 +1,6 @@
 {
   "name": "fastmail-masked-email",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A library for creating, modifying, and otherwise interacting with Fastmail Masked Emails",
   "author": "Andrew Leonard",
   "main": "build/index.js",
@@ -16,7 +16,7 @@
     "build:clean": "rimraf ./dist",
     "build:compile": "tsc -p tsconfig.json",
     "doc": "run-s doc:html && open-cli docs/index.html",
-    "doc:html": " typedoc src/index.ts --out docs",
+    "doc:html": " typedoc src/index.ts --out docs && cp logo.png docs/",
     "fix": "run-s fix:*",
     "fix:lint": "eslint src --ext .ts --fix",
     "fix:prettier": "run-s prettier-format",

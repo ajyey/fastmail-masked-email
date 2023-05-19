@@ -1,13 +1,47 @@
 
-![Logo](logo.png)
-# fastmail-masked-email
+<p align="center">
+  <img src="logo.png" />
+</p>
+<h1 align="center" style="border-bottom: none;">fastmail-masked-email</h1>
+<h3 align="center">Create, delete, and modify <a href="https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email">fastmail masked emails</a></h3>
 
-A Node.js library for creating and modifying/updating [Fastmail Masked Emails](https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email)
+<p align="center">
+  <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/test.yml">
+    <img alt="test state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/test.yml/badge.svg?branch=master">
+  </a>
+  <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/release.yml">
+    <img alt="release state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/release.yml/badge.svg?branch=master">
+  </a>
+  <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/docs.yml">
+    <img alt="docs state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/docs.yml/badge.svg?branch=master">
+  </a>
+  <a href="https://github.com/ajyey/fastmail-masked-email/issues?q=is%3Aopen+is%3Aissue">
+    <img alt="open issues" src="https://img.shields.io/github/issues-raw/ajyey/fastmail-masked-email">
+  </a>
+  <a href="https://github.com/ajyey/fastmail-masked-email/blob/master/LICENSE">
+    <img alt="license" src="https://img.shields.io/github/license/ajyey/fastmail-masked-email">
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/semantic-release/semantic-release/tree/master">
+    <img alt="semantic-release: angular" src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release">
+  </a>
+  <a href="https://www.npmjs.com/package/fastmail-masked-email">
+    <img alt="npm latest version" src="https://img.shields.io/npm/v/fastmail-masked-email">
+  </a>
+  <a href="https://www.npmjs.com/package/fastmail-masked-email">
+    <img alt="npm beta version" src="https://img.shields.io/npm/v/fastmail-masked-email/beta.svg">
+  </a>
+</p>
+<p align="center">
+  Check out the
+  <a href="https://ajyey.github.io/fastmail-masked-email/">
+    Typedoc
+  </a>
+  for Typescript definitions and documentation.
 
-[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+</p>
 
-## Documentation
-[Typedoc](https://ajyey.github.io/fastmail-masked-email/)
 
 ## Installation
 
@@ -20,7 +54,7 @@ or
 yarn add fastmail-masked-email
 ```
 
-## Authentication Setup
+## Setting Up Authentication
 In order to be able to make requests to the Fastmail API, you will need to [create a Fastmail API Token](https://www.fastmail.help/hc/en-us/articles/5254602856719-API-tokens).
 This token should be created with the `Masked Email` scope to allow for the creation and management of masked emails.
 
