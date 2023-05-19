@@ -27,7 +27,7 @@
     <img alt="semantic-release: angular" src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release">
   </a>
   <a href="https://www.npmjs.com/package/fastmail-masked-email">
-    <img alt="npm latest version" src="https://img.shields.io/npm/v/fastmail-masked-email/latest.svg">
+    <img alt="npm latest version" src="https://img.shields.io/npm/v/fastmail-masked-email">
   </a>
   <a href="https://www.npmjs.com/package/fastmail-masked-email">
     <img alt="npm beta version" src="https://img.shields.io/npm/v/fastmail-masked-email/beta.svg">
@@ -35,10 +35,10 @@
 </p>
 <p align="center">
   Check out the
-  <a href="https://github.com/semantic-release/semantic-release/tree/master">
+  <a href="https://ajyey.github.io/fastmail-masked-email/">
     Typedoc
   </a>
-  for Typesript definitions and documentation.
+  for Typescript definitions and documentation.
 
 </p>
 
