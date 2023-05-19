@@ -1,4 +1,4 @@
-name: Run linting and tests
+name: test
 
 on:
   push:
