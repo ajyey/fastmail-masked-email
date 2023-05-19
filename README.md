@@ -4,6 +4,12 @@
 
 A Node.js library for creating and modifying/updating [Fastmail Masked Emails](https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email)
 
+![Branches](./badges/coverage-branches.svg)
+![Functions](./badges/coverage-functions.svg)
+![Lines](./badges/coverage-lines.svg)
+![Statements](./badges/coverage-statements.svg)
+![Jest coverage](./badges/coverage-jest%20coverage.svg)
+
 ## Documentation
 [Typedoc](https://ajyey.github.io/fastmail-masked-email/)
 
