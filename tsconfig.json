@@ -17,7 +17,7 @@
 	"allowJs": true,
 	"forceConsistentCasingInFileNames": true,
 	"esModuleInterop": true,
-	"outDir": "build",
+	"outDir": "dist",
 	"rootDir": "src",
 	"strict": true,
 	"noImplicitAny": true,
