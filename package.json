@@ -12,7 +12,7 @@
     "email"
   ],
   "scripts": {
-    "build": "run-s fix build:* doc:html",
+    "build": "run-s fix build:*",
     "build:clean": "rimraf ./build",
     "build:compile": "tsc -p tsconfig.json",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
