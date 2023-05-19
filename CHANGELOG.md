@@ -1,4 +1,11 @@
-# [1.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2023-05-19)
+# [1.1.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.0.0...v1.1.0) (2023-05-19)
+
+
+### Features
+
+* remove minor scope release rule ([91b2eb2](https://github.com/ajyey/fastmail-masked-email/commit/91b2eb2a60d2031ccaeeaa28f1b71dd3d7cc6646))
+
+
 
 # 1.0.0-beta.1 (2023-05-19)
 
