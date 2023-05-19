@@ -28,7 +28,7 @@
     "test": "run-s test:*",
     "test:prettier": "run-s prettier-format-list",
     "test:lint": "eslint . --ext .ts",
-    "test:unit": "jest --passWithNoTests",
+    "test:unit": "jest --ci --coverage --passWithNoTests --detectOpenHandles --forceExit -w 1",
     "prettier-format": "run-script-os",
     "prettier-format:darwin:linux": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "prettier-format:default": "prettier --config .prettierrc 'src/**/*.ts' --write",
