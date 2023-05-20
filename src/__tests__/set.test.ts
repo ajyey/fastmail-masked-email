@@ -8,7 +8,7 @@ import {
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { disable, enable, remove, update } from '../lib/set';
 import * as set from '../lib/set';
-import { UpdateOptions } from '../types/options';
+import { Options } from '../types/options';
 
 jest.mock('axios');
 
@@ -48,12 +48,12 @@ describe('update', () => {
     });
     it('should reject with InvalidArgumentError if invalid options are provided', async () => {
       await expect(
-        update('1', session, { invalid: 'invalid' } as UpdateOptions)
+        update('1', session, { invalid: 'invalid' } as Options)
       ).rejects.toThrow(InvalidArgumentError);
     });
 
     it('should update a masked email', async () => {
-      const updateOptions: UpdateOptions = {
+      const updateOptions: Options = {
         description: 'updated description',
         state: 'disabled'
       };

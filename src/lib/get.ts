@@ -9,8 +9,9 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { JmapGetResponse, JmapRequest } from '../types/jmap';
 import { MaskedEmail } from '../types/maskedEmail';
-import { GetResponse } from '../types/response';
+import { GetResponseData } from '../types/response';
 import { filterByAddress } from '../util/getUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
@@ -26,7 +27,7 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const body = {
+  const body: JmapRequest = {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
   };
@@ -35,11 +36,15 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
     headers
   });
   listLogger('list() response: %o', JSON.stringify(response.data));
-  const data: GetResponse = response.data;
-  return data.methodResponses[0][1].list;
+  const jmapResponse: JmapGetResponse = response.data;
+  const methodResponse: GetResponseData = jmapResponse.methodResponses[0][1];
+  return methodResponse.list;
 };
 
-const maskedEmailNotFound = (id: string, response: GetResponse): boolean => {
+const maskedEmailNotFound = (
+  id: string,
+  response: JmapGetResponse
+): boolean => {
   const notFoundIds = response.methodResponses[0][1].notFound;
   if (notFoundIds && notFoundIds.length > 0) {
     return notFoundIds.includes(id);
@@ -65,7 +70,7 @@ export const getById = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const body = {
+  const body: JmapRequest = {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']]
   };
@@ -73,7 +78,7 @@ export const getById = async (
     headers
   });
   getByIdLogger('getById() body: %o', JSON.stringify(body));
-  const responseData: GetResponse = response.data;
+  const responseData: JmapGetResponse = response.data;
   getByIdLogger('getById() response %o', JSON.stringify(response.data));
   if (maskedEmailNotFound(id, responseData)) {
     return Promise.reject(new Error(`No masked email found with id ${id}`));
