@@ -1,19 +1,23 @@
-import { GetMethodResponse, SetMethodResponse } from './methodResponse';
+import { MaskedEmail } from './maskedEmail';
 
 /**
- * Response returned from making a standard get call
+ * Response data containing masked email information returned from making a standard get call
  */
-export interface GetResponse {
-  sessionState: string;
-  latestClientVersion: string;
-  methodResponses: Array<Array<GetMethodResponse>>;
+export interface GetResponseData {
+  accountId: string;
+  state: string;
+  notFound: string[];
+  list: MaskedEmail[];
 }
 
 /**
- * Response returned from making a standard set/update call
+ * Response data returned from making a successful set/update call
  */
-export interface SetResponse {
-  sessionState: string;
-  latestClientVersion: string;
-  methodResponses: Array<Array<SetMethodResponse>>;
+export interface SetResponseData {
+  created: any;
+  oldState: string;
+  accountId: string;
+  newState: string;
+  updated: { [key: string]: null };
+  destroyed: { [key: string]: null };
 }

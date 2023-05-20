@@ -7,8 +7,8 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { JmapRequest, JmapSetResponse } from '../types/jmap';
 import { Options } from '../types/options';
-import { SetResponse } from '../types/response';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
@@ -50,7 +50,7 @@ export const update = async (
 
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const body = {
+  const body: JmapRequest = {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [
       [
@@ -65,7 +65,7 @@ export const update = async (
     headers
   });
   updateLog('update() response: %o', JSON.stringify(response.data));
-  const data: SetResponse = await response.data;
+  const data: JmapSetResponse = await response.data;
   return data.methodResponses[0][1].updated;
 };
 
