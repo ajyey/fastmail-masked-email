@@ -1,3 +1,15 @@
+# [1.2.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2023-05-20)
+
+
+### Code Refactoring
+
+* adds generic typing for jmap requests and responses ([af21328](https://github.com/ajyey/fastmail-masked-email/commit/af21328b1022a68d348483e785d9f41b11e010d1))
+
+
+### BREAKING CHANGES
+
+* removes GetMethodResponse and SetMethodResponse types
+
 # [1.2.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.2...v1.2.0-beta.1) (2023-05-19)
 
 
