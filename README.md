@@ -43,7 +43,7 @@
 </p>
 
 
-## Installation
+# Installation
 
 
 ```bash
@@ -54,7 +54,7 @@ or
 yarn add fastmail-masked-email
 ```
 
-## Setting Up Authentication
+# Setting Up Authentication
 In order to be able to make requests to the Fastmail API, you will need to [create a Fastmail API Token](https://www.fastmail.help/hc/en-us/articles/5254602856719-API-tokens).
 This token should be created with the `Masked Email` scope to allow for the creation and management of masked emails.
 
@@ -64,6 +64,8 @@ This library relies on the use of two environment variables to authenticate with
 - `JMAP_HOSTNAME` ( Defaults to `api.fastmail.com` if not explicitly set )
 
 You can set these environment variables in your shell, or in a `.env` file in the root of your project and use something like the [dotenv](https://www.npmjs.com/package/dotenv) package to load them.
+
+# Usage
 
 ## Getting a Session
 Getting a session is the first step in interacting with the Fastmail API. This is done by calling the `getSession` function.
@@ -152,9 +154,9 @@ There are three masked email properties that can be updated:
 - `description`
 
 To update a masked email, call the `update` method.
-The `update` method requires the `id` of the masked email to update, the `session` object, an  `options` object.
+The `update` method requires the `id` of the masked email to update, the `session` object, and an  `options` object.
 
-The `options` object can contain any of the above three properties properties, but MUST contain at least one of them.
+The `options` object can contain any of the above three properties, but MUST contain at least one of them.
 `update` returns a rejected promise if no properties are passed into the options object.
 
 
@@ -175,25 +177,30 @@ await update('my-masked-email-id', session, {
 Enabling a masked email is done by calling the `enable` method and passing in the masked email `id` and the `session` object.
 An enabled masked email will receive any email sent to it.
 
+#### Enable
+
 ```typescript
-import { disable, getSession } from 'fastmail-masked-email';
+import { enable, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await disable('my-masked-email-id', session);
+await enable('my-masked-email-id', session);
 ```
+
 #### Disable
 Disabling a masked email is done by calling the `disable` method and passing in the masked email `id` and the `session` object.
 When a masked email is disabled, any email sent to it will be sent to the trash.
 
-#### Enable
 ```typescript
 import { disable, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
 await disable('my-masked-email-id', session);
+
 ```
+
+
 #### Delete
 A masked email can be deleted by calling the `remove` method and passing in the masked email `id` and the `session` object.
 Any email sent to a deleted masked email will be sent to the trash.
@@ -206,3 +213,19 @@ const session = getSession(token, hostname);
 
 await remove('my-masked-email-id', session);
 ```
+
+# Notes
+- Note on using `async/await`:
+  - In the code examples shown above, we are using `await` to handle asynchronous operations. To use `await`, you must be inside an `async` function.
+	If you're using these examples in your own code, make sure to wrap them in an `async` function. Here's an example of how you can do that:
+  	```typescript
+     import { getSession, list } from 'fastmail-masked-email';
+     async function main() {
+        const session = await getSession(token, hostname);
+        const myMaskedEmails = await list(session);
+        console.log(myMaskedEmails);
+  	  }
+  	  main()
+  	  .then(() => console.log('Done!'))
+  	  .catch((error) => console.error('An error occurred:', error));
+  	```
