@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.1...v1.2.2) (2023-05-21)
+
+
+### Bug Fixes
+
+* bump eslint version ([ff6f76c](https://github.com/ajyey/fastmail-masked-email/commit/ff6f76c1cdea9bc8818bc9287e199bb9f8048edd))
+
 ## [1.2.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.0...v1.2.1) (2023-05-21)
 
 # [1.2.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.2...v1.2.0) (2023-05-20)
