@@ -3,6 +3,7 @@ import debug from 'debug';
 const debugLogger = debug('session:debug');
 const errorLogger = debug('session:error');
 import { API_HOSTNAME } from '../constants';
+import { ACTIONS, handleAxiosError } from '../util/errorUtil';
 
 /**
  * Gets the session object from the JMAP server
@@ -40,19 +41,6 @@ export const getSession = async (
     debugLogger('getSession() response: %o', JSON.stringify(response.data));
     return await response.data;
   } catch (error) {
-    const axiosError = error as AxiosError;
-    if (axiosError.response) {
-      const errorMessage = `Request for session failed with status code ${axiosError.response.status}: ${axiosError.response.statusText}. ${axiosError.response.data}`;
-      errorLogger('Error response: %o', axiosError.response);
-      return Promise.reject(new Error(errorMessage));
-    } else if (axiosError.request) {
-      const errorMessage = `Request for session was made, but no response was received. Error message: ${axiosError.message}`;
-      errorLogger('Error request: %o', axiosError.request);
-      return Promise.reject(new Error(errorMessage));
-    } else {
-      const errorMessage = `An error occurred while fetching the JMAP session. Error message: ${axiosError.message}`;
-      errorLogger('Error: %o', axiosError);
-      return Promise.reject(new Error(errorMessage));
-    }
+    return handleAxiosError(error as AxiosError, errorLogger, ACTIONS.SESSION);
   }
 };

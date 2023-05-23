@@ -65,7 +65,7 @@ describe('getSession', () => {
     });
 
     await expect(getSession(mockAuthToken, mockHostname)).rejects.toThrow(
-      `Request for session failed with status code ${mockErrorResponse.status}: ${mockErrorResponse.statusText}. ${mockErrorResponse.data}`
+      `getting a session failed with status code ${mockErrorResponse.status}: ${mockErrorResponse.statusText}. ${mockErrorResponse.data}`
     );
   });
 
@@ -81,7 +81,7 @@ describe('getSession', () => {
     });
 
     await expect(getSession(mockAuthToken, mockHostname)).rejects.toThrow(
-      'Request for session was made, but no response was received. Error message: Network error'
+      'getting a session request was made, but no response was received. Error message: Network error'
     );
   });
 
@@ -91,7 +91,7 @@ describe('getSession', () => {
     });
 
     await expect(getSession(mockAuthToken, mockHostname)).rejects.toThrow(
-      'An error occurred while fetching the JMAP session. Error message: Unexpected error'
+      'An error occurred while getting a session. Error message: Unexpected error'
     );
   });
 });

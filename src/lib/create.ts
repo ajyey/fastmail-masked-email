@@ -11,6 +11,7 @@ import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { JmapRequest, JmapSetResponse } from '../types/jmap';
 import { MaskedEmail, MaskedEmailState } from '../types/maskedEmail';
 import { Options } from '../types/options';
+import { ACTIONS, handleAxiosError } from '../util/errorUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 const DEFAULT_MASKED_EMAIL_STATE: MaskedEmailState = 'enabled';
@@ -62,19 +63,6 @@ export const create = async (
       state
     };
   } catch (error) {
-    const axiosError = error as AxiosError;
-    if (axiosError.response) {
-      const errorMessage = `Create request failed with status code ${axiosError.response.status}: ${axiosError.response.statusText}. ${axiosError.response.data}`;
-      errorLogger('Error response from axios: %o', axiosError.response);
-      return Promise.reject(new Error(errorMessage));
-    } else if (axiosError.request) {
-      const errorMessage = `Create request was made, but no response was received. Error message: ${axiosError.message}`;
-      errorLogger('Error request: %o', axiosError.request);
-      return Promise.reject(new Error(errorMessage));
-    } else {
-      const errorMessage = `An error occurred while creating a masked email. Error message: ${axiosError.message}`;
-      errorLogger('Error: %o', axiosError);
-      return Promise.reject(new Error(errorMessage));
-    }
+    return handleAxiosError(error as AxiosError, errorLogger, ACTIONS.CREATE);
   }
 };

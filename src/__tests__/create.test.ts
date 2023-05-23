@@ -117,7 +117,7 @@ describe('create', () => {
     });
 
     await expect(create(session, options)).rejects.toThrow(
-      `Create request failed with status code ${errorResponse.status}: ${errorResponse.statusText}. ${errorResponse.data}`
+      `creating a masked email failed with status code ${errorResponse.status}: ${errorResponse.statusText}. ${errorResponse.data}`
     );
   });
 
@@ -132,7 +132,7 @@ describe('create', () => {
     });
 
     await expect(create(session, options)).rejects.toThrow(
-      `Create request was made, but no response was received. Error message: ${errorMessage}`
+      `creating a masked email request was made, but no response was received. Error message: ${errorMessage}`
     );
   });
 
