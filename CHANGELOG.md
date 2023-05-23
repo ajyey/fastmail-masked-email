@@ -1,3 +1,10 @@
+# [1.3.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.4...v1.3.0-beta.5) (2023-05-23)
+
+
+### Reverts
+
+* Revert "fix: errors occurring due to axios being mocked" ([fa4c66d](https://github.com/ajyey/fastmail-masked-email/commit/fa4c66d02ecbc7b609220acede8456d93b2fc385))
+
 # [1.3.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.3...v1.3.0-beta.4) (2023-05-23)
 
 
