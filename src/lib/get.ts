@@ -1,7 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import debug from 'debug';
-const listLogger = debug('list');
-const getByIdLogger = debug('getById');
+const listDebugLogger = debug('list:debug');
+const listErrorLogger = debug('list:error');
+const getByIdDebugLogger = debug('getById:debug');
+const getByIdErrorLogger = debug('getById:error');
 
 import {
   JMAP,
@@ -12,6 +14,7 @@ import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { JmapGetResponse, JmapRequest } from '../types/jmap';
 import { MaskedEmail } from '../types/maskedEmail';
 import { GetResponseData } from '../types/response';
+import { ACTIONS, handleAxiosError } from '../util/errorUtil';
 import { filterByAddress } from '../util/getUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
@@ -31,14 +34,18 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
   };
-  listLogger('list() body: %o', JSON.stringify(body));
-  const response: AxiosResponse = await axios.post(apiUrl, body, {
-    headers
-  });
-  listLogger('list() response: %o', JSON.stringify(response.data));
-  const jmapResponse: JmapGetResponse = response.data;
-  const methodResponse: GetResponseData = jmapResponse.methodResponses[0][1];
-  return methodResponse.list;
+  listDebugLogger('list() body: %o', JSON.stringify(body));
+  try {
+    const response: AxiosResponse = await axios.post(apiUrl, body, {
+      headers
+    });
+    listDebugLogger('list() response: %o', JSON.stringify(response.data));
+    const jmapResponse: JmapGetResponse = response.data;
+    const methodResponse: GetResponseData = jmapResponse.methodResponses[0][1];
+    return methodResponse.list;
+  } catch (error) {
+    return handleAxiosError(error as AxiosError, listErrorLogger, ACTIONS.LIST);
+  }
 };
 
 const maskedEmailNotFound = (
@@ -74,16 +81,24 @@ export const getById = async (
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']]
   };
-  const response: AxiosResponse = await axios.post(apiUrl, body, {
-    headers
-  });
-  getByIdLogger('getById() body: %o', JSON.stringify(body));
-  const responseData: JmapGetResponse = response.data;
-  getByIdLogger('getById() response %o', JSON.stringify(response.data));
-  if (maskedEmailNotFound(id, responseData)) {
-    return Promise.reject(new Error(`No masked email found with id ${id}`));
+  try {
+    const response: AxiosResponse = await axios.post(apiUrl, body, {
+      headers
+    });
+    getByIdDebugLogger('getById() body: %o', JSON.stringify(body));
+    const responseData: JmapGetResponse = response.data;
+    getByIdDebugLogger('getById() response %o', JSON.stringify(response.data));
+    if (maskedEmailNotFound(id, responseData)) {
+      return Promise.reject(new Error(`No masked email found with id ${id}`));
+    }
+    return responseData.methodResponses[0][1].list[0];
+  } catch (error) {
+    return handleAxiosError(
+      error as AxiosError,
+      getByIdErrorLogger,
+      ACTIONS.GET_BY_ID
+    );
   }
-  return responseData.methodResponses[0][1].list[0];
 };
 
 /**
@@ -96,6 +111,10 @@ export const getByAddress = async (
   address: string,
   session: any
 ): Promise<MaskedEmail[] | []> => {
-  const maskedEmails = await list(session);
-  return filterByAddress(address, maskedEmails);
+  try {
+    const maskedEmails: MaskedEmail[] = await list(session);
+    return filterByAddress(address, maskedEmails);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };

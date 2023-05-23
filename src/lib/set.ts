@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import debug from 'debug';
-const updateLog = debug('setState');
+const updateDebugLogger = debug('update:debug');
+const updateErrorLogger = debug('update:error');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -9,6 +10,7 @@ import {
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { JmapRequest, JmapSetResponse } from '../types/jmap';
 import { Options } from '../types/options';
+import { ACTIONS, handleAxiosError } from '../util/errorUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 /**
@@ -60,13 +62,21 @@ export const update = async (
       ]
     ]
   };
-  updateLog('update() body: %o', JSON.stringify(body));
-  const response = await axios.post(apiUrl, body, {
-    headers
-  });
-  updateLog('update() response: %o', JSON.stringify(response.data));
-  const data: JmapSetResponse = await response.data;
-  return data.methodResponses[0][1].updated;
+  updateDebugLogger('update() body: %o', JSON.stringify(body));
+  try {
+    const response = await axios.post(apiUrl, body, {
+      headers
+    });
+    updateDebugLogger('update() response: %o', JSON.stringify(response.data));
+    const data: JmapSetResponse = await response.data;
+    return data.methodResponses[0][1].updated;
+  } catch (error) {
+    return handleAxiosError(
+      error as AxiosError,
+      updateErrorLogger,
+      ACTIONS.UPDATE
+    );
+  }
 };
 
 /**

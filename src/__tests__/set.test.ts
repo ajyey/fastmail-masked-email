@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import axios from '../__mocks__/axios';
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -9,11 +8,7 @@ import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { disable, enable, remove, update } from '../lib/set';
 import * as set from '../lib/set';
 import { Options } from '../types/options';
-
-jest.mock('axios');
-
 describe('update', () => {
-  const mockedAxios = axios as jest.Mocked<typeof axios>;
   const updateSpy = jest.spyOn(set, 'update');
 
   beforeEach(() => {
@@ -58,7 +53,7 @@ describe('update', () => {
         state: 'disabled'
       };
 
-      mockedAxios.post.mockResolvedValue({
+      axios.post.mockResolvedValue({
         data: {
           methodResponses: [
             [MASKED_EMAIL_CALLS.set, { updated: { '1': null } }]
@@ -68,7 +63,7 @@ describe('update', () => {
 
       const result = await update('1', session, updateOptions);
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
+      expect(axios.post).toHaveBeenCalledWith(
         'https://api.example.com',
         {
           using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],

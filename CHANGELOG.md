@@ -1,3 +1,42 @@
+# [1.3.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.4...v1.3.0-beta.5) (2023-05-23)
+
+
+### Reverts
+
+* Revert "fix: errors occurring due to axios being mocked" ([fa4c66d](https://github.com/ajyey/fastmail-masked-email/commit/fa4c66d02ecbc7b609220acede8456d93b2fc385))
+
+# [1.3.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.3...v1.3.0-beta.4) (2023-05-23)
+
+
+### Bug Fixes
+
+* errors occurring due to axios being mocked ([6d158ca](https://github.com/ajyey/fastmail-masked-email/commit/6d158ca858cfecbd7c70cdc9085fcb514dce02ac))
+
+# [1.3.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2023-05-23)
+
+
+### Bug Fixes
+
+* entrypoint in package.json ([6cf5f5b](https://github.com/ajyey/fastmail-masked-email/commit/6cf5f5be63f6ebb1e8497ee162676d178b3976ed))
+
+# [1.3.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.1...v1.3.0-beta.2) (2023-05-23)
+
+
+### Features
+
+* **errors:** add util function for handling axios errors ([c560d4c](https://github.com/ajyey/fastmail-masked-email/commit/c560d4c9da169c815358cb7dfa9a1d9638ec203b))
+
+# [1.3.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.4-beta.2...v1.3.0-beta.1) (2023-05-23)
+
+
+### Features
+
+* **create:** add better axios error handling for creating masked emails ([35782b3](https://github.com/ajyey/fastmail-masked-email/commit/35782b39612300f52523228ddc95ccbd2ca3045c))
+
+## [1.2.4-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.4-beta.1...v1.2.4-beta.2) (2023-05-23)
+
+## [1.2.4-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.3...v1.2.4-beta.1) (2023-05-23)
+
 ## [1.2.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.2...v1.2.3) (2023-05-23)
 
 ## [1.2.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.1...v1.2.2) (2023-05-21)

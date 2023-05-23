@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import debug from 'debug';
-const createLogger = debug('create');
+const debugLogger = debug('create:debug');
+const errorLogger = debug('create:error');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -10,7 +11,10 @@ import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { JmapRequest, JmapSetResponse } from '../types/jmap';
 import { MaskedEmail, MaskedEmailState } from '../types/maskedEmail';
 import { Options } from '../types/options';
+import { ACTIONS, handleAxiosError } from '../util/errorUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
+
+const DEFAULT_MASKED_EMAIL_STATE: MaskedEmailState = 'enabled';
 
 /**
  * Creates a new masked email address
@@ -27,8 +31,8 @@ export const create = async (
   }
   const { apiUrl, accountId, authToken } = parseSession(session);
   const headers = buildHeaders(authToken);
-  const state: MaskedEmailState = options.state || 'enabled';
-  const body: JmapRequest = {
+  const state: MaskedEmailState = options.state || DEFAULT_MASKED_EMAIL_STATE;
+  const requestBody: JmapRequest = {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [
       [
@@ -46,16 +50,19 @@ export const create = async (
       ]
     ]
   };
-  createLogger('create() body: %o', JSON.stringify(body));
+  debugLogger('create() request body: %o', JSON.stringify(requestBody));
+  try {
+    const response = await axios.post(apiUrl, requestBody, {
+      headers
+    });
 
-  const response = await axios.post(apiUrl, body, {
-    headers
-  });
-
-  createLogger('create() response: %o', JSON.stringify(response.data));
-  const data: JmapSetResponse = response.data;
-  return {
-    ...data.methodResponses[0][1].created['0'],
-    state
-  };
+    debugLogger('create() response: %o', JSON.stringify(response.data));
+    const { data }: { data: JmapSetResponse } = response;
+    return {
+      ...data.methodResponses[0][1].created['0'],
+      state
+    };
+  } catch (error) {
+    return handleAxiosError(error as AxiosError, errorLogger, ACTIONS.CREATE);
+  }
 };

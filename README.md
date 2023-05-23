@@ -6,6 +6,20 @@
 <h3 align="center">Create, delete, and modify <a href="https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email">fastmail masked emails</a></h3>
 
 <p align="center">
+  <a href="https://open.vscode.dev/ajyey/fastmail-masked-email">
+    <img alt="open in vs code" src="https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc">
+  </a>
+  <a href="https://github.com/semantic-release/semantic-release/tree/master">
+    <img alt="semantic-release: angular" src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release">
+  </a>
+  <a href="https://www.npmjs.com/package/fastmail-masked-email">
+    <img alt="npm latest version" src="https://img.shields.io/npm/v/fastmail-masked-email">
+  </a>
+  <a href="https://www.npmjs.com/package/fastmail-masked-email">
+    <img alt="npm beta version" src="https://img.shields.io/npm/v/fastmail-masked-email/beta.svg">
+  </a>
+</p>
+<p align="center">
   <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/test.yml">
     <img alt="test state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/test.yml/badge.svg?branch=master">
   </a>
@@ -20,17 +34,6 @@
   </a>
   <a href="https://github.com/ajyey/fastmail-masked-email/blob/master/LICENSE">
     <img alt="license" src="https://img.shields.io/github/license/ajyey/fastmail-masked-email">
-  </a>
-</p>
-<p align="center">
-  <a href="https://github.com/semantic-release/semantic-release/tree/master">
-    <img alt="semantic-release: angular" src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release">
-  </a>
-  <a href="https://www.npmjs.com/package/fastmail-masked-email">
-    <img alt="npm latest version" src="https://img.shields.io/npm/v/fastmail-masked-email">
-  </a>
-  <a href="https://www.npmjs.com/package/fastmail-masked-email">
-    <img alt="npm beta version" src="https://img.shields.io/npm/v/fastmail-masked-email/beta.svg">
   </a>
 </p>
 <p align="center">
