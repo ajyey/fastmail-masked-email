@@ -1,3 +1,10 @@
+# [1.3.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2023-05-23)
+
+
+### Bug Fixes
+
+* entrypoint in package.json ([6cf5f5b](https://github.com/ajyey/fastmail-masked-email/commit/6cf5f5be63f6ebb1e8497ee162676d178b3976ed))
+
 # [1.3.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.1...v1.3.0-beta.2) (2023-05-23)
 
 
