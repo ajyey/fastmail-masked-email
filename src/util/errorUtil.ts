@@ -2,9 +2,9 @@ import { AxiosError } from 'axios';
 
 /**
  * Handles an axios error and returns a rejected promise with a formatted error message based on the type of error and action attempted.
- * @param error The axios error
- * @param logger The logger to use for logging
- * @param action The action that was being performed when the error occurred
+ * @param error - The axios error
+ * @param logger - The logger to use for logging
+ * @param action - The action that was being performed when the error occurred
  */
 export const handleAxiosError = (
   error: AxiosError,
