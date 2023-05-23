@@ -19,9 +19,26 @@ describe('create', () => {
   const mockedBuildHeaders = buildHeaders as jest.MockedFunction<
     typeof buildHeaders
   >;
-
+  let session: any;
   beforeEach(() => {
     jest.resetAllMocks();
+    mockedParseSession.mockReturnValue({
+      accountId: 'account1',
+      apiUrl: 'https://api.example.com',
+      authToken: 'auth-token-123'
+    });
+
+    mockedBuildHeaders.mockReturnValue({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer auth-token-123'
+    });
+    session = {
+      primaryAccounts: {
+        [JMAP.CORE]: 'account1'
+      },
+      apiUrl: 'https://api.example.com',
+      fmAuthToken: 'auth-token-123'
+    };
   });
 
   it('should reject with InvalidArgumentError if no session is provided', async () => {
@@ -29,14 +46,6 @@ describe('create', () => {
   });
 
   it('should create a new masked email address enabled by default', async () => {
-    const session = {
-      primaryAccounts: {
-        [JMAP.CORE]: 'account1'
-      },
-      apiUrl: 'https://api.example.com',
-      fmAuthToken: 'auth-token-123'
-    };
-
     const options: Options = {};
 
     const expectedRequest: JmapRequest = {
@@ -56,17 +65,6 @@ describe('create', () => {
         ]
       ]
     };
-
-    mockedParseSession.mockReturnValue({
-      accountId: 'account1',
-      apiUrl: 'https://api.example.com',
-      authToken: 'auth-token-123'
-    });
-
-    mockedBuildHeaders.mockReturnValue({
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer auth-token-123'
-    });
 
     axios.post.mockResolvedValue({
       data: {
@@ -104,5 +102,51 @@ describe('create', () => {
       id: 'masked-email-id',
       state: 'enabled'
     });
+  });
+
+  it('should reject with an Error when Axios receives an error response', async () => {
+    const options: Options = {};
+    const errorResponse = {
+      status: 500,
+      statusText: 'Internal Server Error',
+      data: 'Server error occurred'
+    };
+
+    axios.post.mockRejectedValue({
+      response: errorResponse
+    });
+
+    await expect(create(session, options)).rejects.toThrow(
+      `Create request failed with status code ${errorResponse.status}: ${errorResponse.statusText}. ${errorResponse.data}`
+    );
+  });
+
+  it('should reject with an Error when Axios makes a request but receives no response', async () => {
+    const options: Options = {};
+
+    const errorMessage = 'Network Error';
+
+    axios.post.mockRejectedValue({
+      request: {},
+      message: errorMessage
+    });
+
+    await expect(create(session, options)).rejects.toThrow(
+      `Create request was made, but no response was received. Error message: ${errorMessage}`
+    );
+  });
+
+  it('should reject with an Error when another error occurs during the request', async () => {
+    const options: Options = {};
+
+    const errorMessage = 'Unexpected Error';
+
+    axios.post.mockRejectedValue({
+      message: errorMessage
+    });
+
+    await expect(create(session, options)).rejects.toThrow(
+      `An error occurred while creating a masked email. Error message: ${errorMessage}`
+    );
   });
 });
