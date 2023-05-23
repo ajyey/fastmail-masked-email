@@ -1,3 +1,10 @@
+# [1.3.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.4-beta.2...v1.3.0-beta.1) (2023-05-23)
+
+
+### Features
+
+* **create:** add better axios error handling for creating masked emails ([35782b3](https://github.com/ajyey/fastmail-masked-email/commit/35782b39612300f52523228ddc95ccbd2ca3045c))
+
 ## [1.2.4-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.4-beta.1...v1.2.4-beta.2) (2023-05-23)
 
 ## [1.2.4-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.3...v1.2.4-beta.1) (2023-05-23)
