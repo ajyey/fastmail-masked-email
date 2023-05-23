@@ -13,12 +13,10 @@ export const getSession = async (
   token?: string,
   hostname?: string
 ): Promise<any> => {
-  if (!hostname) {
-    hostname = process.env.JMAP_HOSTNAME || API_HOSTNAME;
-  }
-  if (!token) {
-    token = process.env.JMAP_TOKEN;
-  }
+  hostname = hostname || process.env.JMAP_HOSTNAME || API_HOSTNAME;
+
+  token = token || process.env.JMAP_TOKEN;
+
   if (!token) {
     return Promise.reject(
       new Error(
@@ -26,6 +24,7 @@ export const getSession = async (
       )
     );
   }
+
   const authUrl = `https://${hostname}/jmap/session`;
   const headers = {
     'Content-Type': 'application/json',
