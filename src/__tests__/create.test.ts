@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import axios from '../__mocks__/axios';
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -11,11 +10,9 @@ import { JmapRequest } from '../types/jmap';
 import { Options } from '../types/options';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
-jest.mock('axios');
 jest.mock('../util/sessionUtil');
 
 describe('create', () => {
-  const mockedAxios = axios as jest.Mocked<typeof axios>;
   const mockedParseSession = parseSession as jest.MockedFunction<
     typeof parseSession
   >;
@@ -69,18 +66,7 @@ describe('create', () => {
       ]
     };
 
-    mockedParseSession.mockReturnValue({
-      accountId: 'account1',
-      apiUrl: 'https://api.example.com',
-      authToken: 'auth-token-123'
-    });
-
-    mockedBuildHeaders.mockReturnValue({
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer auth-token-123'
-    });
-
-    mockedAxios.post.mockResolvedValue({
+    axios.post.mockResolvedValue({
       data: {
         methodResponses: [
           [
@@ -101,7 +87,7 @@ describe('create', () => {
 
     expect(mockedParseSession).toHaveBeenCalledWith(session);
     expect(mockedBuildHeaders).toHaveBeenCalledWith('auth-token-123');
-    expect(mockedAxios.post).toHaveBeenCalledWith(
+    expect(axios.post).toHaveBeenCalledWith(
       'https://api.example.com',
       expectedRequest,
       {
@@ -126,7 +112,7 @@ describe('create', () => {
       data: 'Server error occurred'
     };
 
-    (axios.post as jest.Mock).mockRejectedValue({
+    axios.post.mockRejectedValue({
       response: errorResponse
     });
 
@@ -140,7 +126,7 @@ describe('create', () => {
 
     const errorMessage = 'Network Error';
 
-    (axios.post as jest.Mock).mockRejectedValue({
+    axios.post.mockRejectedValue({
       request: {},
       message: errorMessage
     });
@@ -155,7 +141,7 @@ describe('create', () => {
 
     const errorMessage = 'Unexpected Error';
 
-    (axios.post as jest.Mock).mockRejectedValue({
+    axios.post.mockRejectedValue({
       message: errorMessage
     });
 

@@ -1,11 +1,8 @@
-import axios from 'axios';
-
 import { sessionFixture } from '../__fixtures__/session.fixture';
+import axios from '../__mocks__/axios';
 import { API_HOSTNAME } from '../constants';
 import { getSession } from '../lib/session';
 import { Session } from '../types/session';
-
-jest.mock('axios');
 
 describe('getSession', () => {
   const mockAuthToken = 'mockAuthToken';
@@ -19,7 +16,7 @@ describe('getSession', () => {
     jest.clearAllMocks();
   });
   it('should successfully get session with provided token and default hostname', async () => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: mockSessionResponse });
+    axios.get.mockResolvedValue({ data: mockSessionResponse });
 
     const result = await getSession(mockAuthToken);
     expect(axios.get).toHaveBeenCalledWith(
@@ -35,7 +32,7 @@ describe('getSession', () => {
   });
 
   it('should successfully get session with provided token and hostname', async () => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: mockSessionResponse });
+    axios.get.mockResolvedValue({ data: mockSessionResponse });
 
     const result = await getSession(mockAuthToken, mockHostname);
     expect(axios.get).toHaveBeenCalledWith(
@@ -63,7 +60,7 @@ describe('getSession', () => {
       data: 'Invalid token'
     };
 
-    (axios.get as jest.Mock).mockRejectedValue({
+    axios.get.mockRejectedValue({
       response: mockErrorResponse
     });
 
@@ -78,7 +75,7 @@ describe('getSession', () => {
       method: 'GET'
     };
 
-    (axios.get as jest.Mock).mockRejectedValue({
+    axios.get.mockRejectedValue({
       request: mockErrorRequest,
       message: 'Network error'
     });
@@ -89,7 +86,7 @@ describe('getSession', () => {
   });
 
   it('should reject with an error if an error occurred while fetching the JMAP session without request and response', async () => {
-    (axios.get as jest.Mock).mockRejectedValue({
+    axios.get.mockRejectedValue({
       message: 'Unexpected error'
     });
 
