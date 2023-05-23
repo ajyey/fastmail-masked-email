@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import axios from '../__mocks__/axios';
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -11,11 +10,9 @@ import { JmapRequest } from '../types/jmap';
 import { Options } from '../types/options';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
-jest.mock('axios');
 jest.mock('../util/sessionUtil');
 
 describe('create', () => {
-  const mockedAxios = axios as jest.Mocked<typeof axios>;
   const mockedParseSession = parseSession as jest.MockedFunction<
     typeof parseSession
   >;
@@ -71,7 +68,7 @@ describe('create', () => {
       Authorization: 'Bearer auth-token-123'
     });
 
-    mockedAxios.post.mockResolvedValue({
+    axios.post.mockResolvedValue({
       data: {
         methodResponses: [
           [
@@ -92,7 +89,7 @@ describe('create', () => {
 
     expect(mockedParseSession).toHaveBeenCalledWith(session);
     expect(mockedBuildHeaders).toHaveBeenCalledWith('auth-token-123');
-    expect(mockedAxios.post).toHaveBeenCalledWith(
+    expect(axios.post).toHaveBeenCalledWith(
       'https://api.example.com',
       expectedRequest,
       {

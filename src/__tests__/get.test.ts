@@ -1,16 +1,12 @@
-import axios from 'axios';
-
 import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture';
+import axios from '../__mocks__/axios';
 import { JMAP, MASKED_EMAIL_CALLS } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import * as get from '../lib/get';
 import { getByAddress, getById, list } from '../lib/get';
 import { MaskedEmail } from '../types/maskedEmail';
 
-jest.mock('axios');
-
 describe('get', () => {
-  const mockedAxios = axios as jest.Mocked<typeof axios>;
   const listSpy = jest.spyOn(get, 'list');
 
   beforeEach(() => {
@@ -42,7 +38,7 @@ describe('get', () => {
     });
 
     it('should list all masked emails', async () => {
-      mockedAxios.post.mockResolvedValue({
+      axios.post.mockResolvedValue({
         data: {
           methodResponses: [[MASKED_EMAIL_CALLS.get, { list: maskedEmails }]]
         }
@@ -68,7 +64,7 @@ describe('get', () => {
     });
 
     it('should get a masked email by id', async () => {
-      mockedAxios.post.mockResolvedValue({
+      axios.post.mockResolvedValue({
         data: {
           methodResponses: [
             [MASKED_EMAIL_CALLS.get, { list: [maskedEmails[0]] }]
@@ -82,7 +78,7 @@ describe('get', () => {
     });
 
     it('should reject with an error if masked email not found', async () => {
-      mockedAxios.post.mockResolvedValue({
+      axios.post.mockResolvedValue({
         data: {
           methodResponses: [
             [MASKED_EMAIL_CALLS.get, { notFound: ['masked-email-3'], list: [] }]

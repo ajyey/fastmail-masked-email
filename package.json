@@ -98,6 +98,8 @@
     "!dist/__tests__/**/*",
     "!dist/__fixtures__",
     "!dist/__fixtures__/**/*",
+    "!dist/__mocks__",
+    "!dist/__mocks__/**/*",
     "!dist/**/*.map",
     "!dist/**/*.test.js",
     "!dist/**/*.test.js.map",
