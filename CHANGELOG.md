@@ -1,3 +1,10 @@
+# [1.3.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.3...v1.3.0-beta.4) (2023-05-23)
+
+
+### Bug Fixes
+
+* errors occurring due to axios being mocked ([6d158ca](https://github.com/ajyey/fastmail-masked-email/commit/6d158ca858cfecbd7c70cdc9085fcb514dce02ac))
+
 # [1.3.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2023-05-23)
 
 
