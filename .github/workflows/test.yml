@@ -1,3 +1,4 @@
+# This workflow will do a clean install of node dependencies, run tests across different versions of node, and build it
 name: test
 
 on:
@@ -20,3 +21,5 @@ jobs:
       run: npm ci
     - name: Running linting and tests
       run: npm run test
+    - name: Building package
+      run: npm run build
