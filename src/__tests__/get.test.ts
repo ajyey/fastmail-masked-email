@@ -3,7 +3,7 @@ import axios from '../__mocks__/axios';
 import { JMAP, MASKED_EMAIL_CALLS } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import * as get from '../lib/get';
-import { getAllEmails, getByAddress, getEmailById } from '../lib/get';
+import { getAllEmails, getEmailByAddress, getEmailById } from '../lib/get';
 import { MaskedEmail } from '../types/maskedEmail';
 
 describe('get', () => {
@@ -97,7 +97,7 @@ describe('get', () => {
   describe('getByAddress', () => {
     it('should get a masked email by address', async () => {
       listSpy.mockResolvedValue(maskedEmails);
-      const result = await getByAddress('testEmail@test.com', session);
+      const result = await getEmailByAddress('testEmail@test.com', session);
 
       expect(result).toEqual([maskedEmails[0]]);
     });

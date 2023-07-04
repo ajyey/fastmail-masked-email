@@ -113,7 +113,7 @@ export const getEmailById = async (
  * @param session - The session object
  * @returns  A {@link MaskedEmail} object
  */
-export const getByAddress = async (
+export const getEmailByAddress = async (
   address: string,
   session: any
 ): Promise<MaskedEmail[] | []> => {
