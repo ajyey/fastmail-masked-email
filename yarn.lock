@@ -7273,9 +7273,9 @@ supports-color@^8.0.0:
     has-flag "^4.0.0"
 
 supports-color@^9.3.1:
-  version "9.3.1"
-  resolved "https://registry.npmjs.org/supports-color/-/supports-color-9.3.1.tgz"
-  integrity sha512-knBY82pjmnIzK3NifMo3RxEIRD9E0kIzV4BKcyTZ9+9kWgLMxd4PrsTSMoFQUabgRBbF8KOLRDCyKgNV+iK44Q==
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-9.4.0.tgz#17bfcf686288f531db3dea3215510621ccb55954"
+  integrity sha512-VL+lNrEoIXww1coLPOmiEmK/0sGigko5COxI09KzHc2VJXJsQ37UaQ+8quuxjDeA7+KnLGTWRyOXSLLR2Wb4jw==
 
 supports-hyperlinks@^2.3.0:
   version "2.3.0"
