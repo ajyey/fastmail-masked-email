@@ -1,3 +1,15 @@
+## [1.3.2-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.3...v1.3.2-beta.4) (2023-07-04)
+
+
+### Code Refactoring
+
+* **getByAddress:** rename getByAddress function ([731c7e1](https://github.com/ajyey/fastmail-masked-email/commit/731c7e18f48ecf1844b26526faab75f3b9010b1e))
+
+
+### BREAKING CHANGES
+
+* **getByAddress:** renames getByAddress to getEmailByAddress
+
 ## [1.3.2-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.2...v1.3.2-beta.3) (2023-07-04)
 
 
