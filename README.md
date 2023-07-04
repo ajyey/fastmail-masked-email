@@ -156,19 +156,19 @@ There are three masked email properties that can be updated:
 - `state`
 - `description`
 
-To update a masked email, call the `update` method.
-The `update` method requires the `id` of the masked email to update, the `session` object, and an  `options` object.
+To update a masked email, call the `updateEmail` method.
+The `updateEmail` method requires the `id` of the masked email to updateEmail, the `session` object, and an  `options` object.
 
 The `options` object can contain any of the above three properties, but MUST contain at least one of them.
-`update` returns a rejected promise if no properties are passed into the options object.
+`updateEmail` returns a rejected promise if no properties are passed into the options object.
 
 
 ```typescript
-import { update, getSession } from 'fastmail-masked-email';
+import { updateEmail, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
-await update('my-masked-email-id', session, {
+await updateEmail('my-masked-email-id', session, {
 	forDomain: 'example.com',
 	description: 'My new masked email!',
 	state: 'disabled'

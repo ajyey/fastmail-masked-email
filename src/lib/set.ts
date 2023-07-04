@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import debug from 'debug';
-const updateDebugLogger = debug('update:debug');
-const updateErrorLogger = debug('update:error');
+const updateDebugLogger = debug('updateEmail:debug');
+const updateErrorLogger = debug('updateEmail:error');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -20,7 +20,7 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  * @param options - The {@link Options} containing the fields to update
  * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link Options} are empty
  */
-export const update = async (
+export const updateEmail = async (
   id: string | undefined,
   session: any,
   options: Options
@@ -62,12 +62,15 @@ export const update = async (
       ]
     ]
   };
-  updateDebugLogger('update() body: %o', JSON.stringify(body));
+  updateDebugLogger('updateEmail() body: %o', JSON.stringify(body));
   try {
     const response = await axios.post(apiUrl, body, {
       headers
     });
-    updateDebugLogger('update() response: %o', JSON.stringify(response.data));
+    updateDebugLogger(
+      'updateEmail() response: %o',
+      JSON.stringify(response.data)
+    );
     const data: JmapSetResponse = await response.data;
     return data.methodResponses[0][1].updated;
   } catch (error) {
@@ -88,7 +91,7 @@ export const remove = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return await update(id, session, { state: 'deleted' });
+  return await updateEmail(id, session, { state: 'deleted' });
 };
 
 /**
@@ -100,7 +103,7 @@ export const disable = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return await update(id, session, { state: 'disabled' });
+  return await updateEmail(id, session, { state: 'disabled' });
 };
 
 /**
@@ -112,5 +115,5 @@ export const enable = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return await update(id, session, { state: 'enabled' });
+  return await updateEmail(id, session, { state: 'enabled' });
 };

@@ -5,11 +5,11 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
-import { disable, enable, remove, update } from '../lib/set';
+import { disable, enable, remove, updateEmail } from '../lib/set';
 import * as set from '../lib/set';
 import { Options } from '../types/options';
 describe('update', () => {
-  const updateSpy = jest.spyOn(set, 'update');
+  const updateSpy = jest.spyOn(set, 'updateEmail');
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -26,24 +26,24 @@ describe('update', () => {
   describe('update', () => {
     it('should reject with InvalidArgumentError if no session is provided', async () => {
       await expect(
-        update('1', undefined, { description: 'test' })
+        updateEmail('1', undefined, { description: 'test' })
       ).rejects.toThrow(InvalidArgumentError);
     });
 
     it('should reject with InvalidArgumentError if no id is provided', async () => {
       await expect(
-        update(undefined, session, { description: 'test' })
+        updateEmail(undefined, session, { description: 'test' })
       ).rejects.toThrow(InvalidArgumentError);
     });
 
     it('should reject with InvalidArgumentError if no options are provided', async () => {
-      await expect(update('1', session, {})).rejects.toThrow(
+      await expect(updateEmail('1', session, {})).rejects.toThrow(
         InvalidArgumentError
       );
     });
     it('should reject with InvalidArgumentError if invalid options are provided', async () => {
       await expect(
-        update('1', session, { invalid: 'invalid' } as Options)
+        updateEmail('1', session, { invalid: 'invalid' } as Options)
       ).rejects.toThrow(InvalidArgumentError);
     });
 
@@ -61,7 +61,7 @@ describe('update', () => {
         }
       });
 
-      const result = await update('1', session, updateOptions);
+      const result = await updateEmail('1', session, updateOptions);
 
       expect(axios.post).toHaveBeenCalledWith(
         'https://api.example.com',
