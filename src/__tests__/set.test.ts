@@ -159,7 +159,7 @@ describe('update', () => {
       await expect(
         permanentlyDeleteEmail('masked-81873752', session)
       ).rejects.toThrow(
-        'Failed to delete email: Only masked emails that have not received email can be destroyed'
+        'Only masked emails that have not received email can be destroyed'
       );
     });
   });

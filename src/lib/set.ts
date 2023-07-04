@@ -158,9 +158,7 @@ export const permanentlyDeleteEmail = async (
         'permanentlyDeleteEmail() error: %o',
         JSON.stringify(notDestroyedObj)
       );
-      return Promise.reject(
-        new Error(`Failed to delete email: ${notDestroyedObj.description}`)
-      );
+      return Promise.reject(new Error(notDestroyedObj.description));
     } else {
       return data.methodResponses[0][1].destroyed;
     }
