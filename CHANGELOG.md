@@ -1,3 +1,10 @@
+# [2.0.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2023-07-04)
+
+
+### Features
+
+* add function for permanently deleting a masked email ([b7df294](https://github.com/ajyey/fastmail-masked-email/commit/b7df2940d72c7fa756169803bf6976dc50a98a8e))
+
 # [2.0.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2023-07-04)
 
 
