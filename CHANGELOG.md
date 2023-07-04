@@ -1,3 +1,15 @@
+## [1.3.2-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.2...v1.3.2-beta.3) (2023-07-04)
+
+
+### Code Refactoring
+
+* **create:** renames create function ([324a7af](https://github.com/ajyey/fastmail-masked-email/commit/324a7af8d72173a5417bc1e9d5a6a655500bfd29))
+
+
+### BREAKING CHANGES
+
+* **create:** renames the create function to createEmail
+
 ## [1.3.2-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.1...v1.3.2-beta.2) (2023-07-04)
 
 
