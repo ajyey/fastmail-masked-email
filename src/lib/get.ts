@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import debug from 'debug';
-const listDebugLogger = debug('list:debug');
-const listErrorLogger = debug('list:error');
+const listDebugLogger = debug('getAllEmails:debug');
+const listErrorLogger = debug('getAllEmails:error');
 const getByIdDebugLogger = debug('getById:debug');
 const getByIdErrorLogger = debug('getById:error');
 
@@ -22,9 +22,9 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  * Retrieves all masked emails
  * @param session - The session object
  * @throws {@link InvalidArgumentError} if no session is provided
- * @returns A list of {@link MaskedEmail} objects
+ * @returns A list of all {@link MaskedEmail} objects
  */
-export const list = async (session: any): Promise<MaskedEmail[]> => {
+export const getAllEmails = async (session: any): Promise<MaskedEmail[]> => {
   if (!session) {
     return Promise.reject(new InvalidArgumentError('No session provided'));
   }
@@ -34,12 +34,15 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
   };
-  listDebugLogger('list() body: %o', JSON.stringify(body));
+  listDebugLogger('getAllEmails() body: %o', JSON.stringify(body));
   try {
     const response: AxiosResponse = await axios.post(apiUrl, body, {
       headers
     });
-    listDebugLogger('list() response: %o', JSON.stringify(response.data));
+    listDebugLogger(
+      'getAllEmails() response: %o',
+      JSON.stringify(response.data)
+    );
     const jmapResponse: JmapGetResponse = response.data;
     const methodResponse: GetResponseData = jmapResponse.methodResponses[0][1];
     return methodResponse.list;
@@ -112,7 +115,7 @@ export const getByAddress = async (
   session: any
 ): Promise<MaskedEmail[] | []> => {
   try {
-    const maskedEmails: MaskedEmail[] = await list(session);
+    const maskedEmails: MaskedEmail[] = await getAllEmails(session);
     return filterByAddress(address, maskedEmails);
   } catch (error) {
     return Promise.reject(error);

@@ -90,8 +90,8 @@ session = await getSession();
 session = await getSession(token);
 ```
 
-## Listing all your Masked Emails
-Once you have a session, you can use it to list **all** of the masked emails that are currently configured for your account.
+## Getting all of your Masked Emails
+Once you have a session, you can use it to retrieve a list of **all** of the masked emails that are currently configured for your account.
 This includes `enabled`, `disabled`, `pending` and `deleted` masked emails.
 
 All the masked emails are returned in an array of `MaskedEmail` objects.
@@ -99,11 +99,11 @@ All methods require a `session` object to be passed in as the first argument. Th
 Fastmail API.
 
 ```typescript
-import { list, getSession } from 'fastmail-masked-email';
+import { getAllEmails, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
-const myMaskedEmails = await list(session);
+const myMaskedEmails = await getAllEmails(session);
 
 console.log(myMaskedEmails);
 ```
@@ -222,10 +222,10 @@ await remove('my-masked-email-id', session);
   - In the code examples shown above, we are using `await` to handle asynchronous operations. To use `await`, you must be inside an `async` function.
 	If you're using these examples in your own code, make sure to wrap them in an `async` function. Here's an example of how you can do that:
   	```typescript
-     import { getSession, list } from 'fastmail-masked-email';
+     import { getSession, getAllEmails } from 'fastmail-masked-email';
      async function main() {
         const session = await getSession(token, hostname);
-        const myMaskedEmails = await list(session);
+        const myMaskedEmails = await getAllEmails(session);
         console.log(myMaskedEmails);
   	  }
   	  main()

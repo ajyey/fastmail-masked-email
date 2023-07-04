@@ -3,11 +3,11 @@ import axios from '../__mocks__/axios';
 import { JMAP, MASKED_EMAIL_CALLS } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import * as get from '../lib/get';
-import { getByAddress, getById, list } from '../lib/get';
+import { getAllEmails, getByAddress, getById } from '../lib/get';
 import { MaskedEmail } from '../types/maskedEmail';
 
 describe('get', () => {
-  const listSpy = jest.spyOn(get, 'list');
+  const listSpy = jest.spyOn(get, 'getAllEmails');
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -34,17 +34,19 @@ describe('get', () => {
 
   describe('list', () => {
     it('should reject with InvalidArgumentError if no session is provided', async () => {
-      await expect(list(undefined)).rejects.toThrow(InvalidArgumentError);
+      await expect(getAllEmails(undefined)).rejects.toThrow(
+        InvalidArgumentError
+      );
     });
 
-    it('should list all masked emails', async () => {
+    it('should get all masked emails', async () => {
       axios.post.mockResolvedValue({
         data: {
           methodResponses: [[MASKED_EMAIL_CALLS.get, { list: maskedEmails }]]
         }
       });
 
-      const result = await list(session);
+      const result = await getAllEmails(session);
 
       expect(result).toEqual(maskedEmails);
     });
