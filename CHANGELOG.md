@@ -1,3 +1,34 @@
+# [2.0.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v2.0.0) (2023-07-04)
+
+
+### Code Refactoring
+
+* rename enable function to enableEmail ([b46b77c](https://github.com/ajyey/fastmail-masked-email/commit/b46b77cab4cb3beaee6bcba40c28546185c92c5e))
+* **getByAddress:** rename getByAddress function ([731c7e1](https://github.com/ajyey/fastmail-masked-email/commit/731c7e18f48ecf1844b26526faab75f3b9010b1e))
+* **getbyid:** rename getById function ([9ea778a](https://github.com/ajyey/fastmail-masked-email/commit/9ea778a07ca837a9fa9190b04e11369dc8d06f67))
+* **create:** renames create function ([324a7af](https://github.com/ajyey/fastmail-masked-email/commit/324a7af8d72173a5417bc1e9d5a6a655500bfd29))
+* renames disable function to disableEmail ([2e3feba](https://github.com/ajyey/fastmail-masked-email/commit/2e3feba0e3edd40a7afc05e978bd2e2b2118e4d9))
+* renames remove method to deleteEmail ([2ae0df9](https://github.com/ajyey/fastmail-masked-email/commit/2ae0df97e8bda75560612c301ce643453993470c))
+* **list:** renames the list function to getAllEmails ([d4cdbb0](https://github.com/ajyey/fastmail-masked-email/commit/d4cdbb0fb973b0de9dbb51f297208ef3d6f264b0))
+* update function name change ([abaf4cf](https://github.com/ajyey/fastmail-masked-email/commit/abaf4cf08033d0d11792d84c98ab0aa9fca5634c))
+
+
+### Features
+
+* add function for permanently deleting a masked email ([b7df294](https://github.com/ajyey/fastmail-masked-email/commit/b7df2940d72c7fa756169803bf6976dc50a98a8e))
+
+
+### BREAKING CHANGES
+
+* rename enable function to enableEmail
+* renames disable function to disableEmail
+* renames the remove method to deleteEmail
+* changes the update function to be updateEmail
+* **getByAddress:** renames getByAddress to getEmailByAddress
+* **create:** renames the create function to createEmail
+* **getbyid:** renames getById to getEmailById
+* **list:** rename list to getAllEmails
+
 # [2.0.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2023-07-04)
 
 
