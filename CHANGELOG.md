@@ -1,3 +1,15 @@
+# [2.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.4...v2.0.0-beta.1) (2023-07-04)
+
+
+### Code Refactoring
+
+* update function name change ([abaf4cf](https://github.com/ajyey/fastmail-masked-email/commit/abaf4cf08033d0d11792d84c98ab0aa9fca5634c))
+
+
+### BREAKING CHANGES
+
+* changes the update function to be updateEmail
+
 ## [1.3.2-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.3...v1.3.2-beta.4) (2023-07-04)
 
 
