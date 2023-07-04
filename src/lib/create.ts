@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import debug from 'debug';
-const debugLogger = debug('create:debug');
-const errorLogger = debug('create:error');
+const debugLogger = debug('createEmail:debug');
+const errorLogger = debug('createEmail:error');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -22,7 +22,7 @@ const DEFAULT_MASKED_EMAIL_STATE: MaskedEmailState = 'enabled';
  * @param options - The {@link Options} for creating the masked email
  * @throws {@link InvalidArgumentError} if no session is provided
  */
-export const create = async (
+export const createEmail = async (
   session: any,
   options: Options = {}
 ): Promise<MaskedEmail> => {
@@ -50,13 +50,13 @@ export const create = async (
       ]
     ]
   };
-  debugLogger('create() request body: %o', JSON.stringify(requestBody));
+  debugLogger('createEmail() request body: %o', JSON.stringify(requestBody));
   try {
     const response = await axios.post(apiUrl, requestBody, {
       headers
     });
 
-    debugLogger('create() response: %o', JSON.stringify(response.data));
+    debugLogger('createEmail() response: %o', JSON.stringify(response.data));
     const { data }: { data: JmapSetResponse } = response;
     return {
       ...data.methodResponses[0][1].created['0'],

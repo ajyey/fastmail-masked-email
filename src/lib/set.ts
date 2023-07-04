@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import debug from 'debug';
-const updateDebugLogger = debug('update:debug');
-const updateErrorLogger = debug('update:error');
+const updateDebugLogger = debug('updateEmail:debug');
+const updateErrorLogger = debug('updateEmail:error');
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -20,7 +20,7 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  * @param options - The {@link Options} containing the fields to update
  * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link Options} are empty
  */
-export const update = async (
+export const updateEmail = async (
   id: string | undefined,
   session: any,
   options: Options
@@ -62,12 +62,15 @@ export const update = async (
       ]
     ]
   };
-  updateDebugLogger('update() body: %o', JSON.stringify(body));
+  updateDebugLogger('updateEmail() body: %o', JSON.stringify(body));
   try {
     const response = await axios.post(apiUrl, body, {
       headers
     });
-    updateDebugLogger('update() response: %o', JSON.stringify(response.data));
+    updateDebugLogger(
+      'updateEmail() response: %o',
+      JSON.stringify(response.data)
+    );
     const data: JmapSetResponse = await response.data;
     return data.methodResponses[0][1].updated;
   } catch (error) {
@@ -84,11 +87,11 @@ export const update = async (
  * @param id - The id of the masked email to delete
  * @param session - The session object
  */
-export const remove = async (
+export const deleteEmail = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return await update(id, session, { state: 'deleted' });
+  return await updateEmail(id, session, { state: 'deleted' });
 };
 
 /**
@@ -96,11 +99,11 @@ export const remove = async (
  * @param id - The id of the masked email to disable
  * @param session - The session object
  */
-export const disable = async (
+export const disableEmail = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return await update(id, session, { state: 'disabled' });
+  return await updateEmail(id, session, { state: 'disabled' });
 };
 
 /**
@@ -108,9 +111,62 @@ export const disable = async (
  * @param id - The id of the masked email to enable
  * @param session - The session object
  */
-export const enable = async (
+export const enableEmail = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
-  return await update(id, session, { state: 'enabled' });
+  return await updateEmail(id, session, { state: 'enabled' });
+};
+
+/**
+ * Permanently deletes a masked email
+ * @param id - The id of the masked email to permanently delete
+ * @param session - The session object
+ * @throws {@link InvalidArgumentError} if no id is provided or no session is provided
+ */
+export const permanentlyDeleteEmail = async (
+  id: string | undefined,
+  session: any
+): Promise<{ [key: string]: null }> => {
+  if (!session) {
+    return Promise.reject(new InvalidArgumentError('No session provided'));
+  }
+  if (!id) {
+    return Promise.reject(new InvalidArgumentError('No id provided'));
+  }
+
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
+  const body: JmapRequest = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [[MASKED_EMAIL_CALLS.set, { accountId, destroy: [id] }, 'a']]
+  };
+  updateDebugLogger('permanentlyDeleteEmail() body: %o', JSON.stringify(body));
+  try {
+    const response = await axios.post(apiUrl, body, {
+      headers
+    });
+    updateDebugLogger(
+      'permanentlyDeleteEmail() response: %o',
+      JSON.stringify(response.data)
+    );
+    const data: JmapSetResponse = await response.data;
+    // Check if the email was not destroyed
+    if (data.methodResponses[0][1].notDestroyed) {
+      const notDestroyedObj = data.methodResponses[0][1].notDestroyed[id];
+      updateErrorLogger(
+        'permanentlyDeleteEmail() error: %o',
+        JSON.stringify(notDestroyedObj)
+      );
+      return Promise.reject(new Error(notDestroyedObj.description));
+    } else {
+      return data.methodResponses[0][1].destroyed;
+    }
+  } catch (error) {
+    return handleAxiosError(
+      error as AxiosError,
+      updateErrorLogger,
+      ACTIONS.DELETE
+    );
+  }
 };

@@ -90,8 +90,8 @@ session = await getSession();
 session = await getSession(token);
 ```
 
-## Listing all your Masked Emails
-Once you have a session, you can use it to list **all** of the masked emails that are currently configured for your account.
+## Getting all of your Masked Emails
+Once you have a session, you can use it to retrieve a list of **all** of the masked emails that are currently configured for your account.
 This includes `enabled`, `disabled`, `pending` and `deleted` masked emails.
 
 All the masked emails are returned in an array of `MaskedEmail` objects.
@@ -99,11 +99,11 @@ All methods require a `session` object to be passed in as the first argument. Th
 Fastmail API.
 
 ```typescript
-import { list, getSession } from 'fastmail-masked-email';
+import { getAllEmails, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
-const myMaskedEmails = await list(session);
+const myMaskedEmails = await getAllEmails(session);
 
 console.log(myMaskedEmails);
 ```
@@ -112,18 +112,18 @@ console.log(myMaskedEmails);
 If you know the unique ID of a masked email you want to retrieve, you can get it by its ID.
 
 ```typescript
-import { getById, getSession } from 'fastmail-masked-email';
+import { getEmailById, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
-const myMaskedEmail = await getById('my-masked-email-id', session);
+const myMaskedEmail = await getEmailById('my-masked-email-id', session);
 
 console.log(myMaskedEmail);
 ```
 
 
 ## Creating a new Masked Email
-Creating a new masked email is done by calling the `create` method and passing in both the `session` object and an optional `options` parameter.
+Creating a new masked email is done by calling the `createEmail` method and passing in both the `session` object and an optional `options` parameter.
 The `options` parameter is an object that can contain the following properties:
 
 - `state`: `enabled` | `disabled` | `pending` ( Defaults to `enabled` )
@@ -133,21 +133,21 @@ The `options` parameter is an object that can contain the following properties:
 You can optionally pass in a `state` to set the initial state of the masked email. The default state is `enabled`.
 
 ```typescript
-import { create, getSession } from 'fastmail-masked-email';
+import { createEmail, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
 // Create a new masked email for the domain 'example.com'
-const newMaskedEmail = await create(session, { forDomain: 'example.com' });
+const newMaskedEmail = await createEmail(session, { forDomain: 'example.com' });
 
 // Create a new masked email that is disabled by default
-newMaskedEmail = await create(session, { state: 'disabled' });
+newMaskedEmail = await createEmail(session, { state: 'disabled' });
 
 // Create a new masked email with a description
-newMaskedEmail = await create(session, { description: 'My new masked email' });
+newMaskedEmail = await createEmail(session, { description: 'My new masked email' });
 
 // Create a new masked email with all options present
-newMaskedEmail = await create(session, { forDomain: 'example.com', state: 'enabled', description: 'My new masked email' });
+newMaskedEmail = await createEmail(session, { forDomain: 'example.com', state: 'enabled', description: 'My new masked email' });
 ```
 
 ## Updating a Masked Email
@@ -156,19 +156,19 @@ There are three masked email properties that can be updated:
 - `state`
 - `description`
 
-To update a masked email, call the `update` method.
-The `update` method requires the `id` of the masked email to update, the `session` object, and an  `options` object.
+To update a masked email, call the `updateEmail` method.
+The `updateEmail` method requires the `id` of the masked email to updateEmail, the `session` object, and an  `options` object.
 
 The `options` object can contain any of the above three properties, but MUST contain at least one of them.
-`update` returns a rejected promise if no properties are passed into the options object.
+`updateEmail` returns a rejected promise if no properties are passed into the options object.
 
 
 ```typescript
-import { update, getSession } from 'fastmail-masked-email';
+import { updateEmail, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
-await update('my-masked-email-id', session, {
+await updateEmail('my-masked-email-id', session, {
 	forDomain: 'example.com',
 	description: 'My new masked email!',
 	state: 'disabled'
@@ -177,44 +177,56 @@ await update('my-masked-email-id', session, {
 
 
 ### Enabling, Disabling, and Deleting a Masked Email
-Enabling a masked email is done by calling the `enable` method and passing in the masked email `id` and the `session` object.
+Enabling a masked email is done by calling the `enableEmail` method and passing in the masked email `id` and the `session` object.
 An enabled masked email will receive any email sent to it.
 
 #### Enable
 
 ```typescript
-import { enable, getSession } from 'fastmail-masked-email';
+import { enableEmail, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await enable('my-masked-email-id', session);
+await enableEmail('my-masked-email-id', session);
 ```
 
 #### Disable
-Disabling a masked email is done by calling the `disable` method and passing in the masked email `id` and the `session` object.
+Disabling a masked email is done by calling the `disableEmail` method and passing in the masked email `id` and the `session` object.
 When a masked email is disabled, any email sent to it will be sent to the trash.
 
 ```typescript
-import { disable, getSession } from 'fastmail-masked-email';
+import { disableEmail, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await disable('my-masked-email-id', session);
+await disableEmail('my-masked-email-id', session);
 
 ```
 
 
 #### Delete
-A masked email can be deleted by calling the `remove` method and passing in the masked email `id` and the `session` object.
+A masked email can be deleted by calling the `deleteEmail` method and passing in the masked email `id` and the `session` object.
 Any email sent to a deleted masked email will be sent to the trash.
-A deleted email can be restored by `enable`-ing it again at which point it will continue to receive emails.
+A deleted email can be restored by enabling it again at which point it will continue to receive emails.
 
 ```typescript
-import { remove, getSession } from 'fastmail-masked-email';
+import { deleteEmail, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await remove('my-masked-email-id', session);
+await deleteEmail('my-masked-email-id', session);
+```
+
+#### Permenently Delete a Masked Email
+A masked email that has not received any mail yet can be permanently deleted by calling the `permanentlyDeleteEmail` method and passing in the masked email `id` and the `session` object.
+This will permanently delete the masked email and it will no longer be able to be restored.
+
+```typescript
+import { permanentlyDeleteEmail, getSession } from 'fastmail-masked-email';
+
+const session = getSession(token, hostname);
+
+await permanentlyDeleteEmail('my-masked-email-id', session);
 ```
 
 # Notes
@@ -222,10 +234,10 @@ await remove('my-masked-email-id', session);
   - In the code examples shown above, we are using `await` to handle asynchronous operations. To use `await`, you must be inside an `async` function.
 	If you're using these examples in your own code, make sure to wrap them in an `async` function. Here's an example of how you can do that:
   	```typescript
-     import { getSession, list } from 'fastmail-masked-email';
+     import { getSession, getAllEmails } from 'fastmail-masked-email';
      async function main() {
         const session = await getSession(token, hostname);
-        const myMaskedEmails = await list(session);
+        const myMaskedEmails = await getAllEmails(session);
         console.log(myMaskedEmails);
   	  }
   	  main()

@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import debug from 'debug';
-const listDebugLogger = debug('list:debug');
-const listErrorLogger = debug('list:error');
-const getByIdDebugLogger = debug('getById:debug');
-const getByIdErrorLogger = debug('getById:error');
+const listDebugLogger = debug('getAllEmails:debug');
+const listErrorLogger = debug('getAllEmails:error');
+const getByIdDebugLogger = debug('getEmailById:debug');
+const getByIdErrorLogger = debug('getEmailById:error');
 
 import {
   JMAP,
@@ -22,9 +22,9 @@ import { buildHeaders, parseSession } from '../util/sessionUtil';
  * Retrieves all masked emails
  * @param session - The session object
  * @throws {@link InvalidArgumentError} if no session is provided
- * @returns A list of {@link MaskedEmail} objects
+ * @returns A list of all {@link MaskedEmail} objects
  */
-export const list = async (session: any): Promise<MaskedEmail[]> => {
+export const getAllEmails = async (session: any): Promise<MaskedEmail[]> => {
   if (!session) {
     return Promise.reject(new InvalidArgumentError('No session provided'));
   }
@@ -34,12 +34,15 @@ export const list = async (session: any): Promise<MaskedEmail[]> => {
     using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
     methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
   };
-  listDebugLogger('list() body: %o', JSON.stringify(body));
+  listDebugLogger('getAllEmails() body: %o', JSON.stringify(body));
   try {
     const response: AxiosResponse = await axios.post(apiUrl, body, {
       headers
     });
-    listDebugLogger('list() response: %o', JSON.stringify(response.data));
+    listDebugLogger(
+      'getAllEmails() response: %o',
+      JSON.stringify(response.data)
+    );
     const jmapResponse: JmapGetResponse = response.data;
     const methodResponse: GetResponseData = jmapResponse.methodResponses[0][1];
     return methodResponse.list;
@@ -65,7 +68,7 @@ const maskedEmailNotFound = (
  * @returns A {@link MaskedEmail} object
  * @throws {@link InvalidArgumentError} if no session is provided or no id is provided
  */
-export const getById = async (
+export const getEmailById = async (
   id: string | undefined,
   session: any
 ): Promise<MaskedEmail> => {
@@ -85,9 +88,12 @@ export const getById = async (
     const response: AxiosResponse = await axios.post(apiUrl, body, {
       headers
     });
-    getByIdDebugLogger('getById() body: %o', JSON.stringify(body));
+    getByIdDebugLogger('getEmailById() body: %o', JSON.stringify(body));
     const responseData: JmapGetResponse = response.data;
-    getByIdDebugLogger('getById() response %o', JSON.stringify(response.data));
+    getByIdDebugLogger(
+      'getEmailById() response %o',
+      JSON.stringify(response.data)
+    );
     if (maskedEmailNotFound(id, responseData)) {
       return Promise.reject(new Error(`No masked email found with id ${id}`));
     }
@@ -107,12 +113,12 @@ export const getById = async (
  * @param session - The session object
  * @returns  A {@link MaskedEmail} object
  */
-export const getByAddress = async (
+export const getEmailByAddress = async (
   address: string,
   session: any
 ): Promise<MaskedEmail[] | []> => {
   try {
-    const maskedEmails: MaskedEmail[] = await list(session);
+    const maskedEmails: MaskedEmail[] = await getAllEmails(session);
     return filterByAddress(address, maskedEmails);
   } catch (error) {
     return Promise.reject(error);

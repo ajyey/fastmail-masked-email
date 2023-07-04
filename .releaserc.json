@@ -15,11 +15,13 @@
 				"releaseRules": [
 					{"type": "docs", "scope":"readme", "release": "patch"},
 					{"type": "chore", "scope":"deps", "release": "patch"},
-					{"type": "refactor", "release": "patch"},
 					{"type": "refactor", "scope": "types", "release": "minor"},
 					{"type": "feat", "scope":"major", "release": "major"},
 					{"scope": "no-release", "release": false}
-				]
+				],
+				"parserOpts": {
+					"noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+				}
 			}
 		],
 		[

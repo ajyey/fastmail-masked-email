@@ -20,4 +20,7 @@ export interface SetResponseData {
   newState: string;
   updated: { [key: string]: null };
   destroyed: { [key: string]: null };
+  notDestroyed?: {
+    [key: string]: { type: string; subType: string; description: string };
+  };
 }

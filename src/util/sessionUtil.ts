@@ -1,7 +1,7 @@
 import { JMAP } from '../constants';
 
 /**
- * Parses the session object and returns the apiUrl and accountId
+ * Parses the session object and returns the apiUrl, accountId, and auth token attached to the session
  * @param session - The session object
  */
 export const parseSession = (session: any) => {
