@@ -111,7 +111,7 @@ export const disableEmail = async (
  * @param id - The id of the masked email to enable
  * @param session - The session object
  */
-export const enable = async (
+export const enableEmail = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
