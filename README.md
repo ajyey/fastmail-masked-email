@@ -205,16 +205,16 @@ await disable('my-masked-email-id', session);
 
 
 #### Delete
-A masked email can be deleted by calling the `remove` method and passing in the masked email `id` and the `session` object.
+A masked email can be deleted by calling the `deleteEmail` method and passing in the masked email `id` and the `session` object.
 Any email sent to a deleted masked email will be sent to the trash.
 A deleted email can be restored by `enable`-ing it again at which point it will continue to receive emails.
 
 ```typescript
-import { remove, getSession } from 'fastmail-masked-email';
+import { deleteEmail, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await remove('my-masked-email-id', session);
+await deleteEmail('my-masked-email-id', session);
 ```
 
 # Notes

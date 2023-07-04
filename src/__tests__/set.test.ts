@@ -5,7 +5,7 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
-import { disable, enable, remove, updateEmail } from '../lib/set';
+import { deleteEmail, disable, enable, updateEmail } from '../lib/set';
 import * as set from '../lib/set';
 import { Options } from '../types/options';
 describe('update', () => {
@@ -23,7 +23,7 @@ describe('update', () => {
     fmAuthToken: 'auth-token-123'
   };
 
-  describe('update', () => {
+  describe('updateEmail', () => {
     it('should reject with InvalidArgumentError if no session is provided', async () => {
       await expect(
         updateEmail('1', undefined, { description: 'test' })
@@ -87,11 +87,11 @@ describe('update', () => {
     });
   });
 
-  describe('remove', () => {
-    it('should remove a masked email', async () => {
+  describe('deleteEmail', () => {
+    it('should delete a masked email', async () => {
       updateSpy.mockResolvedValue({ '1': null });
 
-      const result = await remove('1', session);
+      const result = await deleteEmail('1', session);
 
       expect(updateSpy).toHaveBeenCalledWith('1', session, {
         state: 'deleted'
@@ -100,7 +100,7 @@ describe('update', () => {
     });
   });
 
-  describe('disable', () => {
+  describe('disableEmail', () => {
     it('should disable a masked email', async () => {
       updateSpy.mockResolvedValue({ '1': null });
 
@@ -113,7 +113,7 @@ describe('update', () => {
     });
   });
 
-  describe('enable', () => {
+  describe('enableEmail', () => {
     it('should enable a masked email', async () => {
       updateSpy.mockResolvedValue({ '1': null });
 

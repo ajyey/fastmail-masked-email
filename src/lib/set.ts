@@ -87,7 +87,7 @@ export const updateEmail = async (
  * @param id - The id of the masked email to delete
  * @param session - The session object
  */
-export const remove = async (
+export const deleteEmail = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {
