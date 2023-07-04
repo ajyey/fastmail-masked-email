@@ -5,7 +5,7 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
-import { create } from '../lib/create';
+import { createEmail } from '../lib/create';
 import { JmapRequest } from '../types/jmap';
 import { Options } from '../types/options';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
@@ -42,10 +42,10 @@ describe('create', () => {
   });
 
   it('should reject with InvalidArgumentError if no session is provided', async () => {
-    await expect(create(undefined)).rejects.toThrow(InvalidArgumentError);
+    await expect(createEmail(undefined)).rejects.toThrow(InvalidArgumentError);
   });
 
-  it('should create a new masked email address enabled by default', async () => {
+  it('should createEmail a new masked email address enabled by default', async () => {
     const options: Options = {};
 
     const expectedRequest: JmapRequest = {
@@ -83,7 +83,7 @@ describe('create', () => {
       }
     });
 
-    const result = await create(session, options);
+    const result = await createEmail(session, options);
 
     expect(mockedParseSession).toHaveBeenCalledWith(session);
     expect(mockedBuildHeaders).toHaveBeenCalledWith('auth-token-123');
@@ -116,7 +116,7 @@ describe('create', () => {
       response: errorResponse
     });
 
-    await expect(create(session, options)).rejects.toThrow(
+    await expect(createEmail(session, options)).rejects.toThrow(
       `creating a masked email failed with status code ${errorResponse.status}: ${errorResponse.statusText}. ${errorResponse.data}`
     );
   });
@@ -131,7 +131,7 @@ describe('create', () => {
       message: errorMessage
     });
 
-    await expect(create(session, options)).rejects.toThrow(
+    await expect(createEmail(session, options)).rejects.toThrow(
       `creating a masked email request was made, but no response was received. Error message: ${errorMessage}`
     );
   });
@@ -145,7 +145,7 @@ describe('create', () => {
       message: errorMessage
     });
 
-    await expect(create(session, options)).rejects.toThrow(
+    await expect(createEmail(session, options)).rejects.toThrow(
       `An error occurred while creating a masked email. Error message: ${errorMessage}`
     );
   });
