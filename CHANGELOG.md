@@ -4,58 +4,18 @@
 ### Code Refactoring
 
 * update function name change ([abaf4cf](https://github.com/ajyey/fastmail-masked-email/commit/abaf4cf08033d0d11792d84c98ab0aa9fca5634c))
-
-
-### BREAKING CHANGES
-
-* changes the update function to be updateEmail
-
-## [1.3.2-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.3...v1.3.2-beta.4) (2023-07-04)
-
-
-### Code Refactoring
-
 * **getByAddress:** rename getByAddress function ([731c7e1](https://github.com/ajyey/fastmail-masked-email/commit/731c7e18f48ecf1844b26526faab75f3b9010b1e))
-
-
-### BREAKING CHANGES
-
-* **getByAddress:** renames getByAddress to getEmailByAddress
-
-## [1.3.2-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.2...v1.3.2-beta.3) (2023-07-04)
-
-
-### Code Refactoring
-
 * **create:** renames create function ([324a7af](https://github.com/ajyey/fastmail-masked-email/commit/324a7af8d72173a5417bc1e9d5a6a655500bfd29))
-
-
-### BREAKING CHANGES
-
-* **create:** renames the create function to createEmail
-
-## [1.3.2-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.1...v1.3.2-beta.2) (2023-07-04)
-
-
-### Code Refactoring
-
 * **getbyid:** rename getById function ([9ea778a](https://github.com/ajyey/fastmail-masked-email/commit/9ea778a07ca837a9fa9190b04e11369dc8d06f67))
-
-
-### BREAKING CHANGES
-
-* **getbyid:** renames getById to getEmailById
-
-## [1.3.2-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v1.3.2-beta.1) (2023-07-04)
-
-
-### Code Refactoring
-
 * **list:** renames the list function to getAllEmails ([d4cdbb0](https://github.com/ajyey/fastmail-masked-email/commit/d4cdbb0fb973b0de9dbb51f297208ef3d6f264b0))
 
 
 ### BREAKING CHANGES
 
+* changes the update function to be updateEmail
+* **getByAddress:** renames getByAddress to getEmailByAddress
+* **create:** renames the create function to createEmail
+* **getbyid:** renames getById to getEmailById
 * **list:** rename list to getAllEmails
 
 ## [1.3.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0...v1.3.1) (2023-05-24)
@@ -168,7 +128,7 @@
 
 ### Features
 
-* remove minor scope release rule ([91b2eb2](https://github.com/ajyey/fastmail-masked-email/commit/91b2eb2a60d2031ccaeeaa28f1b71dd3d7cc6646))
+* deleteEmail minor scope release rule ([91b2eb2](https://github.com/ajyey/fastmail-masked-email/commit/91b2eb2a60d2031ccaeeaa28f1b71dd3d7cc6646))
 
 
 
