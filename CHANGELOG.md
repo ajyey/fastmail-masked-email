@@ -1,3 +1,15 @@
+## [1.3.2-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.1...v1.3.2-beta.2) (2023-07-04)
+
+
+### Code Refactoring
+
+* **getbyid:** rename getById function ([9ea778a](https://github.com/ajyey/fastmail-masked-email/commit/9ea778a07ca837a9fa9190b04e11369dc8d06f67))
+
+
+### BREAKING CHANGES
+
+* **getbyid:** renames getById to getEmailById
+
 ## [1.3.2-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v1.3.2-beta.1) (2023-07-04)
 
 
