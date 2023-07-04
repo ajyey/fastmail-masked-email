@@ -217,6 +217,18 @@ const session = getSession(token, hostname);
 await deleteEmail('my-masked-email-id', session);
 ```
 
+#### Permenently Delete a Masked Email
+A masked email that has not received any mail yet can be permanently deleted by calling the `permanentlyDeleteEmail` method and passing in the masked email `id` and the `session` object.
+This will permanently delete the masked email and it will no longer be able to be restored.
+
+```typescript
+import { permanentlyDeleteEmail, getSession } from 'fastmail-masked-email';
+
+const session = getSession(token, hostname);
+
+await permanentlyDeleteEmail('my-masked-email-id', session);
+```
+
 # Notes
 - Note on using `async/await`:
   - In the code examples shown above, we are using `await` to handle asynchronous operations. To use `await`, you must be inside an `async` function.

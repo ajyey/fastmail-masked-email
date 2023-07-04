@@ -1,3 +1,5 @@
+import { permanentDeleteFailResponseFixture } from '../__fixtures__/responses/permanentDeleteFailResponse.fixture';
+import { permanentDeleteSuccessResponseFixture } from '../__fixtures__/responses/permanentDeleteSuccessResponse.fixture';
 import axios from '../__mocks__/axios';
 import {
   JMAP,
@@ -9,6 +11,7 @@ import {
   deleteEmail,
   disableEmail,
   enableEmail,
+  permanentlyDeleteEmail,
   updateEmail
 } from '../lib/set';
 import * as set from '../lib/set';
@@ -102,6 +105,62 @@ describe('update', () => {
         state: 'deleted'
       });
       expect(result).toEqual({ '1': null });
+    });
+  });
+
+  describe('permanentlyDeleteEmail', () => {
+    it('should reject with InvalidArgumentError if no session is provided', async () => {
+      await expect(permanentlyDeleteEmail('1', undefined)).rejects.toThrow(
+        InvalidArgumentError
+      );
+    });
+
+    it('should reject with InvalidArgumentError if no id is provided', async () => {
+      await expect(permanentlyDeleteEmail(undefined, session)).rejects.toThrow(
+        InvalidArgumentError
+      );
+    });
+
+    it('should permanently delete a masked email', async () => {
+      axios.post.mockResolvedValue({
+        data: permanentDeleteSuccessResponseFixture
+      });
+
+      const result = await permanentlyDeleteEmail('masked-81873752', session);
+
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://api.example.com',
+        {
+          using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+          methodCalls: [
+            [
+              MASKED_EMAIL_CALLS.set,
+              { accountId: 'account1', destroy: ['masked-81873752'] },
+              'a'
+            ]
+          ]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer auth-token-123'
+          }
+        }
+      );
+
+      expect(result).toEqual(['masked-81873752']);
+    });
+
+    it('should throw an error if the email could not be deleted', async () => {
+      axios.post.mockResolvedValue({
+        data: permanentDeleteFailResponseFixture
+      });
+
+      await expect(
+        permanentlyDeleteEmail('masked-81873752', session)
+      ).rejects.toThrow(
+        'Failed to delete email: Only masked emails that have not received email can be destroyed'
+      );
     });
   });
 

@@ -117,3 +117,58 @@ export const enableEmail = async (
 ): Promise<{ [key: string]: null }> => {
   return await updateEmail(id, session, { state: 'enabled' });
 };
+
+/**
+ * Permanently deletes a masked email
+ * @param id - The id of the masked email to permanently delete
+ * @param session - The session object
+ * @throws {@link InvalidArgumentError} if no id is provided or no session is provided
+ */
+export const permanentlyDeleteEmail = async (
+  id: string | undefined,
+  session: any
+): Promise<{ [key: string]: null }> => {
+  if (!session) {
+    return Promise.reject(new InvalidArgumentError('No session provided'));
+  }
+  if (!id) {
+    return Promise.reject(new InvalidArgumentError('No id provided'));
+  }
+
+  const { apiUrl, accountId, authToken } = parseSession(session);
+  const headers = buildHeaders(authToken);
+  const body: JmapRequest = {
+    using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+    methodCalls: [[MASKED_EMAIL_CALLS.set, { accountId, destroy: [id] }, 'a']]
+  };
+  updateDebugLogger('permanentlyDeleteEmail() body: %o', JSON.stringify(body));
+  try {
+    const response = await axios.post(apiUrl, body, {
+      headers
+    });
+    updateDebugLogger(
+      'permanentlyDeleteEmail() response: %o',
+      JSON.stringify(response.data)
+    );
+    const data: JmapSetResponse = await response.data;
+    // Check if the email was not destroyed
+    if (data.methodResponses[0][1].notDestroyed) {
+      const notDestroyedObj = data.methodResponses[0][1].notDestroyed[id];
+      updateErrorLogger(
+        'permanentlyDeleteEmail() error: %o',
+        JSON.stringify(notDestroyedObj)
+      );
+      return Promise.reject(
+        new Error(`Failed to delete email: ${notDestroyedObj.description}`)
+      );
+    } else {
+      return data.methodResponses[0][1].destroyed;
+    }
+  } catch (error) {
+    return handleAxiosError(
+      error as AxiosError,
+      updateErrorLogger,
+      ACTIONS.DELETE
+    );
+  }
+};

@@ -1,4 +1,4 @@
-export const permanentlyDeleteSuccessResponse = {
+export const permanentDeleteSuccessResponseFixture = {
   latestClientVersion: '',
   methodResponses: [
     [
