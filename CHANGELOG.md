@@ -1,3 +1,15 @@
+# [2.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-07-04)
+
+
+### Code Refactoring
+
+* renames remove method to deleteEmail ([2ae0df9](https://github.com/ajyey/fastmail-masked-email/commit/2ae0df97e8bda75560612c301ce643453993470c))
+
+
+### BREAKING CHANGES
+
+* renames the remove method to deleteEmail
+
 # [2.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.4...v2.0.0-beta.1) (2023-07-04)
 
 
