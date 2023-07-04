@@ -1,3 +1,15 @@
+## [1.3.2-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v1.3.2-beta.1) (2023-07-04)
+
+
+### Code Refactoring
+
+* **list:** renames the list function to getAllEmails ([d4cdbb0](https://github.com/ajyey/fastmail-masked-email/commit/d4cdbb0fb973b0de9dbb51f297208ef3d6f264b0))
+
+
+### BREAKING CHANGES
+
+* **list:** rename list to getAllEmails
+
 ## [1.3.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0...v1.3.1) (2023-05-24)
 
 # [1.3.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.3...v1.3.0) (2023-05-23)
