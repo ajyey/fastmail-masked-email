@@ -2,8 +2,8 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import debug from 'debug';
 const listDebugLogger = debug('getAllEmails:debug');
 const listErrorLogger = debug('getAllEmails:error');
-const getByIdDebugLogger = debug('getById:debug');
-const getByIdErrorLogger = debug('getById:error');
+const getByIdDebugLogger = debug('getEmailById:debug');
+const getByIdErrorLogger = debug('getEmailById:error');
 
 import {
   JMAP,
@@ -68,7 +68,7 @@ const maskedEmailNotFound = (
  * @returns A {@link MaskedEmail} object
  * @throws {@link InvalidArgumentError} if no session is provided or no id is provided
  */
-export const getById = async (
+export const getEmailById = async (
   id: string | undefined,
   session: any
 ): Promise<MaskedEmail> => {
@@ -88,9 +88,12 @@ export const getById = async (
     const response: AxiosResponse = await axios.post(apiUrl, body, {
       headers
     });
-    getByIdDebugLogger('getById() body: %o', JSON.stringify(body));
+    getByIdDebugLogger('getEmailById() body: %o', JSON.stringify(body));
     const responseData: JmapGetResponse = response.data;
-    getByIdDebugLogger('getById() response %o', JSON.stringify(response.data));
+    getByIdDebugLogger(
+      'getEmailById() response %o',
+      JSON.stringify(response.data)
+    );
     if (maskedEmailNotFound(id, responseData)) {
       return Promise.reject(new Error(`No masked email found with id ${id}`));
     }

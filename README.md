@@ -112,11 +112,11 @@ console.log(myMaskedEmails);
 If you know the unique ID of a masked email you want to retrieve, you can get it by its ID.
 
 ```typescript
-import { getById, getSession } from 'fastmail-masked-email';
+import { getEmailById, getSession } from 'fastmail-masked-email';
 
 const session = await getSession(token, hostname);
 
-const myMaskedEmail = await getById('my-masked-email-id', session);
+const myMaskedEmail = await getEmailById('my-masked-email-id', session);
 
 console.log(myMaskedEmail);
 ```

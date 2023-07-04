@@ -3,7 +3,7 @@ import axios from '../__mocks__/axios';
 import { JMAP, MASKED_EMAIL_CALLS } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import * as get from '../lib/get';
-import { getAllEmails, getByAddress, getById } from '../lib/get';
+import { getAllEmails, getByAddress, getEmailById } from '../lib/get';
 import { MaskedEmail } from '../types/maskedEmail';
 
 describe('get', () => {
@@ -54,13 +54,13 @@ describe('get', () => {
 
   describe('getById', () => {
     it('should reject with InvalidArgumentError if no session is provided', async () => {
-      await expect(getById('1', undefined)).rejects.toThrow(
+      await expect(getEmailById('1', undefined)).rejects.toThrow(
         InvalidArgumentError
       );
     });
 
     it('should reject with InvalidArgumentError if no id is provided', async () => {
-      await expect(getById(undefined, session)).rejects.toThrow(
+      await expect(getEmailById(undefined, session)).rejects.toThrow(
         InvalidArgumentError
       );
     });
@@ -74,7 +74,7 @@ describe('get', () => {
         }
       });
 
-      const result = await getById('1', session);
+      const result = await getEmailById('1', session);
 
       expect(result).toEqual(maskedEmails[0]);
     });
@@ -88,7 +88,7 @@ describe('get', () => {
         }
       });
 
-      await expect(getById('masked-email-3', session)).rejects.toThrow(
+      await expect(getEmailById('masked-email-3', session)).rejects.toThrow(
         'No masked email found with id masked-email-3'
       );
     });
