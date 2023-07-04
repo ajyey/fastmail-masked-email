@@ -1,3 +1,15 @@
+# [2.0.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2023-07-04)
+
+
+### Code Refactoring
+
+* renames disable function to disableEmail ([2e3feba](https://github.com/ajyey/fastmail-masked-email/commit/2e3feba0e3edd40a7afc05e978bd2e2b2118e4d9))
+
+
+### BREAKING CHANGES
+
+* renames disable function to disableEmail
+
 # [2.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-07-04)
 
 
