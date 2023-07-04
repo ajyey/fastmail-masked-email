@@ -99,7 +99,7 @@ export const deleteEmail = async (
  * @param id - The id of the masked email to disable
  * @param session - The session object
  */
-export const disable = async (
+export const disableEmail = async (
   id: string,
   session: any
 ): Promise<{ [key: string]: null }> => {

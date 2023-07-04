@@ -191,15 +191,15 @@ await enable('my-masked-email-id', session);
 ```
 
 #### Disable
-Disabling a masked email is done by calling the `disable` method and passing in the masked email `id` and the `session` object.
+Disabling a masked email is done by calling the `disableEmail` method and passing in the masked email `id` and the `session` object.
 When a masked email is disabled, any email sent to it will be sent to the trash.
 
 ```typescript
-import { disable, getSession } from 'fastmail-masked-email';
+import { disableEmail, getSession } from 'fastmail-masked-email';
 
 const session = getSession(token, hostname);
 
-await disable('my-masked-email-id', session);
+await disableEmail('my-masked-email-id', session);
 
 ```
 

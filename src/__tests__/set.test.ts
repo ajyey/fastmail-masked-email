@@ -5,7 +5,7 @@ import {
   MASKED_EMAIL_CAPABILITY
 } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';
-import { deleteEmail, disable, enable, updateEmail } from '../lib/set';
+import { deleteEmail, disableEmail, enable, updateEmail } from '../lib/set';
 import * as set from '../lib/set';
 import { Options } from '../types/options';
 describe('update', () => {
@@ -104,7 +104,7 @@ describe('update', () => {
     it('should disable a masked email', async () => {
       updateSpy.mockResolvedValue({ '1': null });
 
-      const result = await disable('1', session);
+      const result = await disableEmail('1', session);
 
       expect(updateSpy).toHaveBeenCalledWith('1', session, {
         state: 'disabled'
