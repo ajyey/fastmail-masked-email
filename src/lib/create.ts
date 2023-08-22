@@ -10,7 +10,7 @@ import {
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { JmapRequest, JmapSetResponse } from '../types/jmap';
 import { MaskedEmail, MaskedEmailState } from '../types/maskedEmail';
-import { Options } from '../types/options';
+import { CreateOptions } from '../types/options';
 import { ACTIONS, handleAxiosError } from '../util/errorUtil';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
@@ -19,12 +19,12 @@ const DEFAULT_MASKED_EMAIL_STATE: MaskedEmailState = 'enabled';
 /**
  * Creates a new masked email address
  * @param session - The session object
- * @param options - The {@link Options} for creating the masked email
+ * @param options - The {@link CreateOptions|options} for creating the masked email
  * @throws {@link InvalidArgumentError} if no session is provided
  */
 export const createEmail = async (
   session: any,
-  options: Options = {}
+  options: CreateOptions = {}
 ): Promise<MaskedEmail> => {
   if (!session) {
     return Promise.reject(new InvalidArgumentError('No session provided'));

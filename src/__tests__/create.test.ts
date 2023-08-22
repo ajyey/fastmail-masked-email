@@ -7,7 +7,7 @@ import {
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 import { createEmail } from '../lib/create';
 import { JmapRequest } from '../types/jmap';
-import { Options } from '../types/options';
+import { CreateOptions } from '../types/options';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
 jest.mock('../util/sessionUtil');
@@ -46,7 +46,7 @@ describe('create', () => {
   });
 
   it('should createEmail a new masked email address enabled by default', async () => {
-    const options: Options = {};
+    const options: CreateOptions = {};
 
     const expectedRequest: JmapRequest = {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
@@ -105,7 +105,7 @@ describe('create', () => {
   });
 
   it('should reject with an Error when Axios receives an error response', async () => {
-    const options: Options = {};
+    const options: CreateOptions = {};
     const errorResponse = {
       status: 500,
       statusText: 'Internal Server Error',
@@ -122,7 +122,7 @@ describe('create', () => {
   });
 
   it('should reject with an Error when Axios makes a request but receives no response', async () => {
-    const options: Options = {};
+    const options: CreateOptions = {};
 
     const errorMessage = 'Network Error';
 
@@ -137,7 +137,7 @@ describe('create', () => {
   });
 
   it('should reject with an Error when another error occurs during the request', async () => {
-    const options: Options = {};
+    const options: CreateOptions = {};
 
     const errorMessage = 'Unexpected Error';
 
