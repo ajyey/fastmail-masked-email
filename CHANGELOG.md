@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.1...v2.1.0) (2023-09-09)
+
+
+### Features
+
+* add emailPrefix ([#92](https://github.com/ajyey/fastmail-masked-email/issues/92)) ([b53b7b9](https://github.com/ajyey/fastmail-masked-email/commit/b53b7b90e16846abd0dbc9b7b3abde650badb844))
+
 ## [2.0.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0...v2.0.1) (2023-07-11)
 
 # [2.0.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v2.0.0) (2023-07-04)
