@@ -15,3 +15,8 @@ export interface Options {
    * */
   state?: MaskedEmailState;
 }
+
+export interface CreateOptions extends Options {
+  /** If supplied, the server-assigned email will start with the given prefix. */
+  emailPrefix?: string;
+}

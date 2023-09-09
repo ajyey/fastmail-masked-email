@@ -129,6 +129,7 @@ The `options` parameter is an object that can contain the following properties:
 - `state`: `enabled` | `disabled` | `pending` ( Defaults to `enabled` )
 - `forDomain`: string ( This is the domain that you want associated with this masked email )
 - `description`: string ( This is a description of the masked email )
+- `emailPrefix`: string ( If supplied, the masked email will start with the given prefix )
 
 You can optionally pass in a `state` to set the initial state of the masked email. The default state is `enabled`.
 
@@ -146,8 +147,11 @@ newMaskedEmail = await createEmail(session, { state: 'disabled' });
 // Create a new masked email with a description
 newMaskedEmail = await createEmail(session, { description: 'My new masked email' });
 
+// Create a new masked email that starts with a given prefix
+newMaskedEmail = await createEmail(session, { emailPrefix: 'myprefix' });
+
 // Create a new masked email with all options present
-newMaskedEmail = await createEmail(session, { forDomain: 'example.com', state: 'enabled', description: 'My new masked email' });
+newMaskedEmail = await createEmail(session, { forDomain: 'example.com', state: 'enabled', description: 'My new masked email', emailPrefix: 'myprefix' });
 ```
 
 ## Updating a Masked Email
