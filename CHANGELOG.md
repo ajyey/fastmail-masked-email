@@ -1,3 +1,5 @@
+## [2.1.10](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.9...v2.1.10) (2024-09-11)
+
 ## [2.1.9](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.8...v2.1.9) (2024-06-12)
 
 ## [2.1.8](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.7...v2.1.8) (2024-06-12)
