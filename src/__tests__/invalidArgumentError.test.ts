@@ -1,4 +1,5 @@
 import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { describe, it, expect } from 'vitest';
 
 describe('InvalidArgumentError', () => {
   it('should create an instance of InvalidArgumentError with the given message', () => {

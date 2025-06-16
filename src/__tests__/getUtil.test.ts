@@ -5,6 +5,7 @@ import {
   filterByForDomain,
   filterByState
 } from '../util/getUtil';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('getUtil', () => {
   let maskedEmails: MaskedEmail[];

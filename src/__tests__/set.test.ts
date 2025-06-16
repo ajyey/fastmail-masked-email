@@ -1,6 +1,8 @@
+
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { permanentDeleteFailResponseFixture } from '../__fixtures__/responses/permanentDeleteFailResponse.fixture';
 import { permanentDeleteSuccessResponseFixture } from '../__fixtures__/responses/permanentDeleteSuccessResponse.fixture';
-import axios from '../__mocks__/axios';
+import axios from 'axios';
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -14,13 +16,13 @@ import {
   permanentlyDeleteEmail,
   updateEmail
 } from '../lib/set';
-import * as set from '../lib/set';
 import { Options } from '../types/options';
-describe('update', () => {
-  const updateSpy = jest.spyOn(set, 'updateEmail');
 
+vi.mock('axios');
+
+describe('set', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   const session = {
@@ -49,6 +51,7 @@ describe('update', () => {
         InvalidArgumentError
       );
     });
+
     it('should reject with InvalidArgumentError if invalid options are provided', async () => {
       await expect(
         updateEmail('1', session, { invalid: 'invalid' } as Options)
@@ -61,7 +64,7 @@ describe('update', () => {
         state: 'disabled'
       };
 
-      axios.post.mockResolvedValue({
+      vi.mocked(axios.post).mockResolvedValue({
         data: {
           methodResponses: [
             [MASKED_EMAIL_CALLS.set, { updated: { '1': null } }]
@@ -97,13 +100,37 @@ describe('update', () => {
 
   describe('deleteEmail', () => {
     it('should delete a masked email', async () => {
-      updateSpy.mockResolvedValue({ '1': null });
+      // Mock the axios call that updateEmail makes internally
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          methodResponses: [
+            [MASKED_EMAIL_CALLS.set, { updated: { '1': null } }]
+          ]
+        }
+      });
 
       const result = await deleteEmail('1', session);
 
-      expect(updateSpy).toHaveBeenCalledWith('1', session, {
-        state: 'deleted'
-      });
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://api.example.com',
+        {
+          using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+          methodCalls: [
+            [
+              MASKED_EMAIL_CALLS.set,
+              { accountId: 'account1', update: { '1': { state: 'deleted' } } },
+              'a'
+            ]
+          ]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer auth-token-123'
+          }
+        }
+      );
+
       expect(result).toEqual({ '1': null });
     });
   });
@@ -122,7 +149,7 @@ describe('update', () => {
     });
 
     it('should permanently delete a masked email', async () => {
-      axios.post.mockResolvedValue({
+      vi.mocked(axios.post).mockResolvedValue({
         data: permanentDeleteSuccessResponseFixture
       });
 
@@ -152,7 +179,7 @@ describe('update', () => {
     });
 
     it('should throw an error if the email could not be deleted', async () => {
-      axios.post.mockResolvedValue({
+      vi.mocked(axios.post).mockResolvedValue({
         data: permanentDeleteFailResponseFixture
       });
 
@@ -166,26 +193,74 @@ describe('update', () => {
 
   describe('disableEmail', () => {
     it('should disable a masked email', async () => {
-      updateSpy.mockResolvedValue({ '1': null });
+      // Mock the axios call that updateEmail makes internally
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          methodResponses: [
+            [MASKED_EMAIL_CALLS.set, { updated: { '1': null } }]
+          ]
+        }
+      });
 
       const result = await disableEmail('1', session);
 
-      expect(updateSpy).toHaveBeenCalledWith('1', session, {
-        state: 'disabled'
-      });
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://api.example.com',
+        {
+          using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+          methodCalls: [
+            [
+              MASKED_EMAIL_CALLS.set,
+              { accountId: 'account1', update: { '1': { state: 'disabled' } } },
+              'a'
+            ]
+          ]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer auth-token-123'
+          }
+        }
+      );
+
       expect(result).toEqual({ '1': null });
     });
   });
 
   describe('enableEmail', () => {
     it('should enable a masked email', async () => {
-      updateSpy.mockResolvedValue({ '1': null });
+      // Mock the axios call that updateEmail makes internally
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          methodResponses: [
+            [MASKED_EMAIL_CALLS.set, { updated: { '1': null } }]
+          ]
+        }
+      });
 
       const result = await enableEmail('1', session);
 
-      expect(updateSpy).toHaveBeenCalledWith('1', session, {
-        state: 'enabled'
-      });
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://api.example.com',
+        {
+          using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+          methodCalls: [
+            [
+              MASKED_EMAIL_CALLS.set,
+              { accountId: 'account1', update: { '1': { state: 'enabled' } } },
+              'a'
+            ]
+          ]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer auth-token-123'
+          }
+        }
+      );
+
       expect(result).toEqual({ '1': null });
     });
   });

@@ -1,4 +1,5 @@
-import axios from '../__mocks__/axios';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import axios from 'axios';
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
@@ -10,18 +11,16 @@ import { JmapRequest } from '../types/jmap';
 import { CreateOptions } from '../types/options';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 
-jest.mock('../util/sessionUtil');
+vi.mock('axios');
+vi.mock('../util/sessionUtil');
 
 describe('create', () => {
-  const mockedParseSession = parseSession as jest.MockedFunction<
-    typeof parseSession
-  >;
-  const mockedBuildHeaders = buildHeaders as jest.MockedFunction<
-    typeof buildHeaders
-  >;
+  const mockedParseSession = vi.mocked(parseSession);
+  const mockedBuildHeaders = vi.mocked(buildHeaders);
   let session: any;
+
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.clearAllMocks();
     mockedParseSession.mockReturnValue({
       accountId: 'account1',
       apiUrl: 'https://api.example.com',
@@ -66,7 +65,7 @@ describe('create', () => {
       ]
     };
 
-    axios.post.mockResolvedValue({
+    vi.mocked(axios.post).mockResolvedValue({
       data: {
         methodResponses: [
           [
@@ -112,7 +111,7 @@ describe('create', () => {
       data: 'Server error occurred'
     };
 
-    axios.post.mockRejectedValue({
+    vi.mocked(axios.post).mockRejectedValue({
       response: errorResponse
     });
 
@@ -126,7 +125,7 @@ describe('create', () => {
 
     const errorMessage = 'Network Error';
 
-    axios.post.mockRejectedValue({
+    vi.mocked(axios.post).mockRejectedValue({
       request: {},
       message: errorMessage
     });
@@ -141,7 +140,7 @@ describe('create', () => {
 
     const errorMessage = 'Unexpected Error';
 
-    axios.post.mockRejectedValue({
+    vi.mocked(axios.post).mockRejectedValue({
       message: errorMessage
     });
 
