@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { sessionFixture } from '../__fixtures__/session.fixture';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
 

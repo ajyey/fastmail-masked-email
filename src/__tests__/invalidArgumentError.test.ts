@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { InvalidArgumentError } from '../error/invalidArgumentError';
 
 describe('InvalidArgumentError', () => {

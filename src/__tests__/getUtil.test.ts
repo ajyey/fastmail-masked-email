@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture';
 import { MaskedEmail } from '../types/maskedEmail';
 import {
