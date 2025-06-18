@@ -1,5 +1,7 @@
 import { sessionFixture } from '../__fixtures__/session.fixture';
 import { buildHeaders, parseSession } from '../util/sessionUtil';
+import { describe, it, expect } from 'vitest';
+
 
 describe('parseSession', () => {
   it('should parse the session object and return accountId, apiUrl, and authToken', () => {
