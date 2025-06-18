@@ -5,7 +5,10 @@
 	"author": "Andrew Leonard",
 	"main": "dist/index.js",
 	"type": "module",
-	"repository": "https://github.com/ajyey/fastmail-masked-email",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ajyey/fastmail-masked-email.git"
+	},
 	"license": "MIT",
 	"keywords": [
 		"fastmail",
