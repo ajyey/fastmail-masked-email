@@ -1,3 +1,5 @@
+## [2.1.14](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.13...v2.1.14) (2025-06-18)
+
 ## [2.1.14-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.13...v2.1.14-beta.1) (2025-06-18)
 
 ## [2.1.13](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.12...v2.1.13) (2025-04-25)
