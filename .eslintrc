@@ -10,6 +10,7 @@
 		"prettier",
 		"eslint-plugin-tsdoc"
 	],
+	"ignorePatterns": ["vitest.config.ts", "*.config.ts"],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
