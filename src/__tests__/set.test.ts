@@ -1,4 +1,3 @@
-
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { permanentDeleteFailResponseFixture } from '../__fixtures__/responses/permanentDeleteFailResponse.fixture';
 import { permanentDeleteSuccessResponseFixture } from '../__fixtures__/responses/permanentDeleteSuccessResponse.fixture';

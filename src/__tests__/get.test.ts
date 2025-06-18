@@ -8,13 +8,12 @@ import { MaskedEmail } from '../types/maskedEmail';
 
 vi.mock('axios');
 describe('get', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
   afterEach(() => {
     vi.restoreAllMocks();
-  })
+  });
 
   const session = {
     primaryAccounts: {
@@ -95,7 +94,6 @@ describe('get', () => {
         'An error occurred while listing masked emails. Error message: Unexpected error'
       );
     });
-
   });
 
   describe('getById', () => {
@@ -180,7 +178,6 @@ describe('get', () => {
         'An error occurred while getting a masked email by id. Error message: Database connection error'
       );
     });
-
   });
 
   describe('getByAddress', () => {
@@ -196,7 +193,11 @@ describe('get', () => {
         expect.objectContaining({
           using: [JMAP.CORE, expect.any(String)],
           methodCalls: expect.arrayContaining([
-            expect.arrayContaining([MASKED_EMAIL_CALLS.get, expect.any(Object), expect.any(String)])
+            expect.arrayContaining([
+              MASKED_EMAIL_CALLS.get,
+              expect.any(Object),
+              expect.any(String)
+            ])
           ])
         }),
         expect.objectContaining({
@@ -205,8 +206,6 @@ describe('get', () => {
       );
 
       expect(result).toEqual([maskedEmails[0]]);
-
-
     });
 
     it('should reject with an error if getAllEmails throws an error', async () => {
@@ -220,10 +219,11 @@ describe('get', () => {
         response: mockErrorResponse
       });
 
-      await expect(getEmailByAddress('testEmail@test.com', session)).rejects.toThrow(
+      await expect(
+        getEmailByAddress('testEmail@test.com', session)
+      ).rejects.toThrow(
         `listing masked emails failed with status code ${mockErrorResponse.status}: ${mockErrorResponse.statusText}. ${mockErrorResponse.data}`
       );
     });
-
   });
 });
