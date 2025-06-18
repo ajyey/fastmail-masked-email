@@ -1,5 +1,6 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture';
 import { JMAP, MASKED_EMAIL_CALLS } from '../constants';
 import { InvalidArgumentError } from '../error/invalidArgumentError';

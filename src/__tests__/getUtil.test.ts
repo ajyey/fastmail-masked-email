@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture';
 import { MaskedEmail } from '../types/maskedEmail';
 import {
@@ -5,7 +7,6 @@ import {
   filterByForDomain,
   filterByState
 } from '../util/getUtil';
-import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('getUtil', () => {
   let maskedEmails: MaskedEmail[];

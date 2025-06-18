@@ -1,7 +1,8 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import axios from 'axios';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { permanentDeleteFailResponseFixture } from '../__fixtures__/responses/permanentDeleteFailResponse.fixture';
 import { permanentDeleteSuccessResponseFixture } from '../__fixtures__/responses/permanentDeleteSuccessResponse.fixture';
-import axios from 'axios';
 import {
   JMAP,
   MASKED_EMAIL_CALLS,

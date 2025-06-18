@@ -1,5 +1,6 @@
-import { vi, describe, it, expect, afterEach } from 'vitest';
 import axios from 'axios';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { sessionFixture } from '../__fixtures__/session.fixture';
 import { API_HOSTNAME } from '../constants';
 import { getSession } from '../lib/session';

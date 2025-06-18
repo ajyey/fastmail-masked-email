@@ -1,5 +1,6 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import {
   JMAP,
   MASKED_EMAIL_CALLS,
