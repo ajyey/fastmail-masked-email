@@ -10,7 +10,6 @@
 	],
 	"types": [
 	  "node",
-	  "jest"
 	],
 	"module": "commonjs",
 	"moduleResolution": "node",
