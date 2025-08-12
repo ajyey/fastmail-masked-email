@@ -60,6 +60,11 @@ export class MaskedEmailService {
     }
   }
 
+  public getSession(): Promise<any> {
+    this.ensureInitialized();
+    return this.session;
+  }
+
   /**
    * Creates a new masked email address
    * @param options - The {@link CreateOptions|options} for creating the masked email

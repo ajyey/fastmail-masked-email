@@ -36,5 +36,4 @@ export interface Session {
   primaryAccounts: {
     [key: string]: string;
   };
-  fmAuthToken?: string; // Explicitly added to the session object by getSession()
 }
