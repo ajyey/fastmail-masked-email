@@ -1,3 +1,22 @@
+# [3.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2025-08-12)
+
+
+### Features
+
+* adds getSession method ([b0b3403](https://github.com/ajyey/fastmail-masked-email/commit/b0b3403f66a53190942be2688f423feb03c758b0))
+
+# [3.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.14-beta.1...v3.0.0-beta.1) (2025-08-12)
+
+
+### Features
+
+* **major:** adds MaskedEmailService class ([9f3a5d8](https://github.com/ajyey/fastmail-masked-email/commit/9f3a5d85eff8e5bc7367061137adde69e89c3d03))
+
+
+### BREAKING CHANGES
+
+* **major:** Removes individual modules in favor of a MaskedEmailService class
+
 ## [2.1.15](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.14...v2.1.15) (2025-08-12)
 
 ## [2.1.14](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.13...v2.1.14) (2025-06-18)

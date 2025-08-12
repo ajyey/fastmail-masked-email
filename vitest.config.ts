@@ -9,7 +9,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['json-summary', 'lcov', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['src/index.ts', 'src/constants.ts', 'src/types/*'],
+      exclude: ['src/index.ts', 'src/constants.ts', 'src/types/*', 'src/__fixtures__'],
       thresholds: {
         branches: 95,
         functions: 95,
