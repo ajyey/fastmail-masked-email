@@ -1,3 +1,10 @@
+# [3.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2025-08-12)
+
+
+### Features
+
+* adds getSession method ([b0b3403](https://github.com/ajyey/fastmail-masked-email/commit/b0b3403f66a53190942be2688f423feb03c758b0))
+
 # [3.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.14-beta.1...v3.0.0-beta.1) (2025-08-12)
 
 
