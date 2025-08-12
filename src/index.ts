@@ -1,9 +1,6 @@
 export * from './error/invalidArgumentError';
 export * from './error/invalidCredentialsError';
-export * from './lib/create';
-export * from './lib/get';
-export * from './lib/session';
-export * from './lib/set';
+export { MaskedEmailService } from './MaskedEmailService';
 export * from './types/jmap';
 export * from './types/maskedEmail';
 export * from './types/options';
