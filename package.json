@@ -1,6 +1,6 @@
 {
 	"name": "fastmail-masked-email",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "A library for creating, deleting, and updating Fastmail masked emails",
 	"author": "Andrew Leonard",
 	"main": "dist/index.js",
