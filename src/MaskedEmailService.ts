@@ -148,6 +148,11 @@ export class MaskedEmailService {
       const jmapResponse: JmapGetResponse = response.data;
       const methodResponse: GetResponseData =
         jmapResponse.methodResponses[0][1];
+      if (!methodResponse.list) {
+        return Promise.reject(
+          new Error('JMAP Error: ' + JSON.stringify(jmapResponse))
+        );
+      }
       return methodResponse.list;
     } catch (error) {
       return this.handleAxiosError(error as AxiosError, Action.LIST);
@@ -390,7 +395,13 @@ export class MaskedEmailService {
   }
 
   private parseSession() {
-    const accountId = this.session.primaryAccounts[JMAP.CORE];
+    let accountId = this.session.primaryAccounts[JMAP.CORE];
+    if (!accountId) {
+      accountId = this.session.primaryAccounts[MASKED_EMAIL_CAPABILITY];
+    }
+    if (!accountId && this.session.accounts) {
+      accountId = Object.keys(this.session.accounts)[0];
+    }
     const { apiUrl } = this.session;
     return {
       accountId,
