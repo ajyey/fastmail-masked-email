@@ -68,6 +68,49 @@ describe('MaskedEmailService', () => {
       );
     });
 
+    it('should fallback to MASKED_EMAIL_CAPABILITY if JMAP.CORE is not in primaryAccounts', async () => {
+      vi.mocked(axios.get).mockResolvedValue({
+        data: {
+          primaryAccounts: { [MASKED_EMAIL_CAPABILITY]: 'account-masked' },
+          apiUrl: 'https://api.example.com'
+        }
+      });
+      await service.initialize();
+
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          methodResponses: [[MASKED_EMAIL_CALLS.get, { list: [] }, 'a']]
+        }
+      });
+      await service.getAllEmails();
+      expect(
+        (vi.mocked(axios.post).mock.calls[0][1] as any).methodCalls[0][1]
+          .accountId
+      ).toEqual('account-masked');
+    });
+
+    it('should fallback to first account in accounts if primaryAccounts is missing capabilities', async () => {
+      vi.mocked(axios.get).mockResolvedValue({
+        data: {
+          primaryAccounts: {},
+          accounts: { 'fallback-account': {} },
+          apiUrl: 'https://api.example.com'
+        }
+      });
+      await service.initialize();
+
+      vi.mocked(axios.post).mockResolvedValue({
+        data: {
+          methodResponses: [[MASKED_EMAIL_CALLS.get, { list: [] }, 'a']]
+        }
+      });
+      await service.getAllEmails();
+      expect(
+        (vi.mocked(axios.post).mock.calls[0][1] as any).methodCalls[0][1]
+          .accountId
+      ).toEqual('fallback-account');
+    });
+
     it('should throw error when no token is provided', async () => {
       const serviceNoToken = new MaskedEmailService();
 
@@ -273,6 +316,25 @@ describe('MaskedEmailService', () => {
 
       await expect(service.getAllEmails()).rejects.toThrow(
         'listing masked emails request was made, but no response was received. Error message: Network Error'
+      );
+    });
+
+    it('should throw JMAP Error if methodResponse.list is missing', async () => {
+      const mockJmapResponse = {
+        methodResponses: [
+          [
+            'error',
+            { type: 'accountNotFound', description: 'No accountId supplied' },
+            'a'
+          ]
+        ]
+      };
+      vi.mocked(axios.post).mockResolvedValue({
+        data: mockJmapResponse
+      });
+
+      await expect(service.getAllEmails()).rejects.toThrow(
+        'JMAP Error: ' + JSON.stringify(mockJmapResponse)
       );
     });
   });
