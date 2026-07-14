@@ -1,3 +1,10 @@
+# [3.0.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0-beta.2...v3.0.0-beta.3) (2026-07-14)
+
+
+### Bug Fixes
+
+* **jmap:** handle missing JMAP.CORE and missing list on get response ([c1cf188](https://github.com/ajyey/fastmail-masked-email/commit/c1cf188f9fc6f15a97095364feef81d11de0b922))
+
 # [3.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2025-08-12)
 
 
