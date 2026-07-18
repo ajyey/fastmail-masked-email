@@ -23,8 +23,6 @@ jobs:
           cache: 'npm'
       - name: Installing dependencies
         run: npm ci
-      - name: Building package
-        run: npm run build
       - name: Testing Fastmail contract
         env:
           JMAP_TOKEN: ${{ secrets.JMAP_TOKEN }}

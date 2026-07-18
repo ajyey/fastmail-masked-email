@@ -1,10 +1,5 @@
 {
-  "include": [
-    "integration/**/*",
-    "src/**/*",
-    "vitest.config.ts",
-    "vitest.integration.config.ts"
-  ],
+  "include": ["src/**/*", "vitest.config.ts", "vitest.integration.config.ts"],
   "compilerOptions": {
     "target": "es2022",
     "lib": ["es2022", "dom"],

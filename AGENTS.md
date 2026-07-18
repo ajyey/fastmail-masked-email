@@ -7,7 +7,7 @@
 - Run one test file with `npx vitest run src/__tests__/MaskedEmailService.test.ts --coverage.enabled=false`; add `-t "test name"` for one case.
 - `npm run build` is non-mutating: it cleans `dist` and compiles only publishable source through `tsconfig.build.json`.
 - `npm run test:package` builds and packs the library, validates it with Publint and Are The Types Wrong's ESM-only profile, then tests runtime and type consumers.
-- `npm run test:integration` uses `JMAP_TOKEN` to exercise the live Fastmail lifecycle. It creates and permanently deletes a real address, is excluded from `npm test`, and must use a dedicated test account.
+- `npm run test:integration` builds the package, then uses `JMAP_TOKEN` to exercise the live Fastmail lifecycle through the public ESM entrypoint. It creates and permanently deletes real addresses, is excluded from `npm test`, and must use a dedicated test account.
 - Use `npm run dev` for Vitest watch mode and `npm run doc:html` for local API docs.
 
 ## Code Map

@@ -258,9 +258,11 @@ JMAP_TOKEN=your-test-token npm run test:integration
 ```
 
 Set `JMAP_HOSTNAME` as well when testing a non-default host. The token needs the
-Masked Email scope. The sequential suite creates one uniquely named pending
-address, exercises reads, filters, metadata updates, every state transition,
-and permanent deletion, then attempts cleanup even after a failure.
+Masked Email scope. The command builds the package first, so the suite imports
+the same ESM entrypoint consumers use. It checks environment configuration and
+authentication errors, creates pending and default-state addresses, exercises
+cached and fetching filters, metadata updates, every state transition, and
+permanent deletion, then attempts cleanup even after a failure.
 
 This command is intentionally excluded from `npm test`. Never use a personal
 account or a token that is also used by production automation.
