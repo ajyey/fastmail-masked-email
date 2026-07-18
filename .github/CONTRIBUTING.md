@@ -73,7 +73,7 @@ JMAP_TOKEN=your-test-token npm run test:integration
 
 The command builds and type-checks the package before exercising its public ESM
 entrypoint. The suite creates and permanently destroys two real masked emails.
-The manual `Fastmail contract` GitHub workflow runs this same suite with
+The manual `fastmail-integration-test` GitHub workflow runs this same suite with
 repository secrets; it must never be enabled for pull requests or personal
 accounts.
 

@@ -1,4 +1,4 @@
-name: Fastmail contract
+name: fastmail-integration-test
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: fastmail-contract
+  group: fastmail-integration-test
   cancel-in-progress: false
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
           cache: 'npm'
       - name: Installing dependencies
         run: npm ci
-      - name: Testing Fastmail contract
+      - name: Run Fastmail integration test
         env:
           JMAP_TOKEN: ${{ secrets.JMAP_TOKEN }}
           JMAP_HOSTNAME: ${{ secrets.JMAP_HOSTNAME }}
