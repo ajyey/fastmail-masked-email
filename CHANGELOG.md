@@ -1,3 +1,12 @@
+# [4.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2026-07-18)
+
+
+### Bug Fixes
+
+* **changelog:** fixes prettier errors ([c3a2e2d](https://github.com/ajyey/fastmail-masked-email/commit/c3a2e2dbf5ad34bdc175b91c14672f6b9708203f))
+* **release:** require passing integration tests ([c68dab0](https://github.com/ajyey/fastmail-masked-email/commit/c68dab035839de77bff410aac783842a227cc03d))
+* **ci:** use default Fastmail hostname ([8003a50](https://github.com/ajyey/fastmail-masked-email/commit/8003a509a19c4f5d0bf95d46741013e5c07716aa))
+
 # [4.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.3...v4.0.0-beta.1) (2026-07-18)
 
 ### Bug Fixes
