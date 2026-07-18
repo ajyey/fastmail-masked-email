@@ -29,4 +29,4 @@ jobs:
         env:
           JMAP_TOKEN: ${{ secrets.JMAP_TOKEN }}
           JMAP_HOSTNAME: ${{ secrets.JMAP_HOSTNAME }}
-        run: node scripts/contract-test.mjs
+        run: npm run test:integration

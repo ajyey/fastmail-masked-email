@@ -41,6 +41,7 @@
     "prepare": "husky",
     "test": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run test:package && npm run test:docs",
     "test:docs": "typedoc src/index.ts --out /tmp/fastmail-masked-email-docs",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:package": "node scripts/test-package.mjs",
     "test:unit": "vitest run --coverage",
     "typecheck": "tsc -p tsconfig.json --noEmit"

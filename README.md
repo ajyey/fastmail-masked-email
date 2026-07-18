@@ -247,3 +247,20 @@ main().catch(console.error);
 See [MIGRATION.md](MIGRATION.md) for the complete v3-to-v4 guide and the
 [generated API documentation](https://ajyey.github.io/fastmail-masked-email/)
 for exported TypeScript definitions.
+
+## Live Integration Tests
+
+The normal test suite uses an injected HTTP client and never contacts Fastmail.
+To verify the complete API against a dedicated Fastmail test account, run:
+
+```sh
+JMAP_TOKEN=your-test-token npm run test:integration
+```
+
+Set `JMAP_HOSTNAME` as well when testing a non-default host. The token needs the
+Masked Email scope. The sequential suite creates one uniquely named pending
+address, exercises reads, filters, metadata updates, every state transition,
+and permanent deletion, then attempts cleanup even after a failure.
+
+This command is intentionally excluded from `npm test`. Never use a personal
+account or a token that is also used by production automation.
