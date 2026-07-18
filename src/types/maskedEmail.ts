@@ -9,7 +9,7 @@
  * - deleted
  *   - The address is inactive; any mail sent to the address is bounced.
  * - pending
- *   - The initial state. Once set to anything else, it cannot be set back to pending.
+ *   - A create-only temporary state. Once changed, it cannot be restored.
  *   - If a message is received by an address in the "pending" state, it will automatically be converted to "enabled".
  *   - Pending email addresses are automatically deleted 24h after creation.
 
@@ -17,8 +17,10 @@
  */
 export type MaskedEmailState = 'enabled' | 'disabled' | 'pending' | 'deleted';
 
+/** States accepted when creating an address; deletion is an update operation. */
 export type CreateMaskedEmailState = Exclude<MaskedEmailState, 'deleted'>;
 
+/** States accepted when updating an address; pending cannot be restored. */
 export type UpdateMaskedEmailState = Exclude<MaskedEmailState, 'pending'>;
 
 /**

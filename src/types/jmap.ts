@@ -7,8 +7,11 @@ import type { GetResponseData, SetResponseData } from './response.js';
  */
 export type Invocation<T> = [methodName: string, args: T, methodCallId: string];
 
+/** Data carried by a JMAP method-level `error` invocation. */
 export interface JmapMethodErrorData {
+  /** Machine-readable JMAP error type. */
   type: string;
+  /** Optional human-readable explanation. */
   description?: string;
   [key: string]: unknown;
 }

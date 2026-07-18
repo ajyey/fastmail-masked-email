@@ -209,6 +209,7 @@ describe.sequential('Fastmail live integration', () => {
   });
 });
 
+/** Return the primary test ID or fail with lifecycle context. */
 function expectCreatedId(): string {
   if (!createdId) {
     throw new Error('The integration masked email was not created.');

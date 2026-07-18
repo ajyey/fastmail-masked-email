@@ -10,15 +10,24 @@ export interface GetResponseData {
   list: MaskedEmail[];
 }
 
+/** Per-record failure returned by a JMAP set operation. */
 export interface SetErrorData {
+  /** Machine-readable JMAP SetError type. */
   type: string;
+  /** Optional human-readable explanation. */
   description?: string;
+  /** Properties responsible for validation failure, when supplied. */
   properties?: string[];
+  /** Fastmail-specific refinement of the error type. */
   subType?: string;
   [key: string]: unknown;
 }
 
-/** Response data returned from a JMAP set call. */
+/**
+ * Response data returned from a JMAP set call.
+ *
+ * @typeParam T - Object type being created or updated.
+ */
 export interface SetResponseData<T> {
   accountId: string;
   oldState?: string | null;

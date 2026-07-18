@@ -1,3 +1,8 @@
+/**
+ * Validate the package exactly as consumers receive it: lint package metadata,
+ * inspect the tarball, install it in isolation, and test runtime/type loading.
+ * @file
+ */
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -5,6 +10,8 @@ import { join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+
+/** Resolve a repository-local executable for the current platform. */
 const bin = (name) =>
   join(
     root,
@@ -12,6 +19,7 @@ const bin = (name) =>
     '.bin',
     process.platform === 'win32' ? `${name}.cmd` : name
   );
+/** Run a command from the repository and return its captured standard output. */
 const run = (command, args, options = {}) =>
   execFileSync(command, args, {
     cwd: root,
@@ -20,12 +28,14 @@ const run = (command, args, options = {}) =>
     ...options
   });
 
+// Validate metadata and declarations before creating the consumer fixture.
 run(npm, ['run', 'build']);
 run(bin('publint'), []);
 run(bin('attw'), ['--pack', '.', '--profile', 'esm-only']);
 
 const workspace = mkdtempSync(join(tmpdir(), 'fastmail-masked-email-package-'));
 try {
+  // Inspect the actual npm tarball so package allowlist regressions are visible.
   const packResult = JSON.parse(
     run(npm, [
       'pack',
@@ -45,6 +55,7 @@ try {
     );
   }
 
+  // Install in an isolated project rather than resolving this checkout's files.
   writeFileSync(
     join(workspace, 'package.json'),
     JSON.stringify({ private: true, type: 'module' })
@@ -62,12 +73,14 @@ try {
     }
   );
 
+  // Confirm Node can load the ESM entrypoint at runtime.
   writeFileSync(
     join(workspace, 'runtime.mjs'),
     "import { MaskedEmailService } from 'fastmail-masked-email';\nif (typeof MaskedEmailService !== 'function') process.exit(1);\n"
   );
   run(process.execPath, [join(workspace, 'runtime.mjs')], { cwd: workspace });
 
+  // Compile one consumer under both Node and bundler resolution semantics.
   writeFileSync(
     join(workspace, 'consumer.mts'),
     [
@@ -122,6 +135,7 @@ try {
     );
   }
 
+  // Ensure package metadata does not accidentally restore a CommonJS target.
   const manifest = JSON.parse(
     readFileSync(
       join(workspace, 'node_modules', 'fastmail-masked-email', 'package.json')
@@ -137,5 +151,6 @@ try {
     `Verified ${packResult.filename} as an ESM runtime and type package.`
   );
 } finally {
+  // Package tests run frequently; never accumulate temporary installations.
   rmSync(workspace, { force: true, recursive: true });
 }

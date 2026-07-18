@@ -55,7 +55,12 @@ const UPDATE_STATES = new Set(['enabled', 'disabled', 'deleted']);
 
 type JmapArguments = Record<string, unknown>;
 
-/** A service for managing Fastmail masked email addresses. */
+/**
+ * Manages Fastmail masked email addresses through the JMAP API.
+ *
+ * Call {@link initialize} before using remote methods. Local filter methods can
+ * operate without initialization when an existing list is supplied.
+ */
 export class MaskedEmailService {
   private readonly token?: string;
   private readonly sessionUrl: string;
@@ -69,6 +74,13 @@ export class MaskedEmailService {
   private initialization: Promise<void> | null = null;
   private callSequence = 0;
 
+  /**
+   * Create a service using explicit options or the `JMAP_TOKEN` and
+   * `JMAP_HOSTNAME` environment variables.
+   *
+   * @param options - Authentication, endpoint, account, timeout, and transport
+   * configuration.
+   */
   constructor(options?: MaskedEmailServiceOptions);
   /** @deprecated Pass a {@link MaskedEmailServiceOptions} object instead. */
   constructor(token?: string, hostname?: string);
@@ -76,6 +88,7 @@ export class MaskedEmailService {
     optionsOrToken: MaskedEmailServiceOptions | string = {},
     legacyHostname?: string
   ) {
+    // Normalize the deprecated positional form before applying shared defaults.
     const options =
       typeof optionsOrToken === 'string' || legacyHostname !== undefined
         ? {
@@ -103,7 +116,14 @@ export class MaskedEmailService {
     );
   }
 
-  /** Fetch and validate the JMAP session used by subsequent calls. */
+  /**
+   * Fetch and validate the JMAP session used by subsequent calls.
+   * Concurrent calls share one request; a failed attempt can be retried.
+   *
+   * @throws {@link InvalidCredentialsError} When no token is available or the
+   * server rejects the credentials.
+   * @throws {@link UnsupportedAccountError} When masked email is unavailable.
+   */
   async initialize(): Promise<void> {
     if (this.initialization) {
       return this.initialization;
@@ -117,13 +137,24 @@ export class MaskedEmailService {
     }
   }
 
-  /** Return a snapshot of the active JMAP session. */
+  /**
+   * Return a deeply readonly copy of the active JMAP session.
+   *
+   * @throws {@link ServiceNotInitializedError} When initialization has not
+   * completed successfully.
+   */
   getSession(): ReadonlySession {
     this.ensureInitialized();
     return structuredClone(this.session!) as ReadonlySession;
   }
 
-  /** Create a masked email and retrieve the complete server-owned object. */
+  /**
+   * Create a masked email and retrieve the complete server-owned object.
+   *
+   * @param options - Create-only metadata and initial state.
+   * @returns The authoritative object fetched after creation.
+   * @throws {@link JmapSetError} When Fastmail rejects the creation record.
+   */
   async createEmail(options: CreateOptions = {}): Promise<MaskedEmail> {
     this.ensureWritable();
     const validatedOptions = this.validateCreateOptions(options);
@@ -148,17 +179,23 @@ export class MaskedEmailService {
       );
     }
 
+    // Set responses may be partial, so fetch the complete server-owned record.
     return this.getEmailById(created.id);
   }
 
-  /** Retrieve every masked email in the selected account. */
+  /** Retrieve every masked email in the selected account, including deleted records. */
   async getAllEmails(): Promise<MaskedEmail[]> {
     this.ensureInitialized();
     const response = await this.executeGet('listing masked emails', null);
     return response.list;
   }
 
-  /** Retrieve one masked email by ID. */
+  /**
+   * Retrieve one masked email by ID.
+   *
+   * @throws {@link MaskedEmailNotFoundError} When Fastmail does not return the
+   * requested ID.
+   */
   async getEmailById(id: string): Promise<MaskedEmail> {
     this.ensureInitialized();
     const validId = this.validateId(id);
@@ -174,7 +211,13 @@ export class MaskedEmailService {
     return email;
   }
 
-  /** Find all masked email records with an exact address match. */
+  /**
+   * Find all records whose address exactly matches the supplied value.
+   *
+   * @param address - Address to match case-sensitively.
+   * @param list - Existing records to filter without initialization or network
+   * access. All records are fetched when omitted.
+   */
   async getEmailsByAddress(
     address: string,
     list?: readonly MaskedEmail[]
@@ -187,7 +230,11 @@ export class MaskedEmailService {
     return emails.filter((email) => email.email === address);
   }
 
-  /** Update mutable properties of a masked email. */
+  /**
+   * Update mutable properties of a masked email.
+   *
+   * @throws {@link JmapSetError} When Fastmail rejects the requested update.
+   */
   async updateEmail(id: string, options: UpdateOptions): Promise<void> {
     this.ensureWritable();
     const validId = this.validateId(id);
@@ -207,19 +254,29 @@ export class MaskedEmailService {
     }
   }
 
+  /** Soft-delete a masked email by changing its state to `deleted`. */
   async deleteEmail(id: string): Promise<void> {
     return this.updateEmail(id, { state: 'deleted' });
   }
 
+  /** Disable delivery by changing a masked email's state to `disabled`. */
   async disableEmail(id: string): Promise<void> {
     return this.updateEmail(id, { state: 'disabled' });
   }
 
+  /** Enable delivery by changing a masked email's state to `enabled`. */
   async enableEmail(id: string): Promise<void> {
     return this.updateEmail(id, { state: 'enabled' });
   }
 
-  /** Permanently destroy an eligible masked email. */
+  /**
+   * Permanently destroy an eligible masked email.
+   *
+   * Fastmail only permits destruction while an address is still eligible,
+   * typically before it has received mail.
+   *
+   * @throws {@link JmapSetError} When Fastmail refuses permanent deletion.
+   */
   async permanentlyDeleteEmail(id: string): Promise<void> {
     this.ensureWritable();
     const validId = this.validateId(id);
@@ -242,6 +299,13 @@ export class MaskedEmailService {
     }
   }
 
+  /**
+   * Filter records by state.
+   *
+   * @param state - State to match.
+   * @param list - Existing records to filter locally. All records are fetched
+   * when omitted.
+   */
   async filterByState(
     state: MaskedEmailState,
     list?: readonly MaskedEmail[]
@@ -250,6 +314,13 @@ export class MaskedEmailService {
     return emails.filter((email) => email.state === state);
   }
 
+  /**
+   * Filter records by their exact associated HTTP(S) origin.
+   *
+   * @param origin - Origin to match case-sensitively.
+   * @param list - Existing records to filter locally. All records are fetched
+   * when omitted.
+   */
   async filterByDomain(
     origin: string,
     list?: readonly MaskedEmail[]
@@ -258,6 +329,7 @@ export class MaskedEmailService {
     return emails.filter((email) => email.forDomain === origin);
   }
 
+  /** Fetch, validate, and store a session and selected account. */
   private async initializeSession(): Promise<void> {
     if (!this.token?.trim()) {
       throw new InvalidCredentialsError(
@@ -278,6 +350,7 @@ export class MaskedEmailService {
     this.accountId = accountId;
   }
 
+  /** Execute and validate a `MaskedEmail/get` invocation. */
   private async executeGet(
     operation: string,
     ids: string[] | null
@@ -317,6 +390,7 @@ export class MaskedEmailService {
     return response as unknown as GetResponseData;
   }
 
+  /** Execute and validate a `MaskedEmail/set` invocation. */
   private async executeSet(
     operation: string,
     args: JmapArguments
@@ -336,6 +410,9 @@ export class MaskedEmailService {
     return response as unknown as SetResponseData<MaskedEmail>;
   }
 
+  /**
+   * Execute one JMAP invocation and return its method-specific response data.
+   */
   private async execute(
     operation: string,
     methodName: string,
@@ -365,6 +442,7 @@ export class MaskedEmailService {
       );
     }
 
+    // HTTP success does not imply JMAP success; correlate by call ID first.
     const invocation = (
       data as unknown as JmapResponse<unknown>
     ).methodResponses.find(
@@ -407,6 +485,7 @@ export class MaskedEmailService {
     return responseData;
   }
 
+  /** Validate untrusted session discovery data. */
   private parseSession(data: unknown): Session {
     if (!this.isRecord(data)) {
       throw this.invalidResponse(
@@ -467,6 +546,10 @@ export class MaskedEmailService {
     return data as unknown as Session;
   }
 
+  /**
+   * Select an explicit account, then the masked-email primary account, then
+   * the first account advertising the required capability.
+   */
   private selectAccount(session: Session): string {
     if (this.requestedAccountId) {
       const account = session.accounts[this.requestedAccountId];
@@ -495,6 +578,7 @@ export class MaskedEmailService {
     return supportedAccount[0];
   }
 
+  /** Check whether an account advertises Fastmail masked-email support. */
   private supportsMaskedEmail(
     account: SessionAccount | undefined
   ): account is SessionAccount {
@@ -505,12 +589,14 @@ export class MaskedEmailService {
     );
   }
 
+  /** Assert that session discovery and account selection have completed. */
   private ensureInitialized(): void {
     if (!this.session || !this.accountId) {
       throw new ServiceNotInitializedError();
     }
   }
 
+  /** Assert that the selected account accepts write operations. */
   private ensureWritable(): void {
     this.ensureInitialized();
     const account = this.session!.accounts[this.accountId!];
@@ -522,6 +608,7 @@ export class MaskedEmailService {
     }
   }
 
+  /** Build authentication and JSON content headers for JMAP requests. */
   private buildHeaders(): Record<string, string> {
     return {
       'Content-Type': 'application/json',
@@ -529,6 +616,9 @@ export class MaskedEmailService {
     };
   }
 
+  /**
+   * Build per-request Ky options while preventing implicit mutation retries.
+   */
   private requestConfig(): Options {
     const options: Options = {
       retry: 0,
@@ -540,6 +630,7 @@ export class MaskedEmailService {
       options.timeout = false;
     }
 
+    // Ky's timeout ends at response headers; this signal also covers the body.
     let signal = this.signal;
     if (typeof this.timeout === 'number') {
       const timeoutSignal = AbortSignal.timeout(this.timeout);
@@ -553,6 +644,7 @@ export class MaskedEmailService {
     return options;
   }
 
+  /** Execute a Ky request and classify transport and JSON parsing failures. */
   private async requestJson(
     operation: string,
     request: () => ResponsePromise
@@ -580,6 +672,7 @@ export class MaskedEmailService {
     }
   }
 
+  /** Resolve and validate the JMAP session discovery URL. */
   private resolveSessionUrl(sessionUrl: string | undefined, hostname: string) {
     if (sessionUrl !== undefined) {
       try {
@@ -621,6 +714,7 @@ export class MaskedEmailService {
     }
   }
 
+  /** Validate and normalize create options received from typed or JS callers. */
   private validateCreateOptions(options: CreateOptions): CreateOptions {
     const validated = this.validateOptions(
       options,
@@ -649,6 +743,7 @@ export class MaskedEmailService {
     return validated as CreateOptions;
   }
 
+  /** Validate and normalize a non-empty update payload. */
   private validateUpdateOptions(options: UpdateOptions): UpdateOptions {
     const validated = this.validateOptions(
       options,
@@ -673,6 +768,7 @@ export class MaskedEmailService {
     return validated as UpdateOptions;
   }
 
+  /** Remove undefined values and reject fields not supported by an operation. */
   private validateOptions(
     options: unknown,
     allowedFields: Set<string>,
@@ -696,6 +792,7 @@ export class MaskedEmailService {
     );
   }
 
+  /** Validate metadata shared by create and update operations. */
   private validateMetadata(options: Record<string, unknown>): void {
     if (
       options.forDomain !== undefined &&
@@ -720,6 +817,7 @@ export class MaskedEmailService {
     }
   }
 
+  /** Validate a required masked-email identifier. */
   private validateId(id: unknown): string {
     if (typeof id !== 'string' || id.trim().length === 0) {
       throw new InvalidArgumentError('No id provided');
@@ -727,6 +825,7 @@ export class MaskedEmailService {
     return id;
   }
 
+  /** Convert a per-record JMAP SetError into the public error type. */
   private throwSetError(
     errors: Record<string, SetErrorData> | null | undefined,
     affectedId: string,
@@ -751,6 +850,7 @@ export class MaskedEmailService {
     );
   }
 
+  /** Build a structured error for malformed or inconsistent JMAP data. */
   private invalidResponse(
     operation: string,
     message: string,
@@ -768,6 +868,7 @@ export class MaskedEmailService {
     );
   }
 
+  /** Convert Ky and lower-level request failures into public transport errors. */
   private transportError(error: unknown, operation: string): Error {
     if (isHTTPError(error)) {
       const status = error.response.status;
@@ -796,6 +897,7 @@ export class MaskedEmailService {
     );
   }
 
+  /** Check that a value is a canonical HTTP(S) origin. */
   private isHttpOrigin(value: unknown): boolean {
     if (typeof value !== 'string') {
       return false;
@@ -813,6 +915,7 @@ export class MaskedEmailService {
     }
   }
 
+  /** Check that a value is an absolute URL. */
   private isAbsoluteUrl(value: unknown): boolean {
     if (typeof value !== 'string') {
       return false;
@@ -825,6 +928,7 @@ export class MaskedEmailService {
     }
   }
 
+  /** Narrow untrusted JSON to the public masked-email shape. */
   private isMaskedEmail(value: unknown): value is MaskedEmail {
     return (
       this.isRecord(value) &&
@@ -840,6 +944,7 @@ export class MaskedEmailService {
     );
   }
 
+  /** Narrow untrusted session data to a standard JMAP account. */
   private isSessionAccount(value: unknown): value is SessionAccount {
     return (
       this.isRecord(value) &&
@@ -851,6 +956,9 @@ export class MaskedEmailService {
     );
   }
 
+  /**
+   * Validate the nullable maps and ID arrays used by real JMAP set responses.
+   */
   private isSetResponse(value: unknown): value is SetResponseData<MaskedEmail> {
     if (!this.isRecord(value) || typeof value.accountId !== 'string') {
       return false;
@@ -902,6 +1010,7 @@ export class MaskedEmailService {
     );
   }
 
+  /** Check that an untrusted value is a non-array object. */
   private isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
   }

@@ -25,6 +25,7 @@ import {
 import type { MaskedEmail } from '../types/maskedEmail.js';
 import type { Session } from '../types/session.js';
 
+/** Build a successful HTTP response containing one JMAP invocation. */
 function response(method: string, data: unknown, callId = '1') {
   const defaults =
     method === 'MaskedEmail/get'
@@ -42,12 +43,14 @@ function response(method: string, data: unknown, callId = '1') {
   });
 }
 
+/** Build the minimal Ky response surface used by service tests. */
 function jsonResponse(data: unknown) {
   return {
     json: vi.fn().mockResolvedValue(data)
   };
 }
 
+/** Build a Ky HTTPError with parsed response data. */
 function httpError(status: number, data: unknown): HTTPError {
   const error = new HTTPError(
     new Response(JSON.stringify(data), {
