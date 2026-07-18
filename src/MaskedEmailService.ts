@@ -584,8 +584,8 @@ export class MaskedEmailService {
   ): account is SessionAccount {
     return Boolean(
       account &&
-        this.isRecord(account.accountCapabilities) &&
-        MASKED_EMAIL_CAPABILITY in account.accountCapabilities
+      this.isRecord(account.accountCapabilities) &&
+      MASKED_EMAIL_CAPABILITY in account.accountCapabilities
     );
   }
 
