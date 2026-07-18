@@ -28,5 +28,5 @@ jobs:
       - name: Run Fastmail integration test
         env:
           JMAP_TOKEN: ${{ secrets.JMAP_TOKEN }}
-          JMAP_HOSTNAME: ${{ secrets.JMAP_HOSTNAME }}
+          # Leave the optional hostname unset so the Fastmail default applies.
         run: npm run test:integration
