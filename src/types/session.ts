@@ -4,7 +4,8 @@
 export interface SessionAccount {
   name: string;
   isPersonal: boolean;
-  userId: string;
+  /** Optional Fastmail extension; not part of the standard JMAP Account object. */
+  userId?: string;
   accountCapabilities: Record<string, Record<string, unknown>>;
   isReadOnly: boolean;
   [key: string]: unknown;

@@ -93,6 +93,17 @@ describe('MaskedEmailService', () => {
       expect(get).toHaveBeenCalledTimes(1);
     });
 
+    it('accepts a standard JMAP account without Fastmail userId', async () => {
+      const session: Session = structuredClone(sessionFixture);
+      delete session.accounts['masked-account'].userId;
+      get.mockResolvedValue({ data: session });
+
+      await expect(service.initialize()).resolves.toBeUndefined();
+      expect(
+        service.getSession().accounts['masked-account'].userId
+      ).toBeUndefined();
+    });
+
     it('supports the deprecated positional constructor', async () => {
       vi.stubEnv('JMAP_TOKEN', 'env-token');
       const positional = new MaskedEmailService('token', 'api.example.com');

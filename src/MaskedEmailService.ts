@@ -802,7 +802,7 @@ export class MaskedEmailService {
       typeof value.name === 'string' &&
       typeof value.isPersonal === 'boolean' &&
       typeof value.isReadOnly === 'boolean' &&
-      typeof value.userId === 'string' &&
+      (value.userId === undefined || typeof value.userId === 'string') &&
       this.isRecord(value.accountCapabilities)
     );
   }
