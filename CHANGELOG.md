@@ -1,4 +1,6 @@
-# [4.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2026-07-18)
+# Changelog
+
+## [4.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2026-07-18)
 
 ### Bug Fixes
 
@@ -6,7 +8,7 @@
 - **release:** require passing integration tests ([c68dab0](https://github.com/ajyey/fastmail-masked-email/commit/c68dab035839de77bff410aac783842a227cc03d))
 - **ci:** use default Fastmail hostname ([8003a50](https://github.com/ajyey/fastmail-masked-email/commit/8003a509a19c4f5d0bf95d46741013e5c07716aa))
 
-# [4.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.3...v4.0.0-beta.1) (2026-07-18)
+## [4.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.3...v4.0.0-beta.1) (2026-07-18)
 
 ### Bug Fixes
 
@@ -32,7 +34,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 ## [3.0.1](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0...v3.0.1) (2025-09-25)
 
-# [3.0.0](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.15...v3.0.0) (2025-08-12)
+## [3.0.0](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.15...v3.0.0) (2025-08-12)
 
 ### Features
 
@@ -43,13 +45,13 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 - **major:** Removes individual modules in favor of a MaskedEmailService class
 
-# [3.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2025-08-12)
+## [3.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2025-08-12)
 
 ### Features
 
 - adds getSession method ([b0b3403](https://github.com/ajyey/fastmail-masked-email/commit/b0b3403f66a53190942be2688f423feb03c758b0))
 
-# [3.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.14-beta.1...v3.0.0-beta.1) (2025-08-12)
+## [3.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.14-beta.1...v3.0.0-beta.1) (2025-08-12)
 
 ### Features
 
@@ -91,7 +93,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 ## [2.1.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.1.0...v2.1.1) (2023-09-25)
 
-# [2.1.0](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.1...v2.1.0) (2023-09-09)
+## [2.1.0](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.1...v2.1.0) (2023-09-09)
 
 ### Features
 
@@ -99,7 +101,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 ## [2.0.1](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0...v2.0.1) (2023-07-11)
 
-# [2.0.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v2.0.0) (2023-07-04)
+## [2.0.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.1...v2.0.0) (2023-07-04)
 
 ### Code Refactoring
 
@@ -127,13 +129,13 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 - **getbyid:** renames getById to getEmailById
 - **list:** rename list to getAllEmails
 
-# [2.0.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2023-07-04)
+## [2.0.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2023-07-04)
 
 ### Features
 
 - add function for permanently deleting a masked email ([b7df294](https://github.com/ajyey/fastmail-masked-email/commit/b7df2940d72c7fa756169803bf6976dc50a98a8e))
 
-# [2.0.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2023-07-04)
+## [2.0.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2023-07-04)
 
 ### Code Refactoring
 
@@ -143,7 +145,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 - rename enable function to enableEmail
 
-# [2.0.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2023-07-04)
+## [2.0.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2023-07-04)
 
 ### Code Refactoring
 
@@ -153,7 +155,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 - renames disable function to disableEmail
 
-# [2.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-07-04)
+## [2.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-07-04)
 
 ### Code Refactoring
 
@@ -163,7 +165,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 - renames the remove method to deleteEmail
 
-# [2.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.4...v2.0.0-beta.1) (2023-07-04)
+## [2.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.2-beta.4...v2.0.0-beta.1) (2023-07-04)
 
 ### Code Refactoring
 
@@ -183,7 +185,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 ## [1.3.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0...v1.3.1) (2023-05-24)
 
-# [1.3.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.3...v1.3.0) (2023-05-23)
+## [1.3.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.3...v1.3.0) (2023-05-23)
 
 ### Bug Fixes
 
@@ -194,31 +196,31 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 - **create:** add better axios error handling for creating masked emails ([35782b3](https://github.com/ajyey/fastmail-masked-email/commit/35782b39612300f52523228ddc95ccbd2ca3045c))
 - **errors:** add util function for handling axios errors ([c560d4c](https://github.com/ajyey/fastmail-masked-email/commit/c560d4c9da169c815358cb7dfa9a1d9638ec203b))
 
-# [1.3.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.4...v1.3.0-beta.5) (2023-05-23)
+## [1.3.0-beta.5](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.4...v1.3.0-beta.5) (2023-05-23)
 
 ### Reverts
 
 - Revert "fix: errors occurring due to axios being mocked" ([fa4c66d](https://github.com/ajyey/fastmail-masked-email/commit/fa4c66d02ecbc7b609220acede8456d93b2fc385))
 
-# [1.3.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.3...v1.3.0-beta.4) (2023-05-23)
+## [1.3.0-beta.4](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.3...v1.3.0-beta.4) (2023-05-23)
 
 ### Bug Fixes
 
 - errors occurring due to axios being mocked ([6d158ca](https://github.com/ajyey/fastmail-masked-email/commit/6d158ca858cfecbd7c70cdc9085fcb514dce02ac))
 
-# [1.3.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2023-05-23)
+## [1.3.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2023-05-23)
 
 ### Bug Fixes
 
 - entrypoint in package.json ([6cf5f5b](https://github.com/ajyey/fastmail-masked-email/commit/6cf5f5be63f6ebb1e8497ee162676d178b3976ed))
 
-# [1.3.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.1...v1.3.0-beta.2) (2023-05-23)
+## [1.3.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.3.0-beta.1...v1.3.0-beta.2) (2023-05-23)
 
 ### Features
 
 - **errors:** add util function for handling axios errors ([c560d4c](https://github.com/ajyey/fastmail-masked-email/commit/c560d4c9da169c815358cb7dfa9a1d9638ec203b))
 
-# [1.3.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.4-beta.2...v1.3.0-beta.1) (2023-05-23)
+## [1.3.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.4-beta.2...v1.3.0-beta.1) (2023-05-23)
 
 ### Features
 
@@ -238,7 +240,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 ## [1.2.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.0...v1.2.1) (2023-05-21)
 
-# [1.2.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.2...v1.2.0) (2023-05-20)
+## [1.2.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.2...v1.2.0) (2023-05-20)
 
 ### Code Refactoring
 
@@ -252,7 +254,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 - removes GetMethodResponse and SetMethodResponse types
 
-# [1.2.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2023-05-20)
+## [1.2.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2023-05-20)
 
 ### Code Refactoring
 
@@ -262,7 +264,7 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 - removes GetMethodResponse and SetMethodResponse types
 
-# [1.2.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.2...v1.2.0-beta.1) (2023-05-19)
+## [1.2.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.2...v1.2.0-beta.1) (2023-05-19)
 
 ### Features
 
@@ -272,19 +274,19 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 
 ## [1.1.1](https://github.com/ajyey/fastmail-masked-email/compare/v1.1.0...v1.1.1) (2023-05-19)
 
-# [1.1.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.0.0...v1.1.0) (2023-05-19)
+## [1.1.0](https://github.com/ajyey/fastmail-masked-email/compare/v1.0.0...v1.1.0) (2023-05-19)
 
 ### Features
 
 - deleteEmail minor scope release rule ([91b2eb2](https://github.com/ajyey/fastmail-masked-email/commit/91b2eb2a60d2031ccaeeaa28f1b71dd3d7cc6646))
 
-# 1.0.0-beta.1 (2023-05-19)
+## 1.0.0-beta.1 (2023-05-19)
 
 ### Features
 
 - check the notFound field to determine if a masked email could not be found ([1988fab](https://github.com/ajyey/fastmail-masked-email/commit/1988fabaab2f45946efb7db291028d7db129591c))
 
-# 1.0.0-alpha.2 (2022-10-24)
+## 1.0.0-alpha.2 (2022-10-24)
 
 ### Added
 
@@ -292,14 +294,14 @@ Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
 - Much better typedoc descriptions and annotations
 - Eslint plugin for tsdoc
 
-# 1.0.0-alpha.1 (2022-10-17)
+## 1.0.0-alpha.1 (2022-10-17)
 
 ### Fixed
 
 - Fixed a bug where the entry point was not being set correctly in the package.json file
 - Fixed a bug where the `debug` package should have been a dependency instead of a devDependency
 
-# 1.0.0-alpha.0 (2022-10-17)
+## 1.0.0-alpha.0 (2022-10-17)
 
 ### Added
 

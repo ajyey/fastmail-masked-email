@@ -37,6 +37,7 @@
       }
     ],
     "@semantic-release/changelog",
+    "./scripts/normalize-changelog.mjs",
     "@semantic-release/npm",
     "@semantic-release/github",
     [
