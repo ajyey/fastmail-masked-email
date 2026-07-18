@@ -25,4 +25,4 @@
 - v4 is ESM-only. Keep `package.json`, NodeNext TypeScript output, `.js` relative specifiers, declarations, and the `exports` map aligned.
 - Validate consumer behavior against `npm pack`, not direct `dist` imports. CommonJS consumers must use dynamic `import()` as documented in `MIGRATION.md`.
 - Commit messages use Conventional Commits. Semantic Release publishes stable releases from `master` and beta prereleases from `develop`.
-- `.github/workflows/fastmail-integration-test.yml` runs the same live integration suite on pushes to `develop`/`master` and by manual dispatch. It requires a dedicated Fastmail token and must never run on pull requests or personal accounts.
+- `.github/workflows/fastmail-integration-test.yml` is called by the release workflow on pushes to `develop`/`master` and supports manual dispatch. The release job must depend on its success. It requires a dedicated Fastmail token and must never run on pull requests or personal accounts.

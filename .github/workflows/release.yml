@@ -9,7 +9,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  integration:
+    uses: ./.github/workflows/fastmail-integration-test.yml
+    secrets:
+      JMAP_TOKEN: ${{ secrets.JMAP_TOKEN }}
+
   release:
+    needs: integration
     runs-on: ubuntu-latest
     permissions:
       contents: write # to be able to publish a GitHub release

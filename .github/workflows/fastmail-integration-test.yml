@@ -1,8 +1,11 @@
 name: fastmail-integration-test
 
 on:
-  push:
-    branches: ['develop', 'master']
+  workflow_call:
+    secrets:
+      JMAP_TOKEN:
+        description: Fastmail API token for the dedicated integration account
+        required: true
   workflow_dispatch:
 
 permissions:
