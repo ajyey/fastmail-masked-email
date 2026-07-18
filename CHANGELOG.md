@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.0-beta.3](https://github.com/ajyey/fastmail-masked-email/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2026-07-18)
+
+### Bug Fixes
+
+- **changelog:** normalize CHANGELOG formatting ([5a53db9](https://github.com/ajyey/fastmail-masked-email/commit/5a53db96d05487f8020b77c41ad55e43029f8756))
+- **changelog:** normalize release heading levels ([7eb9e3c](https://github.com/ajyey/fastmail-masked-email/commit/7eb9e3c30fc95b269ecd079f391593fe523afdbc))
+
 ## [4.0.0-beta.2](https://github.com/ajyey/fastmail-masked-email/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2026-07-18)
 
 ### Bug Fixes
