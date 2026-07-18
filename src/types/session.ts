@@ -1,39 +1,34 @@
 /**
  * Fastmail JMAP session object
  */
+export interface SessionAccount {
+  name: string;
+  isPersonal: boolean;
+  userId: string;
+  accountCapabilities: Record<string, Record<string, unknown>>;
+  isReadOnly: boolean;
+  [key: string]: unknown;
+}
+
 export interface Session {
   state: string;
   apiUrl: string;
-  capabilities: {
-    'urn:ietf:params:jmap:core': {
-      maxConcurrentUpload: number;
-      maxConcurrentRequests: number;
-      maxSizeRequest: number;
-      maxObjectsInGet: number;
-      maxCallsInRequest: number;
-      maxSizeUpload: number;
-      maxObjectsInSet: number;
-      collationAlgorithms: string[];
-    };
-    'https://www.fastmail.com/dev/maskedemail': Record<string, unknown>;
-  };
-  accounts: {
-    [key: string]: {
-      name: string;
-      isPersonal: boolean;
-      userId: string;
-      accountCapabilities: {
-        'urn:ietf:params:jmap:core': Record<string, unknown>;
-        'https://www.fastmail.com/dev/maskedemail': Record<string, unknown>;
-      };
-      isReadOnly: boolean;
-    };
-  };
-  eventSourceUrl: string;
-  downloadUrl: string;
-  uploadUrl: string;
-  username: string;
-  primaryAccounts: {
-    [key: string]: string;
-  };
+  capabilities: Record<string, Record<string, unknown>>;
+  accounts: Record<string, SessionAccount>;
+  primaryAccounts: Record<string, string>;
+  eventSourceUrl?: string;
+  downloadUrl?: string;
+  uploadUrl?: string;
+  username?: string;
+  [key: string]: unknown;
 }
+
+export type DeepReadonly<T> = T extends (...args: never[]) => unknown
+  ? T
+  : T extends readonly (infer U)[]
+    ? readonly DeepReadonly<U>[]
+    : T extends object
+      ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
+      : T;
+
+export type ReadonlySession = DeepReadonly<Session>;

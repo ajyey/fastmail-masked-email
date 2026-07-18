@@ -17,6 +17,10 @@
  */
 export type MaskedEmailState = 'enabled' | 'disabled' | 'pending' | 'deleted';
 
+export type CreateMaskedEmailState = Exclude<MaskedEmailState, 'deleted'>;
+
+export type UpdateMaskedEmailState = Exclude<MaskedEmailState, 'pending'>;
+
 /**
  * Represents a masked email address.
  * @see {@link https://www.fastmail.com/developer/maskedemail/}
@@ -34,12 +38,10 @@ export interface MaskedEmail {
   forDomain: string;
   /** A short user-supplied description of what this masked email address is for. */
   description: string;
-  /** The date-time the most recent message was received at this email address, if any. */
-  createdAt: string;
   /** The date-time the email address was created. */
-  lastMessageAt: string;
+  createdAt: string;
+  /** The date-time the most recent message was received, if any. */
+  lastMessageAt: string | null;
   /** The name of the client that created this masked email address */
   createdBy: string;
-  /** (create-only) This is only used on create and otherwise ignored; it is not returned when masked email objects are fetched. */
-  emailPrefix?: string;
 }

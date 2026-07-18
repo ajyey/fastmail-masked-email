@@ -1,13 +1,13 @@
-import { MaskedEmailState } from '../types/maskedEmail';
+import type { MaskedEmail } from '../types/maskedEmail.js';
 
 export const maskedEmailFixture = {
   id: 'masked-email-1',
-  email: 'testEmail@test.com',
-  state: 'enabled' as MaskedEmailState,
-  description: 'A very helpful description',
-  forDomain: 'test.com',
-  createdAt: '2020-01-01T00:00:00.000Z',
-  createdBy: '1Password',
-  url: 'gmail.com',
-  lastMessageAt: '2020-01-01T00:00:00.000Z'
-};
+  email: 'test@masked.example',
+  state: 'enabled',
+  description: 'Test account',
+  forDomain: 'https://example.com',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  createdBy: 'fastmail-masked-email',
+  url: 'https://example.com/credentials/1',
+  lastMessageAt: null
+} satisfies MaskedEmail;

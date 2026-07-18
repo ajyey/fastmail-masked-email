@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { InvalidArgumentError } from '../error/invalidArgumentError';
+import { InvalidArgumentError } from '../error/invalidArgumentError.js';
 
 describe('InvalidArgumentError', () => {
   it('should create an instance of InvalidArgumentError with the given message', () => {

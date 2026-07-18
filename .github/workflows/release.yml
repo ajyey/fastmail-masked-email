@@ -1,46 +1,39 @@
 name: release
 
 on:
-    push:
-        branches: [ "master", "develop" ]
+  push:
+    branches: ['master', 'develop']
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/checkout@v5
-            -   name: Use Node.js 24
-                uses: actions/setup-node@v6
-                with:
-                    node-version: 24
-                    cache: 'npm'
-            -   name: Installing dependencies
-                run: npm ci
-            -   name: Running linting and tests
-                run: npm run test
-    release:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write # to be able to publish a GitHub release
-            issues: write # to be able to comment on released issues
-            pull-requests: write # to be able to comment on released pull requests
-            id-token: write # to enable use of OIDC for npm provenance
-        needs: test
-        steps:
-            - uses: actions/checkout@v5
-              with:
-                  persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-            - name: Use Node.js 24
-              uses: actions/setup-node@v5
-              with:
-                  node-version: 24
-                  cache: 'npm'
-            - name: Installing dependencies
-              run: npm ci
-            - name: Building package
-              run: npm run build
-            - name: Releasing
-              env:
-                  GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-              run: npx semantic-release
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Installing dependencies
+        run: npm ci
+      - name: Running linting and tests
+        run: npm test
+      - name: Building package
+        run: npm run build
+      - name: Releasing
+        env:
+          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm exec -- semantic-release

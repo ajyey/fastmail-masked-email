@@ -1,461 +1,864 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import debug from 'debug';
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig
+} from 'axios';
 
 import {
-  Action,
   API_HOSTNAME,
   JMAP,
   MASKED_EMAIL_CALLS,
   MASKED_EMAIL_CAPABILITY
-} from './constants';
-import { InvalidArgumentError } from './error/invalidArgumentError';
-import { JmapGetResponse, JmapRequest, JmapSetResponse } from './types/jmap';
-import { MaskedEmail, MaskedEmailState } from './types/maskedEmail';
-import { CreateOptions, Options } from './types/options';
-import { GetResponseData } from './types/response';
+} from './constants.js';
+import { InvalidArgumentError } from './error/invalidArgumentError.js';
+import { InvalidCredentialsError } from './error/invalidCredentialsError.js';
+import { JmapMethodError } from './error/jmapMethodError.js';
+import { JmapSetError } from './error/jmapSetError.js';
+import { MaskedEmailNotFoundError } from './error/maskedEmailNotFoundError.js';
+import { ServiceNotInitializedError } from './error/serviceNotInitializedError.js';
+import { TransportError } from './error/transportError.js';
+import { UnsupportedAccountError } from './error/unsupportedAccountError.js';
+import type {
+  Invocation,
+  JmapMethodErrorData,
+  JmapRequest,
+  JmapResponse
+} from './types/jmap.js';
+import type { MaskedEmail, MaskedEmailState } from './types/maskedEmail.js';
+import type {
+  CreateOptions,
+  MaskedEmailServiceOptions,
+  UpdateOptions
+} from './types/options.js';
+import type {
+  GetResponseData,
+  SetErrorData,
+  SetResponseData
+} from './types/response.js';
+import type {
+  ReadonlySession,
+  Session,
+  SessionAccount
+} from './types/session.js';
 
-/**
- * MaskedEmailService - A comprehensive service for managing Fastmail masked emails
- * Provides methods for creating, retrieving, updating, and deleting masked email addresses
- */
+const CREATE_FIELDS = new Set([
+  'description',
+  'emailPrefix',
+  'forDomain',
+  'state',
+  'url'
+]);
+const UPDATE_FIELDS = new Set(['description', 'forDomain', 'state', 'url']);
+const CREATE_STATES = new Set(['enabled', 'disabled', 'pending']);
+const UPDATE_STATES = new Set(['enabled', 'disabled', 'deleted']);
+
+type JmapArguments = Record<string, unknown>;
+
+/** A service for managing Fastmail masked email addresses. */
 export class MaskedEmailService {
-  private session: any = null;
-  private debugLogger = debug('MaskedEmailService:debug');
-  private errorLogger = debug('MaskedEmailService:error');
+  private readonly token?: string;
+  private readonly sessionUrl: string;
+  private readonly requestedAccountId?: string;
+  private readonly timeout?: number;
+  private readonly signal?: AbortSignal;
+  private readonly httpClient: AxiosInstance;
+  private session: Session | null = null;
+  private accountId: string | null = null;
+  private initialization: Promise<void> | null = null;
+  private callSequence = 0;
 
-  /**
-   * Creates a new MaskedEmailService instance
-   * @param token - Optional Fastmail API token for authentication
-   * @param hostname - Optional Fastmail API hostname; defaults to api.fastmail.com
-   */
+  constructor(options?: MaskedEmailServiceOptions);
+  /** @deprecated Pass a {@link MaskedEmailServiceOptions} object instead. */
+  constructor(token?: string, hostname?: string);
   constructor(
-    private token?: string,
-    private hostname?: string
+    optionsOrToken: MaskedEmailServiceOptions | string = {},
+    legacyHostname?: string
   ) {
-    this.token = token || process.env.JMAP_TOKEN;
-    this.hostname = hostname || process.env.JMAP_HOSTNAME || API_HOSTNAME;
+    const options =
+      typeof optionsOrToken === 'string' || legacyHostname !== undefined
+        ? {
+            token:
+              typeof optionsOrToken === 'string' ? optionsOrToken : undefined,
+            hostname: legacyHostname
+          }
+        : optionsOrToken;
+
+    this.token = options.token ?? process.env.JMAP_TOKEN;
+    this.requestedAccountId = options.accountId;
+    this.timeout = options.timeout;
+    this.signal = options.signal;
+    this.httpClient = options.httpClient ?? axios;
+    this.sessionUrl = this.resolveSessionUrl(
+      options.sessionUrl,
+      options.hostname ?? process.env.JMAP_HOSTNAME ?? API_HOSTNAME
+    );
   }
 
-  /**
-   * Initialize the service by getting a session from the JMAP server
-   * @returns Promise that resolves when the session is established
-   * @throws Error if no auth token is provided
-   */
+  /** Fetch and validate the JMAP session used by subsequent calls. */
   async initialize(): Promise<void> {
-    if (!this.token) {
-      throw new Error(
+    if (this.initialization) {
+      return this.initialization;
+    }
+
+    this.initialization = this.initializeSession();
+    try {
+      await this.initialization;
+    } finally {
+      this.initialization = null;
+    }
+  }
+
+  /** Return a snapshot of the active JMAP session. */
+  getSession(): ReadonlySession {
+    this.ensureInitialized();
+    return structuredClone(this.session!) as ReadonlySession;
+  }
+
+  /** Create a masked email and retrieve the complete server-owned object. */
+  async createEmail(options: CreateOptions = {}): Promise<MaskedEmail> {
+    this.ensureWritable();
+    const validatedOptions = this.validateCreateOptions(options);
+    const state = validatedOptions.state ?? 'enabled';
+    const response = await this.executeSet('creating a masked email', {
+      accountId: this.accountId!,
+      create: {
+        '0': {
+          ...validatedOptions,
+          state
+        }
+      }
+    });
+
+    this.throwSetError(response.notCreated, '0', 'creating a masked email');
+    const created = response.created?.['0'];
+    if (!created?.id) {
+      throw this.invalidResponse(
+        'creating a masked email',
+        'The JMAP response did not contain the created masked email ID.',
+        response
+      );
+    }
+
+    return this.getEmailById(created.id);
+  }
+
+  /** Retrieve every masked email in the selected account. */
+  async getAllEmails(): Promise<MaskedEmail[]> {
+    this.ensureInitialized();
+    const response = await this.executeGet('listing masked emails', null);
+    return response.list;
+  }
+
+  /** Retrieve one masked email by ID. */
+  async getEmailById(id: string): Promise<MaskedEmail> {
+    this.ensureInitialized();
+    const validId = this.validateId(id);
+    const response = await this.executeGet('getting a masked email by id', [
+      validId
+    ]);
+    const email = response.list.find((candidate) => candidate.id === validId);
+
+    if (!email) {
+      throw new MaskedEmailNotFoundError(validId);
+    }
+
+    return email;
+  }
+
+  /** Find all masked email records with an exact address match. */
+  async getEmailsByAddress(
+    address: string,
+    list?: readonly MaskedEmail[]
+  ): Promise<MaskedEmail[]> {
+    if (typeof address !== 'string' || address.trim().length === 0) {
+      throw new InvalidArgumentError('No address provided');
+    }
+
+    const emails = list ?? (await this.getAllEmails());
+    return emails.filter((email) => email.email === address);
+  }
+
+  /** Update mutable properties of a masked email. */
+  async updateEmail(id: string, options: UpdateOptions): Promise<void> {
+    this.ensureWritable();
+    const validId = this.validateId(id);
+    const validatedOptions = this.validateUpdateOptions(options);
+    const response = await this.executeSet('updating a masked email', {
+      accountId: this.accountId!,
+      update: { [validId]: validatedOptions }
+    });
+
+    this.throwSetError(response.notUpdated, validId, 'updating a masked email');
+    if (!response.updated || !(validId in response.updated)) {
+      throw this.invalidResponse(
+        'updating a masked email',
+        `The JMAP response did not confirm that ${validId} was updated.`,
+        response
+      );
+    }
+  }
+
+  async deleteEmail(id: string): Promise<void> {
+    return this.updateEmail(id, { state: 'deleted' });
+  }
+
+  async disableEmail(id: string): Promise<void> {
+    return this.updateEmail(id, { state: 'disabled' });
+  }
+
+  async enableEmail(id: string): Promise<void> {
+    return this.updateEmail(id, { state: 'enabled' });
+  }
+
+  /** Permanently destroy an eligible masked email. */
+  async permanentlyDeleteEmail(id: string): Promise<void> {
+    this.ensureWritable();
+    const validId = this.validateId(id);
+    const response = await this.executeSet('deleting a masked email', {
+      accountId: this.accountId!,
+      destroy: [validId]
+    });
+
+    this.throwSetError(
+      response.notDestroyed,
+      validId,
+      'deleting a masked email'
+    );
+    if (!response.destroyed?.includes(validId)) {
+      throw this.invalidResponse(
+        'deleting a masked email',
+        `The JMAP response did not confirm that ${validId} was destroyed.`,
+        response
+      );
+    }
+  }
+
+  async filterByState(
+    state: MaskedEmailState,
+    list?: readonly MaskedEmail[]
+  ): Promise<MaskedEmail[]> {
+    const emails = list ?? (await this.getAllEmails());
+    return emails.filter((email) => email.state === state);
+  }
+
+  async filterByDomain(
+    origin: string,
+    list?: readonly MaskedEmail[]
+  ): Promise<MaskedEmail[]> {
+    const emails = list ?? (await this.getAllEmails());
+    return emails.filter((email) => email.forDomain === origin);
+  }
+
+  private async initializeSession(): Promise<void> {
+    if (!this.token?.trim()) {
+      throw new InvalidCredentialsError(
         'No auth token provided and JMAP_TOKEN environment variable is not set. Please provide a token.'
       );
     }
 
-    const authUrl = `https://${this.hostname}/jmap/session`;
-    const headers = this.buildHeaders(this.token);
-
+    let data: unknown;
     try {
-      const response: AxiosResponse = await axios.get(authUrl, { headers });
-      this.session = response.data;
-      this.debugLogger('Session initialized: %o', JSON.stringify(this.session));
+      const response = await this.httpClient.get(this.sessionUrl, {
+        ...this.requestConfig(),
+        headers: this.buildHeaders()
+      });
+      data = response.data;
     } catch (error) {
-      return this.handleAxiosError(error as AxiosError, Action.SESSION);
+      throw this.transportError(error, 'getting a session');
     }
+
+    const session = this.parseSession(data);
+    const accountId = this.selectAccount(session);
+    this.session = session;
+    this.accountId = accountId;
   }
 
-  public getSession(): Promise<any> {
-    this.ensureInitialized();
-    return this.session;
+  private async executeGet(
+    operation: string,
+    ids: string[] | null
+  ): Promise<GetResponseData> {
+    const response = await this.execute(operation, MASKED_EMAIL_CALLS.get, {
+      accountId: this.accountId!,
+      ids
+    });
+
+    if (
+      !this.isRecord(response) ||
+      typeof response.accountId !== 'string' ||
+      typeof response.state !== 'string' ||
+      !Array.isArray(response.list) ||
+      !response.list.every((email) => this.isMaskedEmail(email))
+    ) {
+      throw this.invalidResponse(
+        operation,
+        'The JMAP get response did not contain a list.',
+        response
+      );
+    }
+
+    if (
+      response.notFound !== undefined &&
+      response.notFound !== null &&
+      (!Array.isArray(response.notFound) ||
+        !response.notFound.every((id) => typeof id === 'string'))
+    ) {
+      throw this.invalidResponse(
+        operation,
+        'The JMAP get response contained an invalid notFound value.',
+        response
+      );
+    }
+
+    return response as unknown as GetResponseData;
   }
 
-  /**
-   * Creates a new masked email address
-   * @param options - The {@link CreateOptions|options} for creating the masked email
-   * @throws {@link InvalidArgumentError} if no session is provided
-   */
-  async createEmail(options: CreateOptions = {}): Promise<MaskedEmail> {
+  private async executeSet(
+    operation: string,
+    args: JmapArguments
+  ): Promise<SetResponseData<MaskedEmail>> {
+    const response = await this.execute(
+      operation,
+      MASKED_EMAIL_CALLS.set,
+      args
+    );
+    if (!this.isSetResponse(response)) {
+      throw this.invalidResponse(
+        operation,
+        'The JMAP set response was not an object.',
+        response
+      );
+    }
+    return response as unknown as SetResponseData<MaskedEmail>;
+  }
+
+  private async execute(
+    operation: string,
+    methodName: string,
+    args: JmapArguments
+  ): Promise<unknown> {
     this.ensureInitialized();
-
-    const { apiUrl, accountId } = this.parseSession();
-    const headers = this.buildHeaders(this.token!);
-    const state: MaskedEmailState = options.state || 'enabled';
-
-    const requestBody: JmapRequest = {
+    const callId = String(++this.callSequence);
+    const body: JmapRequest = {
       using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          {
-            accountId,
-            create: {
-              ['0']: {
-                ...options,
-                state
-              }
-            }
-          },
-          'a'
-        ]
-      ]
+      methodCalls: [[methodName, args, callId]]
     };
 
-    this.debugLogger(
-      'createEmail() request body: %o',
-      JSON.stringify(requestBody)
+    let data: unknown;
+    try {
+      const response = await this.httpClient.post(this.session!.apiUrl, body, {
+        ...this.requestConfig(),
+        headers: this.buildHeaders()
+      });
+      data = response.data;
+    } catch (error) {
+      throw this.transportError(error, operation);
+    }
+
+    if (!this.isRecord(data) || !Array.isArray(data.methodResponses)) {
+      throw this.invalidResponse(
+        operation,
+        'The server returned an invalid JMAP response.',
+        data,
+        callId
+      );
+    }
+
+    const invocation = (
+      data as unknown as JmapResponse<unknown>
+    ).methodResponses.find(
+      (candidate): candidate is Invocation<unknown> =>
+        Array.isArray(candidate) && candidate[2] === callId
     );
 
-    try {
-      const response = await axios.post(apiUrl, requestBody, { headers });
-      this.debugLogger(
-        'createEmail() response: %o',
-        JSON.stringify(response.data)
+    if (!invocation) {
+      throw this.invalidResponse(
+        operation,
+        `The JMAP response did not contain call ID ${callId}.`,
+        data,
+        callId
       );
-
-      const { data }: { data: JmapSetResponse } = response;
-      return {
-        ...data.methodResponses[0][1].created['0'],
-        state
-      };
-    } catch (error) {
-      return this.handleAxiosError(error as AxiosError, Action.CREATE);
     }
+
+    const [responseMethod, responseData] = invocation;
+    if (responseMethod === 'error') {
+      const errorData = this.isRecord(responseData)
+        ? (responseData as unknown as JmapMethodErrorData)
+        : { type: 'unknown', description: 'Unknown JMAP method error' };
+      throw new JmapMethodError(
+        operation,
+        typeof errorData.type === 'string' ? errorData.type : 'unknown',
+        errorData.description ?? `JMAP ${operation} failed.`,
+        callId,
+        responseData
+      );
+    }
+
+    if (responseMethod !== methodName) {
+      throw this.invalidResponse(
+        operation,
+        `Expected ${methodName} but received ${responseMethod}.`,
+        data,
+        callId
+      );
+    }
+
+    return responseData;
   }
 
-  /**
-   * Retrieves all masked emails
-   * @throws {@link InvalidArgumentError} if no session is provided
-   * @returns A list of all {@link MaskedEmail} objects
-   */
-  async getAllEmails(): Promise<MaskedEmail[]> {
-    this.ensureInitialized();
+  private parseSession(data: unknown): Session {
+    if (!this.isRecord(data)) {
+      throw this.invalidResponse(
+        'getting a session',
+        'The JMAP session was not an object.',
+        data
+      );
+    }
 
-    const { apiUrl, accountId } = this.parseSession();
-    const headers = this.buildHeaders(this.token!);
-
-    const body: JmapRequest = {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: null }, 'a']]
-    };
-
-    this.debugLogger('getAllEmails() body: %o', JSON.stringify(body));
+    if (
+      typeof data.state !== 'string' ||
+      typeof data.apiUrl !== 'string' ||
+      !this.isRecord(data.capabilities) ||
+      !this.isRecord(data.accounts) ||
+      !this.isRecord(data.primaryAccounts)
+    ) {
+      throw this.invalidResponse(
+        'getting a session',
+        'The JMAP session is missing required fields.',
+        data
+      );
+    }
 
     try {
-      const response: AxiosResponse = await axios.post(apiUrl, body, {
-        headers
-      });
-      this.debugLogger(
-        'getAllEmails() response: %o',
-        JSON.stringify(response.data)
+      const apiUrl = new URL(data.apiUrl);
+      if (apiUrl.protocol !== 'https:') {
+        throw new Error('JMAP API URL must use HTTPS.');
+      }
+    } catch {
+      throw this.invalidResponse(
+        'getting a session',
+        'The JMAP session contains an invalid apiUrl.',
+        data
       );
+    }
 
-      const jmapResponse: JmapGetResponse = response.data;
-      const methodResponse: GetResponseData =
-        jmapResponse.methodResponses[0][1];
-      if (!methodResponse.list) {
-        return Promise.reject(
-          new Error('JMAP Error: ' + JSON.stringify(jmapResponse))
+    if (
+      !(JMAP.CORE in data.capabilities) ||
+      !(MASKED_EMAIL_CAPABILITY in data.capabilities)
+    ) {
+      throw new UnsupportedAccountError(
+        'The JMAP session does not advertise the required JMAP capabilities.'
+      );
+    }
+
+    if (
+      !Object.values(data.accounts).every((account) =>
+        this.isSessionAccount(account)
+      )
+    ) {
+      throw this.invalidResponse(
+        'getting a session',
+        'The JMAP session contains invalid account data.',
+        data
+      );
+    }
+
+    return data as unknown as Session;
+  }
+
+  private selectAccount(session: Session): string {
+    if (this.requestedAccountId) {
+      const account = session.accounts[this.requestedAccountId];
+      if (!account || !this.supportsMaskedEmail(account)) {
+        throw new UnsupportedAccountError(
+          `Account ${this.requestedAccountId} does not support Fastmail masked email.`,
+          this.requestedAccountId
         );
       }
-      return methodResponse.list;
-    } catch (error) {
-      return this.handleAxiosError(error as AxiosError, Action.LIST);
-    }
-  }
-
-  /**
-   * Get a masked email by id
-   * @param id - The id of the masked email address.
-   * @returns A {@link MaskedEmail} object
-   * @throws {@link InvalidArgumentError} if no session is provided or no id is provided
-   */
-  async getEmailById(id: string | undefined): Promise<MaskedEmail> {
-    this.ensureInitialized();
-
-    if (!id) {
-      return Promise.reject(new InvalidArgumentError('No id provided'));
+      return this.requestedAccountId;
     }
 
-    const { apiUrl, accountId } = this.parseSession();
-    const headers = this.buildHeaders(this.token!);
-
-    const body: JmapRequest = {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.get, { accountId, ids: [id] }, 'a']]
-    };
-
-    try {
-      const response: AxiosResponse = await axios.post(apiUrl, body, {
-        headers
-      });
-      this.debugLogger('getEmailById() body: %o', JSON.stringify(body));
-
-      const responseData: JmapGetResponse = response.data;
-      this.debugLogger(
-        'getEmailById() response %o',
-        JSON.stringify(response.data)
-      );
-
-      if (this.maskedEmailNotFound(id, responseData)) {
-        return Promise.reject(new Error(`No masked email found with id ${id}`));
-      }
-
-      return responseData.methodResponses[0][1].list[0];
-    } catch (error) {
-      return this.handleAxiosError(error as AxiosError, Action.GET_BY_ID);
-    }
-  }
-
-  /**
-   * Get a masked email by address
-   * @param address - The address to retrieve
-   * @returns  A {@link MaskedEmail} object
-   */
-  async getEmailByAddress(address: string): Promise<MaskedEmail[] | []> {
-    try {
-      const maskedEmails: MaskedEmail[] = await this.getAllEmails();
-      return this.filterByAddress(address, maskedEmails);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  /**
-   * Updates a masked email
-   * @param id - The id of the masked email to update
-   * @param options - The {@link Options} containing the fields to update
-   * @throws {@link InvalidArgumentError} if no id is provided, no session is provided, or the {@link Options} are empty
-   */
-  async updateEmail(
-    id: string | undefined,
-    options: Options
-  ): Promise<{ [key: string]: null }> {
-    this.ensureInitialized();
-
-    if (!id) {
-      return Promise.reject(new InvalidArgumentError('No id provided'));
+    const primaryId = session.primaryAccounts[MASKED_EMAIL_CAPABILITY];
+    if (primaryId && this.supportsMaskedEmail(session.accounts[primaryId])) {
+      return primaryId;
     }
 
-    if (Object.keys(options).length === 0) {
-      return Promise.reject(
-        new InvalidArgumentError(
-          'No options provided. Please provide at least one option to updateEmail.'
-        )
-      );
-    }
-
-    const validOptions: string[] = ['description', 'forDomain', 'state'];
-    const invalidOptions: string[] = Object.keys(options).filter(
-      (option: string) => !validOptions.includes(option)
+    const supportedAccount = Object.entries(session.accounts).find(
+      ([, account]) => this.supportsMaskedEmail(account)
     );
-
-    if (invalidOptions.length > 0) {
-      return Promise.reject(
-        new InvalidArgumentError(
-          `Invalid options provided: ${invalidOptions.join(', ')}`
-        )
+    if (!supportedAccount) {
+      throw new UnsupportedAccountError(
+        'No account in the JMAP session supports Fastmail masked email.'
       );
     }
-
-    const { apiUrl, accountId } = this.parseSession();
-    const headers = this.buildHeaders(this.token!);
-
-    const body: JmapRequest = {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [
-        [
-          MASKED_EMAIL_CALLS.set,
-          { accountId, update: { [id]: { ...options } } },
-          'a'
-        ]
-      ]
-    };
-
-    this.debugLogger('updateEmail() body: %o', JSON.stringify(body));
-
-    try {
-      const response = await axios.post(apiUrl, body, { headers });
-      this.debugLogger(
-        'updateEmail() response: %o',
-        JSON.stringify(response.data)
-      );
-
-      const data: JmapSetResponse = await response.data;
-      return data.methodResponses[0][1].updated;
-    } catch (error) {
-      return this.handleAxiosError(error as AxiosError, Action.UPDATE);
-    }
+    return supportedAccount[0];
   }
 
-  /**
-   * Deletes a masked email by setting the state to deleted
-   * @param id - The id of the masked email to deleteEmail
-   */
-  async deleteEmail(id: string): Promise<{ [key: string]: null }> {
-    return await this.updateEmail(id, { state: 'deleted' });
+  private supportsMaskedEmail(
+    account: SessionAccount | undefined
+  ): account is SessionAccount {
+    return Boolean(
+      account &&
+        this.isRecord(account.accountCapabilities) &&
+        MASKED_EMAIL_CAPABILITY in account.accountCapabilities
+    );
   }
-
-  /**
-   * Disables a masked email by setting the state to disabled
-   * @param id - The id of the masked email to disableEmail
-   */
-  async disableEmail(id: string): Promise<{ [key: string]: null }> {
-    return await this.updateEmail(id, { state: 'disabled' });
-  }
-
-  /**
-   * Enables a masked email by setting the state to enabled
-   * @param id - The id of the masked email to enableEmail
-   */
-  async enableEmail(id: string): Promise<{ [key: string]: null }> {
-    return await this.updateEmail(id, { state: 'enabled' });
-  }
-
-  /**
-   * Permanently deletes a masked email
-   * @param id - The id of the masked email to permanently deleteEmail
-   * @throws {@link InvalidArgumentError} if no id is provided or no session is provided
-   */
-  async permanentlyDeleteEmail(
-    id: string | undefined
-  ): Promise<{ [key: string]: null }> {
-    this.ensureInitialized();
-
-    if (!id) {
-      return Promise.reject(new InvalidArgumentError('No id provided'));
-    }
-
-    const { apiUrl, accountId } = this.parseSession();
-    const headers = this.buildHeaders(this.token!);
-
-    const body: JmapRequest = {
-      using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-      methodCalls: [[MASKED_EMAIL_CALLS.set, { accountId, destroy: [id] }, 'a']]
-    };
-
-    this.debugLogger('permanentlyDeleteEmail() body: %o', JSON.stringify(body));
-
-    try {
-      const response = await axios.post(apiUrl, body, { headers });
-      this.debugLogger(
-        'permanentlyDeleteEmail() response: %o',
-        JSON.stringify(response.data)
-      );
-
-      const data: JmapSetResponse = await response.data;
-
-      // Check if the email was not destroyed
-      if (data.methodResponses[0][1].notDestroyed) {
-        const notDestroyedObj = data.methodResponses[0][1].notDestroyed[id];
-        this.errorLogger(
-          'permanentlyDeleteEmail() error: %o',
-          JSON.stringify(notDestroyedObj)
-        );
-        return Promise.reject(new Error(notDestroyedObj.description));
-      } else {
-        return data.methodResponses[0][1].destroyed;
-      }
-    } catch (error) {
-      return this.handleAxiosError(error as AxiosError, Action.DELETE);
-    }
-  }
-
-  /**
-   * Filter masked emails by state
-   * @param state - The state to filter by
-   * @param list - The list of masked emails (optional, will fetch all if not provided)
-   * @returns Promise that resolves to a filtered {@link MaskedEmail} array
-   */
-  async filterByState(
-    state: MaskedEmailState,
-    list?: MaskedEmail[]
-  ): Promise<MaskedEmail[]> {
-    const emails = list || (await this.getAllEmails());
-    return emails.filter((me) => me.state === state);
-  }
-
-  /**
-   * Filter masked emails by domain
-   * @param domain - The domain to filter by
-   * @param list - The list of masked emails (optional, will fetch all if not provided)
-   * @returns Promise that resolves to a filtered {@link MaskedEmail} array
-   */
-  async filterByForDomain(
-    domain: string,
-    list?: MaskedEmail[]
-  ): Promise<MaskedEmail[]> {
-    const emails = list || (await this.getAllEmails());
-    return emails.filter((me: MaskedEmail) => me.forDomain === domain);
-  }
-
-  // Private utility methods
 
   private ensureInitialized(): void {
-    if (!this.session) {
-      throw new InvalidArgumentError(
-        'Service not initialized. Call initialize() first.'
+    if (!this.session || !this.accountId) {
+      throw new ServiceNotInitializedError();
+    }
+  }
+
+  private ensureWritable(): void {
+    this.ensureInitialized();
+    const account = this.session!.accounts[this.accountId!];
+    if (account.isReadOnly) {
+      throw new UnsupportedAccountError(
+        `Account ${this.accountId} is read-only.`,
+        this.accountId!
       );
     }
   }
 
-  private parseSession() {
-    let accountId = this.session.primaryAccounts[JMAP.CORE];
-    if (!accountId) {
-      accountId = this.session.primaryAccounts[MASKED_EMAIL_CAPABILITY];
-    }
-    if (!accountId && this.session.accounts) {
-      accountId = Object.keys(this.session.accounts)[0];
-    }
-    const { apiUrl } = this.session;
-    return {
-      accountId,
-      apiUrl
-    };
-  }
-
-  /**
-   * Builds headers for requests using the JMAP token
-   * @param authToken - The JMAP authentication token
-   */
-  private buildHeaders(authToken: string) {
+  private buildHeaders(): Record<string, string> {
     return {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${authToken}`
+      Authorization: `Bearer ${this.token}`
     };
   }
 
-  private maskedEmailNotFound(id: string, response: JmapGetResponse): boolean {
-    const notFoundIds = response.methodResponses[0][1].notFound;
-    if (notFoundIds && notFoundIds.length > 0) {
-      return notFoundIds.includes(id);
-    }
-    return false;
+  private requestConfig(): AxiosRequestConfig {
+    return {
+      signal: this.signal,
+      timeout: this.timeout
+    };
   }
 
-  private filterByAddress(
-    address: string,
-    list: MaskedEmail[]
-  ): MaskedEmail[] | [] {
-    return list.filter((me: MaskedEmail) => me.email === address);
+  private resolveSessionUrl(sessionUrl: string | undefined, hostname: string) {
+    if (sessionUrl !== undefined) {
+      try {
+        const parsed = new URL(sessionUrl);
+        if (parsed.protocol !== 'https:') {
+          throw new Error('Session URL must use HTTPS.');
+        }
+        return parsed.toString();
+      } catch (error) {
+        throw new InvalidArgumentError(
+          `Invalid sessionUrl: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    if (typeof hostname !== 'string' || hostname.trim() !== hostname) {
+      throw new InvalidArgumentError(
+        'hostname must be a host name without a scheme or path'
+      );
+    }
+    try {
+      const parsed = new URL(`https://${hostname}`);
+      if (
+        !hostname ||
+        parsed.username ||
+        parsed.password ||
+        parsed.pathname !== '/' ||
+        parsed.search ||
+        parsed.hash ||
+        parsed.host.toLowerCase() !== hostname.toLowerCase()
+      ) {
+        throw new Error('Invalid host authority.');
+      }
+      return `${parsed.origin}/jmap/session`;
+    } catch {
+      throw new InvalidArgumentError(
+        'hostname must be a host name without a scheme or path'
+      );
+    }
   }
 
-  /**
-   * Handles an axios error and returns a rejected promise with a formatted error message based on the type of error and action attempted.
-   * @param error - The axios error
-   * @param action - The action that was being performed when the error occurred
-   */
-  private async handleAxiosError(
-    error: AxiosError,
-    action: Action
-  ): Promise<never> {
-    if (error.response) {
-      const errorMessage = `${action} failed with status code ${error.response.status}: ${error.response.statusText}. ${error.response.data}`;
-      this.errorLogger('Error response from axios: %o', error.response);
-      return Promise.reject(new Error(errorMessage));
-    } else if (error.request) {
-      const errorMessage = `${action} request was made, but no response was received. Error message: ${error.message}`;
-      this.errorLogger('Error request: %o', error.request);
-      return Promise.reject(new Error(errorMessage));
-    } else {
-      const errorMessage = `An error occurred while ${action.toLowerCase()}. Error message: ${error.message}`;
-      this.errorLogger('Error: %o', error);
-      return Promise.reject(new Error(errorMessage));
+  private validateCreateOptions(options: CreateOptions): CreateOptions {
+    const validated = this.validateOptions(
+      options,
+      CREATE_FIELDS,
+      'createEmail'
+    );
+    if (
+      validated.state !== undefined &&
+      (typeof validated.state !== 'string' ||
+        !CREATE_STATES.has(validated.state))
+    ) {
+      throw new InvalidArgumentError(
+        `Invalid create state: ${String(validated.state)}`
+      );
     }
+    if (
+      validated.emailPrefix !== undefined &&
+      (typeof validated.emailPrefix !== 'string' ||
+        !/^[a-z0-9_]{1,64}$/.test(validated.emailPrefix))
+    ) {
+      throw new InvalidArgumentError(
+        'emailPrefix must contain 1-64 lowercase letters, digits, or underscores'
+      );
+    }
+    this.validateMetadata(validated);
+    return validated as CreateOptions;
+  }
+
+  private validateUpdateOptions(options: UpdateOptions): UpdateOptions {
+    const validated = this.validateOptions(
+      options,
+      UPDATE_FIELDS,
+      'updateEmail'
+    );
+    if (Object.keys(validated).length === 0) {
+      throw new InvalidArgumentError(
+        'No options provided. Please provide at least one option to updateEmail.'
+      );
+    }
+    if (
+      validated.state !== undefined &&
+      (typeof validated.state !== 'string' ||
+        !UPDATE_STATES.has(validated.state))
+    ) {
+      throw new InvalidArgumentError(
+        `Invalid update state: ${String(validated.state)}`
+      );
+    }
+    this.validateMetadata(validated);
+    return validated as UpdateOptions;
+  }
+
+  private validateOptions(
+    options: unknown,
+    allowedFields: Set<string>,
+    operation: string
+  ): Record<string, unknown> {
+    if (!this.isRecord(options)) {
+      throw new InvalidArgumentError(`${operation} options must be an object`);
+    }
+
+    const invalidFields = Object.keys(options).filter(
+      (field) => !allowedFields.has(field)
+    );
+    if (invalidFields.length > 0) {
+      throw new InvalidArgumentError(
+        `Invalid options provided: ${invalidFields.join(', ')}`
+      );
+    }
+
+    return Object.fromEntries(
+      Object.entries(options).filter(([, value]) => value !== undefined)
+    );
+  }
+
+  private validateMetadata(options: Record<string, unknown>): void {
+    if (
+      options.forDomain !== undefined &&
+      !this.isHttpOrigin(options.forDomain)
+    ) {
+      throw new InvalidArgumentError(
+        'forDomain must be an HTTP(S) origin without a path, query, or fragment'
+      );
+    }
+    if (
+      options.url !== undefined &&
+      options.url !== null &&
+      !this.isAbsoluteUrl(options.url)
+    ) {
+      throw new InvalidArgumentError('url must be an absolute URL or null');
+    }
+    if (
+      options.description !== undefined &&
+      typeof options.description !== 'string'
+    ) {
+      throw new InvalidArgumentError('description must be a string');
+    }
+  }
+
+  private validateId(id: unknown): string {
+    if (typeof id !== 'string' || id.trim().length === 0) {
+      throw new InvalidArgumentError('No id provided');
+    }
+    return id;
+  }
+
+  private throwSetError(
+    errors: Record<string, SetErrorData> | null | undefined,
+    affectedId: string,
+    operation: string
+  ): void {
+    const error = errors?.[affectedId];
+    if (!error) {
+      return;
+    }
+    const type = typeof error.type === 'string' ? error.type : 'unknown';
+    const description =
+      typeof error.description === 'string'
+        ? error.description
+        : `${operation} failed with ${type}.`;
+    throw new JmapSetError(
+      operation,
+      type,
+      description,
+      affectedId,
+      typeof error.subType === 'string' ? error.subType : undefined,
+      error
+    );
+  }
+
+  private invalidResponse(
+    operation: string,
+    message: string,
+    responseData: unknown,
+    callId?: string
+  ): JmapMethodError {
+    return new JmapMethodError(
+      operation,
+      'invalidResponse',
+      message,
+      callId,
+      responseData
+    );
+  }
+
+  private transportError(error: unknown, operation: string): Error {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      const status = axiosError.response?.status;
+      if (status === 401 || status === 403) {
+        return new InvalidCredentialsError(
+          `${operation} failed with status code ${status}.`,
+          { cause: error, status }
+        );
+      }
+
+      const message = status
+        ? `${operation} failed with status code ${status}.`
+        : `${operation} failed: ${axiosError.message}`;
+      return new TransportError(
+        operation,
+        message,
+        status,
+        axiosError.response?.data,
+        { cause: error }
+      );
+    }
+
+    return new TransportError(
+      operation,
+      `${operation} failed: ${error instanceof Error ? error.message : String(error)}`,
+      undefined,
+      undefined,
+      { cause: error }
+    );
+  }
+
+  private isHttpOrigin(value: unknown): boolean {
+    if (typeof value !== 'string') {
+      return false;
+    }
+    try {
+      const parsed = new URL(value);
+      return (
+        (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+        parsed.search === '' &&
+        parsed.hash === '' &&
+        value === parsed.origin
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  private isAbsoluteUrl(value: unknown): boolean {
+    if (typeof value !== 'string') {
+      return false;
+    }
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private isMaskedEmail(value: unknown): value is MaskedEmail {
+    return (
+      this.isRecord(value) &&
+      typeof value.id === 'string' &&
+      typeof value.email === 'string' &&
+      (CREATE_STATES.has(String(value.state)) || value.state === 'deleted') &&
+      typeof value.description === 'string' &&
+      typeof value.forDomain === 'string' &&
+      typeof value.createdAt === 'string' &&
+      typeof value.createdBy === 'string' &&
+      (typeof value.url === 'string' || value.url === null) &&
+      (typeof value.lastMessageAt === 'string' || value.lastMessageAt === null)
+    );
+  }
+
+  private isSessionAccount(value: unknown): value is SessionAccount {
+    return (
+      this.isRecord(value) &&
+      typeof value.name === 'string' &&
+      typeof value.isPersonal === 'boolean' &&
+      typeof value.isReadOnly === 'boolean' &&
+      typeof value.userId === 'string' &&
+      this.isRecord(value.accountCapabilities)
+    );
+  }
+
+  private isSetResponse(value: unknown): value is SetResponseData<MaskedEmail> {
+    if (!this.isRecord(value) || typeof value.accountId !== 'string') {
+      return false;
+    }
+
+    const recordGroups = [
+      'created',
+      'updated',
+      'notCreated',
+      'notUpdated',
+      'notDestroyed'
+    ];
+    if (
+      recordGroups.some(
+        (group) =>
+          value[group] !== undefined &&
+          value[group] !== null &&
+          !this.isRecord(value[group])
+      )
+    ) {
+      return false;
+    }
+
+    for (const group of ['notCreated', 'notUpdated', 'notDestroyed']) {
+      const errors = value[group];
+      if (
+        this.isRecord(errors) &&
+        !Object.values(errors).every((error) => this.isRecord(error))
+      ) {
+        return false;
+      }
+    }
+
+    return (
+      (value.destroyed === undefined ||
+        value.destroyed === null ||
+        (Array.isArray(value.destroyed) &&
+          value.destroyed.every((id) => typeof id === 'string'))) &&
+      (value.created === undefined ||
+        value.created === null ||
+        Object.values(value.created).every(
+          (created) => this.isRecord(created) && typeof created.id === 'string'
+        )) &&
+      (value.updated === undefined ||
+        value.updated === null ||
+        Object.values(value.updated).every(
+          (updated) => updated === null || this.isRecord(updated)
+        ))
+    );
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
   }
 }

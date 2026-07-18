@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -7,10 +6,11 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{js,ts}'],
     coverage: {
       provider: 'v8',
-      reporter: ['json-summary', 'lcov', 'html'],
+      reporter: ['text-summary', 'json-summary', 'lcov', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['src/index.ts', 'src/constants.ts', 'src/types/*', 'src/__fixtures__'],
+      exclude: ['src/types/*', 'src/__fixtures__', 'src/__tests__'],
       thresholds: {
+        perFile: true,
         branches: 95,
         functions: 95,
         lines: 95,

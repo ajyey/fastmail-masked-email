@@ -1,322 +1,249 @@
-
 <p align="center">
-  <img src="logo.png" />
+  <img src="logo.png" alt="fastmail-masked-email logo" />
 </p>
-<h1 align="center" style="border-bottom: none;">fastmail-masked-email</h1>
-<h3 align="center">Create, delete, and modify <a href="https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email">fastmail masked emails</a></h3>
+<h1 align="center">fastmail-masked-email</h1>
+<p align="center">Manage <a href="https://www.fastmail.help/hc/en-us/articles/4406536368911-Masked-Email">Fastmail Masked Email</a> addresses with Node.js.</p>
 
-<p align="center">
-  <a href="https://open.vscode.dev/ajyey/fastmail-masked-email">
-    <img alt="open in vs code" src="https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc">
-  </a>
-  <a href="https://github.com/semantic-release/semantic-release/tree/master">
-    <img alt="semantic-release: angular" src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release">
-  </a>
-  <a href="https://www.npmjs.com/package/fastmail-masked-email">
-    <img alt="npm latest version" src="https://img.shields.io/npm/v/fastmail-masked-email">
-  </a>
-  <a href="https://www.npmjs.com/package/fastmail-masked-email">
-    <img alt="npm beta version" src="https://img.shields.io/npm/v/fastmail-masked-email/beta.svg">
-  </a>
-</p>
-<p align="center">
-  <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/test.yml">
-    <img alt="test state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/test.yml/badge.svg?branch=master">
-  </a>
-  <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/release.yml">
-    <img alt="release state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/release.yml/badge.svg?branch=master">
-  </a>
-  <a href="https://github.com/ajyey/fastmail-masked-email/actions/workflows/docs.yml">
-    <img alt="docs state" src="https://github.com/ajyey/fastmail-masked-email/actions/workflows/docs.yml/badge.svg?branch=master">
-  </a>
-  <a href="https://github.com/ajyey/fastmail-masked-email/issues?q=is%3Aopen+is%3Aissue">
-    <img alt="open issues" src="https://img.shields.io/github/issues-raw/ajyey/fastmail-masked-email">
-  </a>
-  <a href="https://github.com/ajyey/fastmail-masked-email/blob/master/LICENSE">
-    <img alt="license" src="https://img.shields.io/github/license/ajyey/fastmail-masked-email">
-  </a>
-</p>
-<p align="center">
-  Check out the
-  <a href="https://ajyey.github.io/fastmail-masked-email/">
-    Typedoc
-  </a>
-  for Typescript definitions and documentation.
+`fastmail-masked-email` is an ESM-only library for Node.js 22 or later. It
+discovers the JMAP API and account from the authenticated Fastmail session,
+then creates, reads, updates, filters, and deletes masked email addresses.
 
-</p>
+## Installation
 
-
-# Installation
-
-
-```bash
-npm install fastmail-masked-email --save
-```
-or
-```bash
-yarn add fastmail-masked-email
+```sh
+npm install fastmail-masked-email
 ```
 
-# Setting Up Authentication
-In order to be able to make requests to the Fastmail API, you will need to [create a Fastmail API Token](https://www.fastmail.help/hc/en-us/articles/5254602856719-API-tokens).
-This token should be created with the `Masked Email` scope to allow for the creation and management of masked emails.
+## Authentication
 
-This library supports authentication through environment variables or by passing credentials directly to the service.
+Create a [Fastmail API token](https://www.fastmail.help/hc/en-us/articles/5254602856719-API-tokens)
+with the **Masked Email** scope. Pass it directly or set `JMAP_TOKEN` before
+constructing the service:
 
-- `JMAP_TOKEN`
-- `JMAP_HOSTNAME` ( Defaults to `api.fastmail.com` if not explicitly set )
-
-You can set these environment variables in your shell, or in a `.env` file in the root of your project and use something like the [dotenv](https://www.npmjs.com/package/dotenv) package to load them.
-
-# Usage
-
-## Creating and Initializing the Service
-The first step is to create an instance of `MaskedEmailService` and initialize it. The service will automatically handle session management with the Fastmail API.
-
-```typescript
+```js
 import { MaskedEmailService } from 'fastmail-masked-email';
 
-// Create service with token and hostname directly
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-// Or create service using environment variables (JMAP_TOKEN and JMAP_HOSTNAME)
-const serviceWithEnv = new MaskedEmailService();
-await serviceWithEnv.initialize();
-
-// Or create service with just a token (hostname defaults to api.fastmail.com)
-const serviceWithToken = new MaskedEmailService(token);
-await serviceWithToken.initialize();
+const service = new MaskedEmailService({
+  token: process.env.FASTMAIL_TOKEN
+});
 ```
 
-## Getting all of your Masked Emails
-Once you have initialized the service, you can retrieve a list of **all** of the masked emails that are currently configured for your account.
-This includes `enabled`, `disabled`, `pending` and `deleted` masked emails.
+With the library's environment variable names:
 
-All the masked emails are returned in an array of `MaskedEmail` objects.
-
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
-
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-const myMaskedEmails = await service.getAllEmails();
-
-console.log(myMaskedEmails);
+```js
+const service = new MaskedEmailService(); // Reads JMAP_TOKEN and JMAP_HOSTNAME.
 ```
 
-## Getting a Masked Email by ID
-If you know the unique ID of a masked email you want to retrieve, you can get it by its ID.
+`JMAP_HOSTNAME` defaults to `api.fastmail.com`. The library reads
+`process.env`; it does **not** load `.env` files. Load one in your application,
+for example with `import 'dotenv/config'`, before constructing the service.
 
-```typescript
+Do not expose API tokens in browser or client-side code.
+
+## Service Setup
+
+The canonical constructor accepts an options object:
+
+```js
 import { MaskedEmailService } from 'fastmail-masked-email';
 
-const service = new MaskedEmailService(token, hostname);
+const service = new MaskedEmailService({
+  token: process.env.JMAP_TOKEN,
+  hostname: 'api.fastmail.com', // Host only: no scheme or path.
+  accountId: 'optional-account-id',
+  timeout: 10_000,
+  signal: AbortSignal.timeout(15_000)
+});
+
 await service.initialize();
-
-const myMaskedEmail = await service.getEmailById('my-masked-email-id');
-
-console.log(myMaskedEmail);
 ```
 
+`sessionUrl` may replace `hostname` when a provider gives you a complete HTTPS
+JMAP session URL. `httpClient` accepts an Axios-compatible `AxiosInstance`,
+primarily for custom transports and testing.
 
-## Creating a new Masked Email
-Creating a new masked email is done by calling the `createEmail` method with an optional `options` parameter.
-The `options` parameter is an object that can contain the following properties:
+The positional constructor remains temporarily available but is deprecated:
 
-- `state`: `enabled` | `disabled` | `pending` ( Defaults to `enabled` )
-- `forDomain`: string ( This is the domain that you want associated with this masked email )
-- `description`: string ( This is a description of the masked email )
-- `emailPrefix`: string ( If supplied, the masked email will start with the given prefix )
+```js
+const service = new MaskedEmailService(token, 'api.fastmail.com');
+```
 
-You can optionally pass in a `state` to set the initial state of the masked email. The default state is `enabled`.
+Call `initialize(): Promise<void>` before `getSession()` or any remote method.
+Concurrent initialization calls share the same request. If initialization
+fails, it may be called again. The service fetches and validates the JMAP
+session, uses its `apiUrl` for later requests, and selects an account as follows:
 
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
+1. The requested `accountId`, if supplied and capable.
+2. The session's primary masked-email account.
+3. The first account advertising masked-email support.
 
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
+Writes are rejected for read-only accounts. `getSession()` synchronously
+returns a read-only snapshot, not the service's mutable internal session:
 
-// Create a new masked email for the domain 'example.com'
-let newMaskedEmail = await service.createEmail({ forDomain: 'example.com' });
+```js
+const session = service.getSession();
+console.log(session.apiUrl, session.accounts);
+```
 
-// Create a new masked email that is disabled by default
-newMaskedEmail = await service.createEmail({ state: 'disabled' });
+## Create
 
-// Create a new masked email with a description
-newMaskedEmail = await service.createEmail({ description: 'My new masked email' });
+`createEmail(options?): Promise<MaskedEmail>` creates an address and fetches
+the complete server-owned record:
 
-// Create a new masked email that starts with a given prefix
-newMaskedEmail = await service.createEmail({ emailPrefix: 'myprefix' });
-
-// Create a new masked email with all options present
-newMaskedEmail = await service.createEmail({
-  forDomain: 'example.com',
+```js
+const email = await service.createEmail({
   state: 'enabled',
-  description: 'My new masked email',
-  emailPrefix: 'myprefix'
+  forDomain: 'https://example.com',
+  description: 'Example account',
+  emailPrefix: 'example_login',
+  url: 'https://example.com/account/security'
 });
 ```
 
-## Updating a Masked Email
-There are three masked email properties that can be updated:
-- `forDomain`
-- `state`
-- `description`
+Create options:
 
-To update a masked email, call the `updateEmail` method.
-The `updateEmail` method requires the `id` of the masked email to update and an `options` object.
+| Option        | Accepted value                                                           |
+| ------------- | ------------------------------------------------------------------------ |
+| `state`       | `enabled`, `disabled`, or `pending`; defaults to `enabled`               |
+| `forDomain`   | An HTTP(S) origin, such as `https://example.com`; no path/query/fragment |
+| `description` | A string                                                                 |
+| `emailPrefix` | 1-64 lowercase letters, digits, or underscores; create-only              |
+| `url`         | An absolute deep-link URL, or `null`                                     |
 
-The `options` object can contain any of the above three properties, but MUST contain at least one of them.
-`updateEmail` returns a rejected promise if no properties are passed into the options object.
+Fastmail's JMAP API normally defaults a new address to `pending` when state is
+omitted. This library deliberately sends `enabled` by default. Pass
+`{ state: 'pending' }` when you want Fastmail's pending behavior: first mail
+enables the address, and an unused pending address is automatically deleted
+after 24 hours.
 
+## Read And Filter
 
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
+```js
+const all = await service.getAllEmails();
+const one = await service.getEmailById(email.id);
+const sameAddress = await service.getEmailsByAddress(email.email);
+const disabled = await service.filterByState('disabled');
+const forExample = await service.filterByDomain('https://example.com');
+```
 
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
+`getAllEmails()` returns every state reported by Fastmail, including pending
+and deleted records. `getEmailById()` rejects with
+`MaskedEmailNotFoundError` when the ID is absent.
 
-await service.updateEmail('my-masked-email-id', {
-	forDomain: 'example.com',
-	description: 'My new masked email!',
-	state: 'disabled'
+The three search/filter helpers perform exact, case-sensitive local equality
+checks. Without a list they first call `getAllEmails()`. Supply a previously
+loaded list to avoid another request; in that form they do not require an
+initialized service:
+
+```js
+const all = await service.getAllEmails();
+
+const matches = await service.getEmailsByAddress('alias@example.com', all);
+const enabled = await service.filterByState('enabled', all);
+const forExample = await service.filterByDomain('https://example.com', all);
+```
+
+## Update And State Transitions
+
+`updateEmail(id, options): Promise<void>` accepts at least one of
+`description`, `forDomain`, `state`, or `url`. The same metadata validation as
+creation applies; `url: null` clears the deep link. Update state may be
+`enabled`, `disabled`, or `deleted`, but not `pending`.
+
+```js
+await service.updateEmail(email.id, {
+  description: 'Updated account note',
+  forDomain: 'https://accounts.example.com',
+  url: null
 });
+
+await service.disableEmail(email.id); // Promise<void>
+await service.enableEmail(email.id); // Promise<void>
+await service.deleteEmail(email.id); // Promise<void>
 ```
 
+State semantics:
 
-### Enabling, Disabling, and Deleting a Masked Email
-The service provides convenient methods for common operations on masked emails.
-An enabled masked email will receive any email sent to it.
+| State      | Behavior                                                               |
+| ---------- | ---------------------------------------------------------------------- |
+| `enabled`  | Active; mail is delivered normally.                                    |
+| `disabled` | Active; incoming mail is sent to Trash.                                |
+| `deleted`  | Inactive; incoming mail is bounced. It can be restored by enabling it. |
+| `pending`  | Create-only temporary state; first mail enables it, or it expires.     |
 
-#### Enable
+`updateEmail()`, `enableEmail()`, `disableEmail()`, and `deleteEmail()` resolve
+to `undefined` after the server confirms the update. They do not return the
+JMAP `updated` object. Fetch the record if you need its current representation.
 
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
+### Permanent Delete
 
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-await service.enableEmail('my-masked-email-id');
+```js
+await service.permanentlyDeleteEmail(email.id); // Promise<void>
 ```
 
-#### Disable
-When a masked email is disabled, any email sent to it will be sent to the trash.
+`deleteEmail()` is a reversible state change. `permanentlyDeleteEmail()` asks
+Fastmail to destroy the record and is irreversible. Fastmail only permits
+eligible addresses, such as addresses that have never received mail; an
+ineligible request rejects with `JmapSetError`. Successful permanent deletion
+resolves to `undefined` only after the server confirms the ID was destroyed.
 
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
+## Errors And Retries
 
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
+All public error classes are named ESM exports:
 
-await service.disableEmail('my-masked-email-id');
+```js
+import {
+  InvalidCredentialsError,
+  JmapSetError,
+  TransportError
+} from 'fastmail-masked-email';
+
+try {
+  await service.disableEmail(email.id);
+} catch (error) {
+  if (error instanceof InvalidCredentialsError) {
+    console.error('Check the token and its Masked Email scope.', error.status);
+  } else if (error instanceof JmapSetError) {
+    console.error(error.type, error.subType, error.affectedId);
+  } else if (error instanceof TransportError) {
+    console.error(error.status, error.operation, error.responseData);
+  }
+}
 ```
 
-#### Delete
-Any email sent to a deleted masked email will be sent to the trash.
-A deleted email can be restored by enabling it again at which point it will continue to receive emails.
+| Error                        | Meaning and useful fields                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `InvalidArgumentError`       | Invalid local input.                                                                                        |
+| `InvalidCredentialsError`    | Missing token or HTTP 401/403; optional `status`.                                                           |
+| `ServiceNotInitializedError` | `initialize()` has not completed successfully.                                                              |
+| `UnsupportedAccountError`    | Missing capability, unsupported selected account, or read-only write; optional `accountId`.                 |
+| `MaskedEmailNotFoundError`   | Requested ID was not returned; `id`.                                                                        |
+| `TransportError`             | Network or non-auth HTTP failure; `operation`, `status`, `responseData`, and `cause`.                       |
+| `JmapMethodError`            | JMAP method/response failure; `operation`, `type`, `callId`, and `responseData`.                            |
+| `JmapSetError`               | Per-record create/update/destroy failure; `operation`, `type`, `affectedId`, `subType`, and `responseData`. |
 
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
+Do not retry validation, credential, unsupported-account, or not-found errors
+without correcting their cause. Retry transient network failures, HTTP 429,
+and 5xx responses with bounded exponential backoff and jitter, honoring any
+server retry guidance. Treat writes carefully: automatic retries, especially
+of `createEmail()`, may duplicate an operation if the server succeeded before
+the connection failed.
 
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
+## CommonJS Consumers
 
-await service.deleteEmail('my-masked-email-id');
+The package has no CommonJS `require` export. Migrate a CommonJS application to
+ESM, or use dynamic import from CommonJS:
+
+```js
+async function main() {
+  const { MaskedEmailService } = await import('fastmail-masked-email');
+  const service = new MaskedEmailService({ token: process.env.JMAP_TOKEN });
+  await service.initialize();
+}
+
+main().catch(console.error);
 ```
 
-#### Permanently Delete a Masked Email
-A masked email that has not received any mail yet can be permanently deleted.
-This will permanently delete the masked email and it will no longer be able to be restored.
-
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
-
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-await service.permanentlyDeleteEmail('my-masked-email-id');
-```
-
-## Additional Filtering Methods
-The `MaskedEmailService` provides convenient filtering methods to help you find specific masked emails.
-
-### Get Masked Emails by Address
-If you know the exact email address, you can retrieve all masked emails that match it:
-
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
-
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-const emailsWithAddress = await service.getEmailByAddress('specific@masked.email');
-console.log(emailsWithAddress);
-```
-
-### Filter by State
-Filter all your masked emails by their current state:
-
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
-
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-// Get only enabled emails
-const enabledEmails = await service.filterByState('enabled');
-
-// Get only disabled emails
-const disabledEmails = await service.filterByState('disabled');
-
-// Get only deleted emails
-const deletedEmails = await service.filterByState('deleted');
-```
-
-### Filter by Domain
-Filter masked emails by the domain they're associated with:
-
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
-
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-// Get all masked emails for a specific domain
-const domainEmails = await service.filterByForDomain('example.com');
-console.log(domainEmails);
-```
-
-You can also pass an existing list of emails to these filter methods to avoid making additional API calls:
-
-```typescript
-import { MaskedEmailService } from 'fastmail-masked-email';
-
-const service = new MaskedEmailService(token, hostname);
-await service.initialize();
-
-// Get all emails once
-const allEmails = await service.getAllEmails();
-
-// Filter the existing list without additional API calls
-const enabledEmails = await service.filterByState('enabled', allEmails);
-const domainEmails = await service.filterByForDomain('example.com', allEmails);
-```
-
-# Notes
-- Note on using `async/await`:
-  - In the code examples shown above, we are using `await` to handle asynchronous operations. To use `await`, you must be inside an `async` function.
-	If you're using these examples in your own code, make sure to wrap them in an `async` function. Here's an example of how you can do that:
-  	```typescript
-     import { MaskedEmailService } from 'fastmail-masked-email';
-     async function main() {
-        const service = new MaskedEmailService(token, hostname);
-        await service.initialize();
-        const myMaskedEmails = await service.getAllEmails();
-        console.log(myMaskedEmails);
-  	  }
-  	  main()
-  	  .then(() => console.log('Done!'))
-  	  .catch((error) => console.error('An error occurred:', error));
-  	```
+See [MIGRATION.md](MIGRATION.md) for the complete v3-to-v4 guide and the
+[generated API documentation](https://ajyey.github.io/fastmail-masked-email/)
+for exported TypeScript definitions.

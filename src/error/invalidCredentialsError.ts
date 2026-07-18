@@ -3,8 +3,11 @@
  */
 export class InvalidCredentialsError extends Error {
   name = 'InvalidCredentialsError';
-  constructor(message: string) {
-    super(message);
+  readonly status?: number;
+
+  constructor(message: string, options?: { cause?: unknown; status?: number }) {
+    super(message, { cause: options?.cause });
+    this.status = options?.status;
     Object.setPrototypeOf(this, InvalidCredentialsError.prototype);
   }
 }

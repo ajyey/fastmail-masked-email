@@ -18,7 +18,7 @@ export const permanentDeleteFailResponseFixture = {
         destroyed: [],
         oldState: null
       },
-      'a'
+      '1'
     ]
   ],
   latestClientVersion: '',
