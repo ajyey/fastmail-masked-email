@@ -12,6 +12,7 @@
 
 ## Code Map
 
+- Add descriptive JSDoc to every new function. Comment non-obvious logic and rationale, especially protocol, validation, retry, timeout, and cleanup behavior; do not narrate self-explanatory code.
 - `src/index.ts` is the only supported package entrypoint. Export public services, errors, and consumer types there; keep raw JMAP wire types internal.
 - `src/MaskedEmailService.ts` owns session discovery, account selection, request validation, JMAP invocation parsing, and local filters. Remote methods require `initialize()`.
 - Select accounts by the Fastmail masked-email capability, never by JMAP core alone. Writes must reject read-only accounts.
