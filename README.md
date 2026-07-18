@@ -59,8 +59,11 @@ await service.initialize();
 ```
 
 `sessionUrl` may replace `hostname` when a provider gives you a complete HTTPS
-JMAP session URL. `httpClient` accepts an Axios-compatible `AxiosInstance`,
-primarily for custom transports and testing.
+JMAP session URL. `httpClient` accepts a Ky `KyInstance`, primarily for custom
+transports and testing. Requests disable automatic retries so mutating JMAP
+operations are never repeated implicitly, and HTTP errors are always thrown.
+Positive `timeout` values cover the response body; `0` disables the timeout.
+When no timeout is supplied, a custom Ky instance keeps its configured timeout.
 
 The positional constructor remains temporarily available but is deprecated:
 

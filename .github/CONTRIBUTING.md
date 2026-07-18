@@ -9,7 +9,7 @@ committed npm lockfile for a reproducible install:
 npm ci
 ```
 
-Do not commit API tokens. Unit tests mock Axios and require no Fastmail account
+Do not commit API tokens. Unit tests inject a mocked Ky instance and require no Fastmail account
 or network access.
 
 ## Validation

@@ -16,7 +16,7 @@
 - `src/MaskedEmailService.ts` owns session discovery, account selection, request validation, JMAP invocation parsing, and local filters. Remote methods require `initialize()`.
 - Select accounts by the Fastmail masked-email capability, never by JMAP core alone. Writes must reject read-only accounts.
 - JMAP calls use `[methodName, args, callId]`, require core and masked-email capabilities, and may return method errors with HTTP 200. Set operations also require checking `notCreated`, `notUpdated`, or `notDestroyed`.
-- The constructor reads `JMAP_TOKEN` and `JMAP_HOSTNAME` directly; the package does not load `.env`. Tests inject an Axios client and need no token or network.
+- The constructor reads `JMAP_TOKEN` and `JMAP_HOSTNAME` directly; the package does not load `.env`. Tests inject a Ky instance and need no token or network. Keep `retry: 0` on JMAP requests to avoid repeating mutations.
 - Tests and fixtures remain under `src`, but the production build excludes them. Do not edit generated `dist`, `docs`, or `coverage` output.
 
 ## Packaging And Release

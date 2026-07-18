@@ -1,4 +1,9 @@
-import axios, { AxiosError, type AxiosInstance } from 'axios';
+import ky, {
+  HTTPError,
+  type KyInstance,
+  NetworkError,
+  type NormalizedOptions
+} from 'ky';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { maskedEmailFixture } from '../__fixtures__/maskedEmail.fixture.js';
@@ -31,30 +36,48 @@ function response(method: string, data: unknown, callId = '1') {
     typeof data === 'object' && data !== null && !Array.isArray(data)
       ? { ...defaults, ...data }
       : data;
+  return jsonResponse({
+    sessionState: 'session-state-1',
+    methodResponses: [[method, methodData, callId]]
+  });
+}
+
+function jsonResponse(data: unknown) {
   return {
-    data: {
-      sessionState: 'session-state-1',
-      methodResponses: [[method, methodData, callId]]
-    }
+    json: vi.fn().mockResolvedValue(data)
   };
+}
+
+function httpError(status: number, data: unknown): HTTPError {
+  const error = new HTTPError(
+    new Response(JSON.stringify(data), {
+      headers: { 'Content-Type': 'application/json' },
+      status,
+      statusText: status === 401 ? 'Unauthorized' : 'Unavailable'
+    }),
+    new Request('https://api.example.com'),
+    {} as NormalizedOptions
+  );
+  error.data = data;
+  return error;
 }
 
 describe('MaskedEmailService', () => {
   let get: ReturnType<typeof vi.fn>;
   let post: ReturnType<typeof vi.fn>;
-  let httpClient: AxiosInstance;
+  let httpClient: KyInstance;
   let service: MaskedEmailService;
 
   beforeEach(() => {
     get = vi.fn();
     post = vi.fn();
-    httpClient = { get, post } as unknown as AxiosInstance;
+    httpClient = { get, post } as unknown as KyInstance;
     service = new MaskedEmailService({
       token: 'test-token',
       hostname: 'api.example.com',
       httpClient
     });
-    get.mockResolvedValue({ data: structuredClone(sessionFixture) });
+    get.mockResolvedValue(jsonResponse(structuredClone(sessionFixture)));
   });
 
   afterEach(() => {
@@ -93,10 +116,62 @@ describe('MaskedEmailService', () => {
       expect(get).toHaveBeenCalledTimes(1);
     });
 
+    it('passes timeout and cancellation options without retries', async () => {
+      const controller = new AbortController();
+      const configured = new MaskedEmailService({
+        token: 'token',
+        hostname: 'api.example.com',
+        httpClient,
+        signal: controller.signal,
+        timeout: 1234
+      });
+
+      await configured.initialize();
+      const requestOptions = get.mock.calls[0][1];
+      expect(get).toHaveBeenCalledWith(
+        'https://api.example.com/jmap/session',
+        expect.objectContaining({
+          retry: 0,
+          throwHttpErrors: true,
+          timeout: 1234
+        })
+      );
+      expect(requestOptions.signal.aborted).toBe(false);
+      controller.abort();
+      expect(requestOptions.signal.aborted).toBe(true);
+    });
+
+    it('preserves disabled timeout semantics', async () => {
+      const configured = new MaskedEmailService({
+        token: 'token',
+        hostname: 'api.example.com',
+        httpClient,
+        timeout: 0
+      });
+
+      await configured.initialize();
+      expect(get.mock.calls[0][1]).toMatchObject({
+        retry: 0,
+        throwHttpErrors: true,
+        timeout: false
+      });
+    });
+
+    it('rejects invalid timeout values', () => {
+      expect(
+        () =>
+          new MaskedEmailService({
+            token: 'token',
+            httpClient,
+            timeout: -1
+          })
+      ).toThrow('timeout must be a non-negative number');
+    });
+
     it('accepts a standard JMAP account without Fastmail userId', async () => {
       const session: Session = structuredClone(sessionFixture);
       delete session.accounts['masked-account'].userId;
-      get.mockResolvedValue({ data: session });
+      get.mockResolvedValue(jsonResponse(session));
 
       await expect(service.initialize()).resolves.toBeUndefined();
       expect(
@@ -112,17 +187,23 @@ describe('MaskedEmailService', () => {
 
     it('supports an environment token with a positional hostname', async () => {
       vi.stubEnv('JMAP_TOKEN', 'env-token');
-      const axiosGet = vi
-        .spyOn(axios, 'get')
-        .mockResolvedValue({ data: structuredClone(sessionFixture) });
+      const kyGet = vi
+        .spyOn(ky, 'get')
+        .mockResolvedValue(
+          jsonResponse(structuredClone(sessionFixture)) as never
+        );
       const positional = new MaskedEmailService(
         undefined,
         'legacy.example.com'
       );
       await positional.initialize();
-      expect(axiosGet).toHaveBeenCalledWith(
+      expect(kyGet).toHaveBeenCalledWith(
         'https://legacy.example.com/jmap/session',
-        expect.any(Object)
+        expect.objectContaining({
+          retry: 0,
+          throwHttpErrors: true,
+          timeout: false
+        })
       );
     });
 
@@ -205,7 +286,7 @@ describe('MaskedEmailService', () => {
         }
       }
     ])('rejects malformed or unsupported sessions', async (session) => {
-      get.mockResolvedValue({ data: session });
+      get.mockResolvedValue(jsonResponse(session));
       await expect(service.initialize()).rejects.toBeInstanceOf(Error);
     });
 
@@ -216,14 +297,14 @@ describe('MaskedEmailService', () => {
         accountCapabilities: { [JMAP.CORE]: {} }
       };
       session.primaryAccounts[JMAP.CORE] = 'core-account';
-      get.mockResolvedValue({ data: session });
+      get.mockResolvedValue(jsonResponse(session));
       post.mockResolvedValue(
         response('MaskedEmail/get', { accountId: 'masked-account', list: [] })
       );
 
       await initialize();
       await service.getAllEmails();
-      expect(post.mock.calls[0][1].methodCalls[0][1].accountId).toBe(
+      expect(post.mock.calls[0][1].json.methodCalls[0][1].accountId).toBe(
         'masked-account'
       );
     });
@@ -231,11 +312,11 @@ describe('MaskedEmailService', () => {
     it('falls back to an account advertising masked-email support', async () => {
       const session: Session = structuredClone(sessionFixture);
       session.primaryAccounts = {};
-      get.mockResolvedValue({ data: session });
+      get.mockResolvedValue(jsonResponse(session));
       post.mockResolvedValue(response('MaskedEmail/get', { list: [] }));
       await initialize();
       await service.getAllEmails();
-      expect(post.mock.calls[0][1].methodCalls[0][1].accountId).toBe(
+      expect(post.mock.calls[0][1].json.methodCalls[0][1].accountId).toBe(
         'masked-account'
       );
     });
@@ -266,7 +347,7 @@ describe('MaskedEmailService', () => {
       session.accounts['masked-account'].accountCapabilities = {
         [JMAP.CORE]: {}
       };
-      get.mockResolvedValue({ data: session });
+      get.mockResolvedValue(jsonResponse(session));
       await expect(service.initialize()).rejects.toBeInstanceOf(
         UnsupportedAccountError
       );
@@ -300,18 +381,25 @@ describe('MaskedEmailService', () => {
       ]);
       expect(post).toHaveBeenCalledWith(
         sessionFixture.apiUrl,
-        {
-          using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
-          methodCalls: [
-            ['MaskedEmail/get', { accountId: 'masked-account', ids: null }, '1']
-          ]
-        },
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer test-token'
-          })
+          }),
+          json: {
+            using: [JMAP.CORE, MASKED_EMAIL_CAPABILITY],
+            methodCalls: [
+              [
+                'MaskedEmail/get',
+                { accountId: 'masked-account', ids: null },
+                '1'
+              ]
+            ]
+          },
+          retry: 0,
+          throwHttpErrors: true
         })
       );
+      expect(post.mock.calls[0][1]).not.toHaveProperty('timeout');
     });
 
     it('retrieves one masked email by ID', async () => {
@@ -380,12 +468,24 @@ describe('MaskedEmailService', () => {
     });
 
     it.each([
-      [{ data: {} }, 'invalid JMAP response'],
+      [jsonResponse({}), 'invalid JMAP response'],
       [response('MaskedEmail/get', { list: [] }, 'wrong'), 'call ID'],
       [response('MaskedEmail/set', { list: [] }), 'Expected MaskedEmail/get']
     ])('rejects malformed invocations', async (result, message) => {
       post.mockResolvedValue(result);
       await expect(service.getAllEmails()).rejects.toThrow(message);
+    });
+
+    it('classifies malformed JSON as an invalid JMAP response', async () => {
+      post.mockResolvedValue({
+        json: vi.fn().mockRejectedValue(new SyntaxError('Invalid JSON'))
+      });
+
+      await expect(service.getAllEmails()).rejects.toMatchObject({
+        cause: expect.any(SyntaxError),
+        name: 'JmapMethodError',
+        type: 'invalidResponse'
+      });
     });
   });
 
@@ -417,7 +517,7 @@ describe('MaskedEmailService', () => {
           url: 'https://example.com/credentials/1'
         })
       ).resolves.toEqual(maskedEmailFixture);
-      expect(post.mock.calls[0][1].methodCalls[0]).toEqual([
+      expect(post.mock.calls[0][1].json.methodCalls[0]).toEqual([
         'MaskedEmail/set',
         {
           accountId: 'masked-account',
@@ -446,9 +546,9 @@ describe('MaskedEmailService', () => {
           response('MaskedEmail/get', { list: [maskedEmailFixture] }, '2')
         );
       await service.createEmail();
-      expect(post.mock.calls[0][1].methodCalls[0][1].create['0'].state).toBe(
-        'enabled'
-      );
+      expect(
+        post.mock.calls[0][1].json.methodCalls[0][1].create['0'].state
+      ).toBe('enabled');
     });
 
     it('surfaces notCreated errors', async () => {
@@ -563,9 +663,9 @@ describe('MaskedEmailService', () => {
       const readonlySession: Session = structuredClone(sessionFixture);
       readonlySession.accounts['masked-account'].isReadOnly = true;
       const readonlyClient = {
-        get: vi.fn().mockResolvedValue({ data: readonlySession }),
+        get: vi.fn().mockResolvedValue(jsonResponse(readonlySession)),
         post: vi.fn()
-      } as unknown as AxiosInstance;
+      } as unknown as KyInstance;
       const readonlyService = new MaskedEmailService({
         token: 'token',
         httpClient: readonlyClient
@@ -592,19 +692,23 @@ describe('MaskedEmailService', () => {
       );
       await service[method](maskedEmailFixture.id);
       expect(
-        post.mock.calls[0][1].methodCalls[0][1].update[maskedEmailFixture.id]
+        post.mock.calls[0][1].json.methodCalls[0][1].update[
+          maskedEmailFixture.id
+        ]
       ).toEqual({ state });
     });
 
     it('permanently deletes using the real destroyed array shape', async () => {
-      post.mockResolvedValue({ data: permanentDeleteSuccessResponseFixture });
+      post.mockResolvedValue(
+        jsonResponse(permanentDeleteSuccessResponseFixture)
+      );
       await expect(
         service.permanentlyDeleteEmail('masked-81873752')
       ).resolves.toBeUndefined();
     });
 
     it('surfaces a real notDestroyed response', async () => {
-      post.mockResolvedValue({ data: permanentDeleteFailResponseFixture });
+      post.mockResolvedValue(jsonResponse(permanentDeleteFailResponseFixture));
       await expect(
         service.permanentlyDeleteEmail('masked-81873752')
       ).rejects.toMatchObject({
@@ -678,21 +782,7 @@ describe('MaskedEmailService', () => {
 
   describe('transport errors', () => {
     it('maps authentication failures', async () => {
-      get.mockRejectedValue(
-        new AxiosError(
-          'Unauthorized',
-          'ERR_BAD_REQUEST',
-          undefined,
-          undefined,
-          {
-            status: 401,
-            statusText: 'Unauthorized',
-            headers: {},
-            config: { headers: {} } as never,
-            data: { type: 'unauthorized' }
-          }
-        )
-      );
+      get.mockRejectedValue(httpError(401, { type: 'unauthorized' }));
       await expect(service.initialize()).rejects.toMatchObject({
         name: 'InvalidCredentialsError',
         status: 401
@@ -701,21 +791,7 @@ describe('MaskedEmailService', () => {
 
     it('preserves status and response data for HTTP errors', async () => {
       await initialize();
-      post.mockRejectedValue(
-        new AxiosError(
-          'Unavailable',
-          'ERR_BAD_RESPONSE',
-          undefined,
-          undefined,
-          {
-            status: 503,
-            statusText: 'Unavailable',
-            headers: {},
-            config: { headers: {} } as never,
-            data: { type: 'serverUnavailable' }
-          }
-        )
-      );
+      post.mockRejectedValue(httpError(503, { type: 'serverUnavailable' }));
       await expect(service.getAllEmails()).rejects.toMatchObject({
         name: 'TransportError',
         status: 503,
@@ -725,7 +801,11 @@ describe('MaskedEmailService', () => {
 
     it('wraps network and non-Error failures', async () => {
       await initialize();
-      post.mockRejectedValueOnce(new AxiosError('Network Error'));
+      post.mockRejectedValueOnce(
+        new NetworkError(new Request('https://api.example.com'), {
+          cause: new Error('Network Error')
+        })
+      );
       await expect(service.getAllEmails()).rejects.toBeInstanceOf(
         TransportError
       );
@@ -733,6 +813,18 @@ describe('MaskedEmailService', () => {
       await expect(service.getAllEmails()).rejects.toThrow('socket closed');
       post.mockRejectedValueOnce(new Error('connection reset'));
       await expect(service.getAllEmails()).rejects.toThrow('connection reset');
+    });
+
+    it('treats response stream failures as transport errors', async () => {
+      await initialize();
+      post.mockResolvedValue({
+        json: vi.fn().mockRejectedValue(new TypeError('stream closed'))
+      });
+
+      await expect(service.getAllEmails()).rejects.toMatchObject({
+        message: 'listing masked emails failed: stream closed',
+        name: 'TransportError'
+      });
     });
   });
 });

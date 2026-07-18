@@ -1,4 +1,4 @@
-import type { AxiosInstance } from 'axios';
+import type { KyInstance } from 'ky';
 
 import type {
   CreateMaskedEmailState,
@@ -37,5 +37,5 @@ export interface MaskedEmailServiceOptions {
   accountId?: string;
   timeout?: number;
   signal?: AbortSignal;
-  httpClient?: AxiosInstance;
+  httpClient?: KyInstance;
 }

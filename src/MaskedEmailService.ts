@@ -1,8 +1,9 @@
-import axios, {
-  type AxiosError,
-  type AxiosInstance,
-  type AxiosRequestConfig
-} from 'axios';
+import ky, {
+  isHTTPError,
+  type KyInstance,
+  type Options,
+  type ResponsePromise
+} from 'ky';
 
 import {
   API_HOSTNAME,
@@ -59,9 +60,10 @@ export class MaskedEmailService {
   private readonly token?: string;
   private readonly sessionUrl: string;
   private readonly requestedAccountId?: string;
-  private readonly timeout?: number;
+  private readonly timeout?: number | false;
   private readonly signal?: AbortSignal;
-  private readonly httpClient: AxiosInstance;
+  private readonly httpClient: KyInstance;
+  private readonly usesDefaultHttpClient: boolean;
   private session: Session | null = null;
   private accountId: string | null = null;
   private initialization: Promise<void> | null = null;
@@ -85,9 +87,16 @@ export class MaskedEmailService {
 
     this.token = options.token ?? process.env.JMAP_TOKEN;
     this.requestedAccountId = options.accountId;
-    this.timeout = options.timeout;
+    if (
+      options.timeout !== undefined &&
+      (!Number.isFinite(options.timeout) || options.timeout < 0)
+    ) {
+      throw new InvalidArgumentError('timeout must be a non-negative number');
+    }
+    this.timeout = options.timeout === 0 ? false : options.timeout;
     this.signal = options.signal;
-    this.httpClient = options.httpClient ?? axios;
+    this.usesDefaultHttpClient = options.httpClient === undefined;
+    this.httpClient = options.httpClient ?? ky;
     this.sessionUrl = this.resolveSessionUrl(
       options.sessionUrl,
       options.hostname ?? process.env.JMAP_HOSTNAME ?? API_HOSTNAME
@@ -256,16 +265,12 @@ export class MaskedEmailService {
       );
     }
 
-    let data: unknown;
-    try {
-      const response = await this.httpClient.get(this.sessionUrl, {
+    const data = await this.requestJson('getting a session', () =>
+      this.httpClient.get(this.sessionUrl, {
         ...this.requestConfig(),
         headers: this.buildHeaders()
-      });
-      data = response.data;
-    } catch (error) {
-      throw this.transportError(error, 'getting a session');
-    }
+      })
+    );
 
     const session = this.parseSession(data);
     const accountId = this.selectAccount(session);
@@ -343,16 +348,13 @@ export class MaskedEmailService {
       methodCalls: [[methodName, args, callId]]
     };
 
-    let data: unknown;
-    try {
-      const response = await this.httpClient.post(this.session!.apiUrl, body, {
+    const data = await this.requestJson(operation, () =>
+      this.httpClient.post(this.session!.apiUrl, {
         ...this.requestConfig(),
-        headers: this.buildHeaders()
-      });
-      data = response.data;
-    } catch (error) {
-      throw this.transportError(error, operation);
-    }
+        headers: this.buildHeaders(),
+        json: body
+      })
+    );
 
     if (!this.isRecord(data) || !Array.isArray(data.methodResponses)) {
       throw this.invalidResponse(
@@ -527,11 +529,55 @@ export class MaskedEmailService {
     };
   }
 
-  private requestConfig(): AxiosRequestConfig {
-    return {
-      signal: this.signal,
-      timeout: this.timeout
+  private requestConfig(): Options {
+    const options: Options = {
+      retry: 0,
+      throwHttpErrors: true
     };
+    if (this.timeout !== undefined) {
+      options.timeout = this.timeout;
+    } else if (this.usesDefaultHttpClient) {
+      options.timeout = false;
+    }
+
+    let signal = this.signal;
+    if (typeof this.timeout === 'number') {
+      const timeoutSignal = AbortSignal.timeout(this.timeout);
+      signal = signal
+        ? AbortSignal.any([signal, timeoutSignal])
+        : timeoutSignal;
+    }
+    if (signal) {
+      options.signal = signal;
+    }
+    return options;
+  }
+
+  private async requestJson(
+    operation: string,
+    request: () => ResponsePromise
+  ): Promise<unknown> {
+    let response: Response;
+    try {
+      response = await request();
+    } catch (error) {
+      throw this.transportError(error, operation);
+    }
+
+    try {
+      return await response.json();
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw this.invalidResponse(
+          operation,
+          'The server returned invalid JSON.',
+          undefined,
+          undefined,
+          error
+        );
+      }
+      throw this.transportError(error, operation);
+    }
   }
 
   private resolveSessionUrl(sessionUrl: string | undefined, hostname: string) {
@@ -709,21 +755,22 @@ export class MaskedEmailService {
     operation: string,
     message: string,
     responseData: unknown,
-    callId?: string
+    callId?: string,
+    cause?: unknown
   ): JmapMethodError {
     return new JmapMethodError(
       operation,
       'invalidResponse',
       message,
       callId,
-      responseData
+      responseData,
+      { cause }
     );
   }
 
   private transportError(error: unknown, operation: string): Error {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      const status = axiosError.response?.status;
+    if (isHTTPError(error)) {
+      const status = error.response.status;
       if (status === 401 || status === 403) {
         return new InvalidCredentialsError(
           `${operation} failed with status code ${status}.`,
@@ -731,14 +778,11 @@ export class MaskedEmailService {
         );
       }
 
-      const message = status
-        ? `${operation} failed with status code ${status}.`
-        : `${operation} failed: ${axiosError.message}`;
       return new TransportError(
         operation,
-        message,
+        `${operation} failed with status code ${status}.`,
         status,
-        axiosError.response?.data,
+        error.data,
         { cause: error }
       );
     }
