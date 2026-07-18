@@ -588,9 +588,9 @@ export class MaskedEmailService {
           throw new Error('Session URL must use HTTPS.');
         }
         return parsed.toString();
-      } catch (error) {
+      } catch {
         throw new InvalidArgumentError(
-          `Invalid sessionUrl: ${error instanceof Error ? error.message : String(error)}`
+          'Invalid sessionUrl: expected an absolute HTTPS URL'
         );
       }
     }

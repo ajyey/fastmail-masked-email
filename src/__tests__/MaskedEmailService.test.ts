@@ -157,6 +157,22 @@ describe('MaskedEmailService', () => {
       });
     });
 
+    it('creates a timeout signal when no external signal is supplied', async () => {
+      const configured = new MaskedEmailService({
+        token: 'token',
+        hostname: 'api.example.com',
+        httpClient,
+        timeout: 1234
+      });
+
+      await configured.initialize();
+      expect(get.mock.calls[0][1]).toMatchObject({
+        retry: 0,
+        signal: expect.any(AbortSignal),
+        timeout: 1234
+      });
+    });
+
     it('rejects invalid timeout values', () => {
       expect(
         () =>
@@ -414,6 +430,22 @@ describe('MaskedEmailService', () => {
       ).resolves.toEqual(maskedEmailFixture);
     });
 
+    it('accepts deleted records with no URL', async () => {
+      const deletedEmail = {
+        ...maskedEmailFixture,
+        state: 'deleted' as const,
+        url: null
+      };
+      post.mockResolvedValue(
+        response('MaskedEmail/get', {
+          list: [deletedEmail],
+          notFound: []
+        })
+      );
+
+      await expect(service.getAllEmails()).resolves.toEqual([deletedEmail]);
+    });
+
     it('reports a missing masked email', async () => {
       post.mockResolvedValue(
         response('MaskedEmail/get', { list: [], notFound: ['missing'] })
@@ -618,6 +650,24 @@ describe('MaskedEmailService', () => {
         name: 'JmapSetError',
         affectedId: maskedEmailFixture.id,
         type: 'invalidProperties'
+      });
+    });
+
+    it('falls back for a SetError without a valid type', async () => {
+      post.mockResolvedValue(
+        response('MaskedEmail/set', {
+          notUpdated: {
+            [maskedEmailFixture.id]: { description: 'Unknown failure' }
+          }
+        })
+      );
+
+      await expect(
+        service.updateEmail(maskedEmailFixture.id, { description: 'Updated' })
+      ).rejects.toMatchObject({
+        message: 'Unknown failure',
+        name: 'JmapSetError',
+        type: 'unknown'
       });
     });
 
