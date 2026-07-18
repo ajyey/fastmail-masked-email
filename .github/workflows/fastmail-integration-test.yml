@@ -1,6 +1,8 @@
 name: fastmail-integration-test
 
 on:
+  push:
+    branches: ['develop', 'master']
   workflow_dispatch:
 
 permissions:
