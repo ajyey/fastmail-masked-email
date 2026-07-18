@@ -1,3 +1,22 @@
+# [4.0.0-beta.1](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.3...v4.0.0-beta.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* **session:** accept standard JMAP account data ([fc62fea](https://github.com/ajyey/fastmail-masked-email/commit/fc62fea339d3f6c9cf15ce8dddf7ef7b2e91a5d8))
+
+
+### Features
+
+* **major:** modernize the library for v4 ([01f0023](https://github.com/ajyey/fastmail-masked-email/commit/01f0023e6a5bc8693572548ce9c6dca51a5f8a4f))
+
+
+### BREAKING CHANGES
+
+* **major:** v4 is ESM-only and introduces corrected service APIs.
+
+Return contracts, JMAP validation, and public types changed. See MIGRATION.md.
+
 ## [3.0.3](https://github.com/ajyey/fastmail-masked-email/compare/v3.0.2...v3.0.3) (2026-07-14)
 
 ### Bug Fixes
