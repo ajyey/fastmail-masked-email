@@ -11,7 +11,7 @@ export const permanentDeleteSuccessResponseFixture = {
         updated: {},
         created: {}
       },
-      'a'
+      '1'
     ]
   ],
   sessionState: 'cyrus-68;p-b14967af44'

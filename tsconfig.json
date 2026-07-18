@@ -1,33 +1,21 @@
 {
-  "include": [
-	"src/**/*"
-  ],
+  "include": ["src/**/*", "vitest.config.ts", "vitest.integration.config.ts"],
   "compilerOptions": {
-	"target": "es2017",
-	"lib": [
-	  "es2017",
-	  "dom"
-	],
-	"types": [
-	  "node",
-	],
-	"module": "commonjs",
-	"moduleResolution": "node",
-	"allowJs": true,
-	"forceConsistentCasingInFileNames": true,
-	"esModuleInterop": true,
-	"outDir": "dist",
-	"rootDir": "src",
-	"strict": true,
-	"noImplicitAny": true,
-	"noUnusedLocals": true,
-	"noFallthroughCasesInSwitch": true,
-	"noUnusedParameters": true,
-	"noImplicitReturns": true,
-	"resolveJsonModule": true,
-	"skipLibCheck": true,
-	"sourceMap": true,
-	"declaration": true
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
+    "types": ["node", "vitest/globals"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true
   }
 }
-

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { InvalidCredentialsError } from '../error/invalidCredentialsError';
+import { InvalidCredentialsError } from '../error/invalidCredentialsError.js';
 
 describe('InvalidCredentialsError', () => {
   it('should create an instance of InvalidCredentialsError with the given message', () => {

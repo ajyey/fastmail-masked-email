@@ -9,13 +9,19 @@
  * - deleted
  *   - The address is inactive; any mail sent to the address is bounced.
  * - pending
- *   - The initial state. Once set to anything else, it cannot be set back to pending.
+ *   - A create-only temporary state. Once changed, it cannot be restored.
  *   - If a message is received by an address in the "pending" state, it will automatically be converted to "enabled".
  *   - Pending email addresses are automatically deleted 24h after creation.
 
  * @see {@link https://www.fastmail.com/developer/maskedemail/}
  */
 export type MaskedEmailState = 'enabled' | 'disabled' | 'pending' | 'deleted';
+
+/** States accepted when creating an address; deletion is an update operation. */
+export type CreateMaskedEmailState = Exclude<MaskedEmailState, 'deleted'>;
+
+/** States accepted when updating an address; pending cannot be restored. */
+export type UpdateMaskedEmailState = Exclude<MaskedEmailState, 'pending'>;
 
 /**
  * Represents a masked email address.
@@ -34,12 +40,10 @@ export interface MaskedEmail {
   forDomain: string;
   /** A short user-supplied description of what this masked email address is for. */
   description: string;
-  /** The date-time the most recent message was received at this email address, if any. */
-  createdAt: string;
   /** The date-time the email address was created. */
-  lastMessageAt: string;
+  createdAt: string;
+  /** The date-time the most recent message was received, if any. */
+  lastMessageAt: string | null;
   /** The name of the client that created this masked email address */
   createdBy: string;
-  /** (create-only) This is only used on create and otherwise ignored; it is not returned when masked email objects are fetched. */
-  emailPrefix?: string;
 }
