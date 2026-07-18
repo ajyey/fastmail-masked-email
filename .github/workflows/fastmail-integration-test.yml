@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  contract:
+  integration:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -28,5 +28,5 @@ jobs:
       - name: Run Fastmail integration test
         env:
           JMAP_TOKEN: ${{ secrets.JMAP_TOKEN }}
-          # Leave the optional hostname unset so the Fastmail default applies.
+          # Add JMAP_HOSTNAME here to use a host other than the Fastmail default.
         run: npm run test:integration
